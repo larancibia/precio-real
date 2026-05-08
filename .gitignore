@@ -1,0 +1,24 @@
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+*.log
+
+# Cloudflare / Wrangler
+.wrangler/
+.dev.vars
+.env
+.env.local
+
+# Build artifacts
+dist/
+build/
+*.zip
+
+# Generated seed SQL (regenerate via npm run db:seed)
+backend/scripts/seed.sql
+
+# IDE
+.vscode/
+.idea/
