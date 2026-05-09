@@ -1,0 +1,31 @@
+name: Deploy landing to Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "landing/**"
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      deployments: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Inject Cloudflare Analytics token
+        if: ${{ secrets.CF_ANALYTICS_TOKEN != '' }}
+        run: |
+          find landing -name "*.html" -exec sed -i "s/TOKEN_PLACEHOLDER/${{ secrets.CF_ANALYTICS_TOKEN }}/g" {} \;
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy landing --project-name=precio-real-landing --commit-dirty=true
