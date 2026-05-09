@@ -833,4 +833,61 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "tabla de skate completa",
   "patines en linea adultos",
   "casco patines skate",
+  // Ciclo 1620 — yerba mate / infusiones argentinas (categoría endemic AR)
+  "yerba mate",
+  "yerba mate sin palo",
+  "mate y bombilla set",
+  "termo mate acero",
+  "te verde organico",
+  "infusiones herbales",
+  // Ciclo 1620 — café de especialidad / equipamiento barista
+  "cafetera de capsulas nespresso",
+  "cafetera prensa francesa",
+  "molinillo de cafe electrico",
+  "cafe de especialidad grano",
+  "cafetera aeropress",
+  "cafetera cold brew",
+  // Ciclo 1620 — cosmética / skincare (alta conversión MLA)
+  "crema facial vitamina c",
+  "serum vitamina c",
+  "protector solar facial spf50",
+  "acido hialuronico serum",
+  "contorno de ojos",
+  "limpiador facial espuma",
+  // Ciclo 1620 — perfumería (enorme volumen MLA AR)
+  "perfume mujer importado",
+  "perfume hombre importado",
+  "colonia masculina",
+  "set perfume regalo",
+  // Ciclo 1620 — ropa bebé / maternidad
+  "ropa bebe recien nacido",
+  "cochecito bebe",
+  "porta bebe ergonomico",
+  "cuna bebe",
+  "monitor bebe wifi",
+  // Ciclo 1620 — juguetes STEM / educativos
+  "kit robotica niños",
+  "microscopio niños",
+  "lego technic",
+  "cubo rubik profesional",
+  "telescopio niños",
+  // Ciclo 1620 — iluminación LED inteligente
+  "tira led wifi rgb",
+  "foco led inteligente alexa",
+  "lampara de escritorio led",
+  "proyector laser estrellas",
+  // Ciclo 1620 — mochilas / bolsos viaje
+  "mochila universitaria",
+  "mochila de viaje 40l",
+  "valija cabina spinner",
+  "riñonera deportiva",
+  // Ciclo 1620 — herramientas eléctricas adicionales
+  "amoladora angular 115mm",
+  "soldadora inverter",
+  "caladora eléctrica",
+  "fresadora de mano",
+  // Ciclo 1620 — ventilación / climatización portátil
+  "ventilador de torre silencioso",
+  "aire acondicionado portatil",
+  "deshumidificador electrico",
 ];
