@@ -1001,4 +1001,62 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "aspiradora robot con mopa",
   "cafetera superautomatica jura",
   "heladera french door",
+  // Ciclo 1623 — Hot Sale activo mayo 2026: tech de alta conversión
+  "notebook gamer rtx",
+  "celular reacondicionado",
+  "smartwatch galaxy watch ultra",
+  "tablet ipad mini",
+  "auriculares marshall",
+  // Ciclo 1623 — Hot Sale activo mayo 2026: hogar / electrodomésticos
+  "heladera combi",
+  "lavarropas carga frontal",
+  "horno combinado microondas",
+  "campana de cocina",
+  "cocina de gas encastre",
+  // Ciclo 1623 — Hot Sale activo mayo 2026: indumentaria / calzado
+  "zapatillas skechers",
+  "zapatillas fila",
+  "ropa deportiva mujer",
+  "remera algodon hombre",
+  "jeans skinny mujer",
+  // Ciclo 1623 — Hot Sale activo mayo 2026: gaming periféricos
+  "controlador nintendo switch",
+  "auriculares gaming inalambrico",
+  "monitor 165hz",
+  "placa de video rx 7700",
+  // Ciclo 1623 — Hot Sale activo mayo 2026: movilidad y outdoor
+  "bicicleta electrica urbana",
+  "casco de bicicleta mips",
+  "mochila montaña 30l",
+  "carpa ultraligera",
+  // Ciclo 1623 — Hot Sale activo mayo 2026: salud / bienestar
+  "colchon ortopedico",
+  "almohada ergonomica cuello",
+  "bicicleta estatica con pantalla",
+  "pesas ajustables 20kg",
+  // Ciclo 1623 — Hot Sale activo mayo 2026: conectividad / smart home
+  "router wifi 6",
+  "switch red gigabit",
+  "nas almacenamiento red",
+  "camara seguridad exterior",
+  // Ciclo 1623 — Hot Sale activo mayo 2026: cocina premium
+  "procesadora de alimentos philips",
+  "freidora air fryer ninja",
+  "olla de hierro fundido",
+  "cuchillo chef profesional",
+  // Ciclo 1623 — Hot Sale activo mayo 2026: TV premium y audio
+  "smart tv oled lg",
+  "soundbar con subwoofer",
+  "proyector 4k laser",
+  "receiver av amplificador",
+  // Ciclo 1623 — Hot Sale activo mayo 2026: bebés / niños
+  "cochecito gemelar",
+  "silla de auto isofix",
+  "juguete educativo stem",
+  "set lego ciudad",
+  // Ciclo 1623 — Hot Sale activo mayo 2026: mascotas
+  "cama ortopedica perro",
+  "rascador grande gatos",
+  "correa ajustable perro",
+  "arena sanitaria gatos",
 ];
