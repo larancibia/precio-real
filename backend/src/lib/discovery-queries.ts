@@ -1243,4 +1243,67 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "aislante termico rollos",
   "espuma poliuretano expansiva",
   "burletes para puertas",
+  // Ciclo 1627 — nutrición deportiva: suplementos y proteínas invierno
+  "proteina whey 3kg",
+  "creatina monohidrato",
+  "bcaa aminoacidos",
+  "pre workout energizante",
+  "colageno hidrolizado",
+  "glutamina polvo",
+  // Ciclo 1627 — home office tech: periferia productividad 2026
+  "camara web 4k autofoco",
+  "microfono usb condensador",
+  "anillo de luz led 18 pulgadas",
+  "monitor portatil 15 pulgadas",
+  "docking station usb c",
+  "teclado mecanico bluetooth",
+  "reposamuñecas teclado gel",
+  // Ciclo 1627 — cocina gourmet: gadgets culinarios invierno
+  "cafetera espresso manual",
+  "maquina de pasta electrica",
+  "olla de coccion lenta electrica",
+  "freidora de aire xxl 8l",
+  "balanza de cocina precision",
+  "molde de silicona reposteria",
+  // Ciclo 1627 — e-bikes y movilidad alternativa
+  "bicicleta electrica urbana",
+  "ebike plegable 250w",
+  "casco bicicleta con luz led",
+  "candado bicicleta seguridad",
+  "bolso alforja bicicleta",
+  // Ciclo 1627 — streaming y entretenimiento en casa
+  "chromecast 4k google tv",
+  "fire stick 4k max",
+  "decoder tda full hd",
+  "barra de sonido dolby atmos",
+  "proyector mini 4k portatil",
+  // Ciclo 1627 — juguetes tech y educativos invierno
+  "robot educativo programable",
+  "kit electronica arduino educativo",
+  "telescopio refractor 70mm",
+  "microscopio digital ninos",
+  "lego technic racing",
+  // Ciclo 1627 — instrumentos musicales indoor
+  "guitarra electrica principiantes",
+  "teclado midi controlador 25 teclas",
+  "ukulele concierto",
+  "bateria electronica 9 pads",
+  "bajo electrico 4 cuerdas",
+  // Ciclo 1627 — café y bebidas calientes premium
+  "molinillo de cafe electrico burr",
+  "cafetera capsulas dolce gusto",
+  "cafetera italiana 6 tazas",
+  "maquina espresso semiprofesional",
+  // Ciclo 1627 — generadores y emergencias invierno
+  "generador electrico 2000w",
+  "bateria solar portatil 600w",
+  "linterna tactica recargable",
+  // Ciclo 1627 — cuidado personal masculino premium
+  "maquina de cortar pelo inalambrica",
+  "afeitadora electrica barba",
+  "set grooming hombre completo",
+  // Ciclo 1627 — coleccionables y cultura gamer/anime
+  "figura funko pop exclusiva",
+  "manga coleccion one piece",
+  "poster acrilico anime",
 ];
