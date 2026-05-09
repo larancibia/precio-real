@@ -18,6 +18,9 @@
     "https://diaonline.supermercadosdia.com.ar/*",
     "https://*.jumbo.com.ar/*",
     "https://*.disco.com.ar/*",
+    "https://*.sodimac.com.ar/*",
+    "https://*.easy.com.ar/*",
+    "https://*.hendel.com.ar/*",
     "http://localhost:8787/*"
   ],
   "action": {
@@ -42,7 +45,10 @@
         "https://*.megatone.net/*",
         "https://diaonline.supermercadosdia.com.ar/*",
         "https://*.jumbo.com.ar/*",
-        "https://*.disco.com.ar/*"
+        "https://*.disco.com.ar/*",
+        "https://*.sodimac.com.ar/*",
+        "https://*.easy.com.ar/*",
+        "https://*.hendel.com.ar/*"
       ],
       "js": ["config.js", "utils/retailers.js", "utils/helpers.js", "utils/affiliates.js", "content/content.js"],
       "css": ["content/badge.css"],

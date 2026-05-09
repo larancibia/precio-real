@@ -122,6 +122,38 @@
         '[class*="Price"]',
       ],
     },
+    sodimac: {
+      label: 'Sodimac',
+      hostnameSuffix: 'sodimac.com.ar',
+      currency: 'ARS',
+      selectors: [
+        '[data-testid="product-detail-price"]',
+        '[data-automation-id="product-price"]',
+        '.copy10',
+        'span[class*="price"]',
+      ],
+    },
+    easy: {
+      label: 'Easy',
+      hostnameSuffix: 'easy.com.ar',
+      currency: 'ARS',
+      selectors: [
+        'meta[itemprop="price"]',
+        '.vtex-product-price-1-x-sellingPrice',
+        '[class*="sellingPrice"]',
+        'span[class*="price"]',
+      ],
+    },
+    hendel: {
+      label: 'Hendel',
+      hostnameSuffix: 'hendel.com.ar',
+      currency: 'ARS',
+      selectors: [
+        'meta[itemprop="price"]',
+        '.product-price',
+        'span[class*="price"]',
+      ],
+    },
   };
 
   const GENERIC_PRICE_SELECTORS = [

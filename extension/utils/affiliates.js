@@ -73,6 +73,30 @@
         campaign: 'descuento-real',
       },
     },
+    sodimac: {
+      enabled: true,
+      utm: {
+        source: 'precio-real',
+        medium: 'extension',
+        campaign: 'descuento-real',
+      },
+    },
+    easy: {
+      enabled: true,
+      utm: {
+        source: 'precio-real',
+        medium: 'extension',
+        campaign: 'descuento-real',
+      },
+    },
+    hendel: {
+      enabled: true,
+      utm: {
+        source: 'precio-real',
+        medium: 'extension',
+        campaign: 'descuento-real',
+      },
+    },
   };
 
   function applyUtm(rawUrl, utm) {
