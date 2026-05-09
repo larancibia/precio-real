@@ -163,6 +163,10 @@ console.log('[precio-real tests] starting…');
     ['ar.lenovo.com', 'lenovo'],
     ['www.alphatec.com.ar', 'alphatec'],
     ['www.exo.com.ar', 'exo'],
+    // Ciclo 1613: Newsan, Asus Store AR, Mac Center.
+    ['www.newsan.com.ar', 'newsan'],
+    ['store.asus.com', 'asus'],
+    ['www.maccenter.com.ar', 'maccenter'],
     ['www.amazon.com', null],
     ['', null],
   ];
@@ -363,6 +367,15 @@ console.log('[precio-real tests] starting…');
     assert(
       Array.isArray(PR.RETAILERS[k] && PR.RETAILERS[k].selectors) && PR.RETAILERS[k].selectors.length > 0,
       `RETAILERS["${k}"].selectors not empty (ciclo 1596)`
+    );
+  }
+  // Ciclo 1613: Newsan, Asus Store AR, Mac Center.
+  for (const k of ['newsan', 'asus', 'maccenter']) {
+    assert(PR.SUPPORTED_SITES.includes(k), `SUPPORTED_SITES includes ${k} (ciclo 1613)`);
+    assert(PR.RETAILERS && PR.RETAILERS[k], `RETAILERS["${k}"] exists (ciclo 1613)`);
+    assert(
+      Array.isArray(PR.RETAILERS[k] && PR.RETAILERS[k].selectors) && PR.RETAILERS[k].selectors.length > 0,
+      `RETAILERS["${k}"].selectors not empty (ciclo 1613)`
     );
   }
 }
