@@ -1337,8 +1337,6 @@
         'meta[property="og:price:amount"]',
       ],
     },
-  };
-
     // Ciclo 1608: FullH4rd AR (Shopify gaming/periféricos), StartTech AR (Magento 2
     // gaming/PC), PC House AR (WooCommerce hardware).
     fullh4rd: {
@@ -1397,6 +1395,123 @@
       selectors: [
         // PC House AR usa WooCommerce. Mismo patrón que Mac Center, Full AR,
         // Olimpo AR: precio con descuento en .price ins, sin descuento directo.
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        'ins .woocommerce-Price-amount.amount bdi',
+        'ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount bdi',
+        '[data-testid="product-price"]',
+        '.product-price',
+        '.precio-actual',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    // Ciclo 1609: nuevos retailers gaming/PC y electrónica AR.
+    // Plataformas: MaxiHogar (VTEX), DigitalTech (Magento 2), Goldenshop (Shopify),
+    // Red UNO (WooCommerce), Cetrogar Córdoba (Magento 2, filial regional).
+    maxihogar: {
+      label: 'MaxiHogar',
+      hostnameSuffix: 'maxihogar.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // MaxiHogar AR (electrodomésticos) usa VTEX IO. Mismos selectores que
+        // otros appliance retailers (Electrolux, Philco, Hisense, Newsan).
+        '.vtex-product-price-1-x-sellingPriceValue',
+        '.vtex-product-price-1-x-sellingPrice',
+        '.vtex-product-price-1-x-currencyContainer',
+        '[class*="sellingPriceValue" i]',
+        '[class*="sellingPrice" i]',
+        '[class*="currentPrice" i]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '[data-testid="pdp-price"]',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    pcfactory: {
+      label: 'PC Factory',
+      hostnameSuffix: 'pcfactory.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // PC Factory AR (hardware/gaming) usa Magento 2 con tema custom.
+        // Precio final en .price-final_price [data-price-amount] (US-formatted).
+        // El precio tachado (.old-price) lo filtra isStrikethroughPrice.
+        '.product-info-price .price-final_price [data-price-amount]',
+        '.product-info-price .price-final_price .price',
+        '.special-price [data-price-amount]',
+        '.special-price .price',
+        '.price-box .price-final_price [data-price-amount]',
+        '.price-box .price',
+        '[data-price-amount]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    compragamer: {
+      label: 'CompraGamer',
+      hostnameSuffix: 'compragamer.com',
+      currency: 'ARS',
+      selectors: [
+        // CompraGamer AR (hardware/gaming) usa plataforma propia (Next.js/React).
+        // El precio de venta activo vive en [data-testid="product-price"] o en
+        // elementos con clase que contiene "price". JSON-LD Product presente.
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '[data-testid="selling-price"]',
+        '[data-testid="final-price"]',
+        '.product-price__current',
+        '.product-price__sale',
+        '[class*="CurrentPrice" i]',
+        '[class*="SalePrice" i]',
+        '[class*="FinalPrice" i]',
+        '[class*="ProductPrice" i]',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    goldenshop: {
+      label: 'Golden Shop',
+      hostnameSuffix: 'goldenshop.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Golden Shop AR (accesorios/electrónica) usa Shopify con tema custom.
+        // El precio de venta activo en .price-item--sale; sin descuento en --regular.
+        '.price__sale .price-item--sale',
+        '.price-item--sale',
+        '.price__regular .price-item--regular',
+        '.price-item--regular',
+        '[data-testid="product-price"]',
+        '[data-testid="price"]',
+        'span[class*="price-item" i]',
+        '[data-price-value]',
+        '.product__price',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    soluciones: {
+      label: 'Soluciones',
+      hostnameSuffix: 'soluciones.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Soluciones AR (informática/gaming) usa WooCommerce con tema custom.
+        // Precio con descuento en .price ins .woocommerce-Price-amount;
+        // sin descuento en .woocommerce-Price-amount directamente.
         '.price ins .woocommerce-Price-amount.amount',
         '.woocommerce-Price-amount.amount',
         '.price .amount',
