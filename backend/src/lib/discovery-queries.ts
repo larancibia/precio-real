@@ -890,4 +890,60 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "ventilador de torre silencioso",
   "aire acondicionado portatil",
   "deshumidificador electrico",
+  // Ciclo 1621 — libros / lectura / papelería premium
+  "libro de cocina",
+  "libro educativo infantil",
+  "agenda ejecutiva 2026",
+  "planner mensual",
+  // Ciclo 1621 — impresión profesional / plotters
+  "impresora de etiquetas",
+  "impresora de fotos portatil",
+  "plotter de corte",
+  // Ciclo 1621 — accesorios fotografía / video
+  "estabilizador gimbal 3 ejes",
+  "microfono para celular",
+  "luz de video portatil",
+  "bateria camara sony",
+  "bateria camara canon",
+  // Ciclo 1621 — colchones / descanso premium
+  "colchon espuma alta densidad",
+  "colchon pocket spring",
+  "almohada latex",
+  "protector colchon impermeable",
+  // Ciclo 1621 — muebles de exterior / jardín
+  "mesa de jardin aluminio",
+  "silla de jardin plegable",
+  "hamaca de jardin",
+  "sombrilla de jardin 3 metros",
+  "parrilla a carbon",
+  // Ciclo 1621 — ropa de trabajo / uniformes
+  "pantalon de trabajo cargo",
+  "camisa de trabajo hombre",
+  "chaleco de trabajo reflectante",
+  // Ciclo 1621 — accesorios para pc gaming streaming
+  "camara web 1080p",
+  "microfono gaming rgb",
+  "alfombra gamer xl",
+  "silla secretlab",
+  // Ciclo 1621 — telefonía / accessories 2026
+  "auriculares samsung buds",
+  "funda magsafe iphone",
+  "soporte celular magnetico auto",
+  "cargador inalambrico 15w",
+  // Ciclo 1621 — instrumentos musicales
+  "guitarra acustica cuerdas nylon",
+  "amplificador guitarra",
+  "pedal efecto guitarra",
+  "bateria electronica compacta",
+  "teclado midi 49 teclas",
+  // Ciclo 1621 — deportes agua / natación
+  "tabla de paddleboard",
+  "traje de neoprene",
+  "lentes de natacion",
+  "aletas de buceo",
+  // Ciclo 1621 — electrodomésticos cocina 2026
+  "olla multicoccion",
+  "sandwichera grill electrica",
+  "juguera extractora frio",
+  "yogurtera digital",
 ];
