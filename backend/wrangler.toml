@@ -1,6 +1,7 @@
 name = "precio-real-api"
 main = "src/index.ts"
 compatibility_date = "2026-05-01"
+account_id = "5de70f4ba8110b9cf400a3157ff420c3"
 
 [[d1_databases]]
 binding = "DB"

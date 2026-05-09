@@ -1,7 +1,7 @@
 /* TEAM */
 
   Maintainer: Luis Arancibia
-  Site:       https://preciorreal.com/
+  Site:       https://precio-real.firemandeveloper.com/
   GitHub:     https://github.com/larancibia/precio-real
   Location:   Argentina
 

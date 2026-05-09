@@ -2,7 +2,7 @@
 <!--
   OpenSearch description for Precio Real.
 
-  Permite a Chrome/Edge/Brave/Firefox detectar preciorreal.com como motor de
+  Permite a Chrome/Edge/Brave/Firefox detectar precio-real.firemandeveloper.com como motor de
   busqueda y agregarlo desde la URL bar. Complementa el SearchAction declarado
   en el WebSite JSON-LD (sitelinks searchbox de Google) y refuerza la senal
   de identidad/marca al crawler.
@@ -15,17 +15,17 @@
   <LongName>Precio Real — Historial real de precios</LongName>
   <Description>Buscar productos en Precio Real para ver el precio histórico real en e-commerce argentinos.</Description>
   <Tags>precio real historial precios hot sale argentina mercado libre fravega carrefour coto</Tags>
-  <Contact>contacto@preciorreal.com</Contact>
+  <Contact>luis@firemandeveloper.com</Contact>
   <InputEncoding>UTF-8</InputEncoding>
   <OutputEncoding>UTF-8</OutputEncoding>
   <Language>es-AR</Language>
-  <Image height="16" width="16" type="image/x-icon">https://preciorreal.com/favicon.ico</Image>
-  <Image height="180" width="180" type="image/png">https://preciorreal.com/apple-touch-icon.png</Image>
+  <Image height="16" width="16" type="image/x-icon">https://precio-real.firemandeveloper.com/favicon.ico</Image>
+  <Image height="180" width="180" type="image/png">https://precio-real.firemandeveloper.com/apple-touch-icon.png</Image>
   <Url type="text/html"
        method="get"
-       template="https://preciorreal.com/?q={searchTerms}"/>
+       template="https://precio-real.firemandeveloper.com/?q={searchTerms}"/>
   <Url type="application/opensearchdescription+xml"
        rel="self"
-       template="https://preciorreal.com/opensearch.xml"/>
-  <moz:SearchForm>https://preciorreal.com/</moz:SearchForm>
+       template="https://precio-real.firemandeveloper.com/opensearch.xml"/>
+  <moz:SearchForm>https://precio-real.firemandeveloper.com/</moz:SearchForm>
 </OpenSearchDescription>

@@ -48,7 +48,7 @@ Asi que me puse a hacer algo al respecto. Se llama **Precio Real** y es una exte
 
 **Links:**
 - Chrome Web Store: `[LINK_CHROME_STORE]`
-- Sitio + FAQ: https://preciorreal.com `[VERIFICAR dominio]`
+- Sitio + FAQ: https://precio-real.firemandeveloper.com `[VERIFICAR dominio]`
 - Codigo (open source): https://github.com/larancibia/precio-real
 
 **Que feedback me sirve mas:**
@@ -91,7 +91,7 @@ Buenas, comparto un proyecto personal por si a alguien le sirve o quiere contrib
 **Links:**
 - Chrome Web Store: `[LINK_CHROME_STORE]`
 - Repo: https://github.com/larancibia/precio-real
-- Sitio: https://preciorreal.com `[VERIFICAR dominio]`
+- Sitio: https://precio-real.firemandeveloper.com `[VERIFICAR dominio]`
 
 **Donde me vendria una mano:**
 - Probar la extension en sitios que tengan layouts raros (paginas de campanas, listings, busquedas) y reportar issues.
@@ -128,7 +128,7 @@ Gracias.
 ## Checklist pre-publicacion
 
 - [ ] Reemplazar `[LINK_CHROME_STORE]` por la URL real del Web Store (depende de la aprobacion del listing).
-- [ ] Confirmar dominio (`preciorreal.com` vs. `precio-real.com` — `docs/PR-KIT.md` lo marca como pendiente de verificar).
+- [ ] Confirmar dominio (`precio-real.firemandeveloper.com` vs. `precio-real.com` — `docs/PR-KIT.md` lo marca como pendiente de verificar).
 - [ ] Confirmar la cifra exacta de EcoGo (ano, categoria, ventana) — ahora dice 4-6% generico.
 - [ ] Confirmar fecha exacta de inicio del Hot Sale 2026.
 - [ ] Tener cuenta de Reddit con karma minimo (si la cuenta es nueva, los mods de r/argentina suelen mandar al filtro automatico).

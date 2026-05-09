@@ -54,27 +54,22 @@ Todo automatico. No tenes que hacer nada.
 
 Permisos minimos: `storage` y `activeTab`. Codigo auditable en GitHub.
 
-### 6/8 — Sitios soportados (v0.1.0)
+### 6/8 — Sitios soportados (v0.2.0 — 96 e-commerce argentinos)
 
-- Mercado Libre Argentina
-- Fravega
-- Garbarino
-- Falabella Argentina
-- Carrefour Argentina
-- Coto Digital
+Los principales: Mercado Libre Argentina, Fravega, Garbarino, Falabella Argentina, Carrefour Argentina, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Jumbo, Disco, Sodimac, Amazon Argentina, Samsung Store, LG Argentina, Lenovo Argentina, HP Tienda, CompraGamer, FullH4rd, PC Factory y 75 mas.
 
-Mas retailers vienen en la v0.2 segun el feedback que llegue esta semana.
+Lista completa en https://preciorreal.com
 
 ### 7/8 — Por que ahora
 
-El Hot Sale arranca [VERIFICAR fecha exacta]. La idea es que tengas la herramienta instalada **antes** de que empiecen las "ofertas" para que la extension ya tenga historial cuando hagas click.
+El Hot Sale arranca el **13 de mayo de 2026**. La idea es que tengas la herramienta instalada **antes** de que empiecen las "ofertas" para que la extension ya tenga historial cuando hagas click.
 
 Cuanto antes la instales, mejores datos vas a ver.
 
 ### 8/8 — CTA
 
 Instalar (Chrome Web Store): [LINK_CHROME_STORE]
-Sitio + FAQ: https://preciorreal.com `[VERIFICAR dominio]`
+Sitio + FAQ: https://preciorreal.com
 Codigo (open source): https://github.com/larancibia/precio-real
 
 Si te sirve, RT al primer tweet asi llega a mas gente antes del Hot Sale. Gracias 🙏
@@ -115,10 +110,10 @@ Evitar saturar con hashtags genericos tipo #ofertas / #descuentos — no aportan
 ## Checklist pre-publicacion
 
 - [ ] Reemplazar `[LINK_CHROME_STORE]` por la URL real del Web Store (depende de issue de aprobacion).
-- [ ] Confirmar dominio (`preciorreal.com` vs. `precio-real.com` — `docs/PR-KIT.md` lo marca como pendiente de verificar).
+- [x] Dominio confirmado: `preciorreal.com` (canonical en toda la landing y extension).
 - [ ] Adjuntar screenshots reales (no placeholders) generados desde la extension instalada en un MLA real durante la semana previa.
 - [ ] Confirmar la cifra exacta de EcoGo (ano, categoria, ventana) — ahora dice 4-6% generico.
-- [ ] Confirmar fecha exacta de inicio del Hot Sale 2026.
+- [x] Fecha Hot Sale 2026 confirmada: 13-15 de mayo de 2026 (CACE).
 - [ ] Programar el thread en TweetDeck / Buffer para 09:00 ART de un dia laboral (martes/miercoles ideales).
 - [ ] Tener listas 2-3 respuestas pre-escritas para preguntas frecuentes ("funciona en Firefox?", "es de verdad gratis?", "como saben que es trucho?").
 - [ ] Avisar a contactos cercanos para tener los primeros 5-10 RT en la primera hora (algoritmo).

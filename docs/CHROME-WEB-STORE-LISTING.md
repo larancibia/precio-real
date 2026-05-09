@@ -18,9 +18,9 @@ para Precio Real v0.2.0. Idioma principal: español (Argentina).
 | Short summary (max 132 chars) | `Detectá descuentos truchos en Hot Sale: historial real de precios en 96 e-commerce argentinos. Sin cuenta, sin tracking.` |
 | Category | Shopping |
 | Language | Spanish (Argentina) — `es-AR` |
-| Website / Homepage URL | `https://preciorreal.com` |
+| Website / Homepage URL | `https://precio-real.firemandeveloper.com` |
 | Support URL | `https://github.com/larancibia/precio-real/issues` |
-| Privacy policy URL | `https://preciorreal.com/privacidad.html` |
+| Privacy policy URL | `https://precio-real.firemandeveloper.com/privacidad.html` |
 | Single purpose | Mostrar el historial real de precios de productos en e-commerce argentinos para detectar aumentos disfrazados de descuentos. |
 
 ---
@@ -51,7 +51,7 @@ PRIVACIDAD
 - Sin cuenta, sin login, sin datos personales.
 - Solo procesamos la URL pública del producto para consultar su historial.
 - No vendemos datos. No tenemos.
-- Política completa: https://preciorreal.com/privacidad.html
+- Política completa: https://precio-real.firemandeveloper.com/privacidad.html
 
 OPEN SOURCE
 Código auditable en GitHub: https://github.com/larancibia/precio-real
@@ -86,7 +86,7 @@ PRIVACY
 - No account, no login, no personal data collected.
 - We only process the public product URL to query its history.
 - We don't sell data. We don't have any to sell.
-- Full policy: https://preciorreal.com/privacy-policy.html
+- Full policy: https://precio-real.firemandeveloper.com/privacy-policy.html
 
 OPEN SOURCE
 Auditable code on GitHub: https://github.com/larancibia/precio-real
@@ -216,7 +216,7 @@ Dominios solicitados (96 retailers de e-commerce argentino):
 
 ### Remote code use
 ```
-La extensión NO ejecuta código remoto. Todo el JavaScript está empaquetado dentro del .zip subido a la Chrome Web Store. La única comunicación de red es una llamada GET a https://preciorreal.com/api/price para obtener el historial de un producto.
+La extensión NO ejecuta código remoto. Todo el JavaScript está empaquetado dentro del .zip subido a la Chrome Web Store. La única comunicación de red es una llamada GET a https://precio-real.firemandeveloper.com/api/price para obtener el historial de un producto.
 ```
 
 ### Data usage disclosures (sección "Privacy practices")
@@ -282,8 +282,8 @@ Verificar que `icon128.png` se ve nítido en el preview de la store antes de sub
 ## 6. Checklist pre-submit
 
 - [ ] `manifest.json` con `version: "0.2.0"` (o bump si corresponde).
-- [ ] `manifest.json` apunta a producción (`config.js` con `API_BASE = "https://preciorreal.com"`, **no** localhost).
-- [ ] Privacy policy publicada en `https://preciorreal.com/privacidad.html` y accesible.
+- [ ] `manifest.json` apunta a producción (`config.js` con `API_BASE = "https://precio-real-api.arancibialuisalejandro.workers.dev"`, **no** localhost).
+- [ ] Privacy policy publicada en `https://precio-real.firemandeveloper.com/privacidad.html` y accesible.
 - [ ] Footer del landing linkea a `/privacidad.html`.
 - [ ] Build del .zip excluye `node_modules`, `.git`, `.DS_Store`, archivos de test.
 - [ ] 5 screenshots a 1280×800 listos.

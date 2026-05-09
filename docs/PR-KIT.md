@@ -39,7 +39,7 @@ Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Arg
 
 - Chrome Web Store: `[LINK_CHROME_STORE_PLACEHOLDER]`
 - Repositorio: https://github.com/larancibia/precio-real
-- Sitio oficial: https://preciorreal.com
+- Sitio oficial: https://precio-real.firemandeveloper.com
 
 ## Sobre el creador
 
@@ -56,15 +56,15 @@ Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Arg
 
 ## Datos de contacto
 
-- Email: contacto@preciorreal.com
+- Email: luis@firemandeveloper.com
 - Twitter / X: @preciorreal_ar
-- Sitio web: https://preciorreal.com
+- Sitio web: https://precio-real.firemandeveloper.com
 - GitHub: https://github.com/larancibia/precio-real
 
 ## Recursos descargables
 
 - Logo (SVG): `extension/icons/icon.svg` (o usar favicon.svg del landing)
-- Imagen Open Graph (1200x630): https://preciorreal.com/og-image.png
+- Imagen Open Graph (1200x630): https://precio-real.firemandeveloper.com/og-image.png
 - Iconos de la extensión (16 / 48 / 128 px): disponibles en `extension/icons/`.
 
 ---

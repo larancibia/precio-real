@@ -1,10 +1,10 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://preciorreal.com/sitemap-index.xml
-Sitemap: https://preciorreal.com/sitemap.xml
-Sitemap: https://preciorreal.com/sitemap-news.xml
+Sitemap: https://precio-real.firemandeveloper.com/sitemap-index.xml
+Sitemap: https://precio-real.firemandeveloper.com/sitemap.xml
+Sitemap: https://precio-real.firemandeveloper.com/sitemap-news.xml
 
-# Humans:     https://preciorreal.com/humans.txt
-# Security:   https://preciorreal.com/.well-known/security.txt
-# OpenSearch: https://preciorreal.com/opensearch.xml
+# Humans:     https://precio-real.firemandeveloper.com/humans.txt
+# Security:   https://precio-real.firemandeveloper.com/.well-known/security.txt
+# OpenSearch: https://precio-real.firemandeveloper.com/opensearch.xml

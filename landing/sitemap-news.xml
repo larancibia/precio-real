@@ -3,14 +3,14 @@
   Google News sitemap (publicaciones <= 2 dias).
   Spec: https://developers.google.com/search/docs/crawling-indexing/sitemaps/news-sitemap
   Las URLs deben renderizarse rapido (< 2s) y devolver HTML estatico — Cloudflare Pages
-  cumple ambos requisitos para preciorreal.com. La fecha publication_date es ISO 8601
+  cumple ambos requisitos para precio-real.firemandeveloper.com. La fecha publication_date es ISO 8601
   con offset; mantenerla actualizada cuando salga una nueva guia (Hot Sale, CyberMonday,
   Black Friday, post-mortems anuales).
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
   <url>
-    <loc>https://preciorreal.com/guia-hot-sale.html</loc>
+    <loc>https://precio-real.firemandeveloper.com/guia-hot-sale.html</loc>
     <news:news>
       <news:publication>
         <news:name>Precio Real</news:name>
@@ -22,7 +22,7 @@
     </news:news>
   </url>
   <url>
-    <loc>https://preciorreal.com/checklist-hot-sale-2026.html</loc>
+    <loc>https://precio-real.firemandeveloper.com/checklist-hot-sale-2026.html</loc>
     <news:news>
       <news:publication>
         <news:name>Precio Real</news:name>
@@ -34,7 +34,7 @@
     </news:news>
   </url>
   <url>
-    <loc>https://preciorreal.com/guia-cybermonday.html</loc>
+    <loc>https://precio-real.firemandeveloper.com/guia-cybermonday.html</loc>
     <news:news>
       <news:publication>
         <news:name>Precio Real</news:name>
@@ -46,7 +46,7 @@
     </news:news>
   </url>
   <url>
-    <loc>https://preciorreal.com/guia-black-friday.html</loc>
+    <loc>https://precio-real.firemandeveloper.com/guia-black-friday.html</loc>
     <news:news>
       <news:publication>
         <news:name>Precio Real</news:name>

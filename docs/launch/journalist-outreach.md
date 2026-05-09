@@ -55,7 +55,7 @@ El angulo es bastante argento:
 - Esta hecha por un solo desarrollador argentino. No hay empresa ni fondeo detras.
 
 Si te sirve, te dejo:
-- Landing + FAQ: https://preciorreal.com `[VERIFICAR dominio]`
+- Landing + FAQ: https://precio-real.firemandeveloper.com `[VERIFICAR dominio]`
 - Chrome Web Store: [LINK_CHROME_STORE]
 - Kit de prensa (cifras, screenshots, logos): https://github.com/larancibia/precio-real/blob/main/docs/PR-KIT.md
 - Repo: https://github.com/larancibia/precio-real
@@ -82,7 +82,7 @@ Te tiro corto: lance **Precio Real**, una extension de Chrome gratis y open sour
 El dato fuerte: EcoGo midio que los precios suben **4-6%** las semanas previas al Hot Sale `[VERIFICAR]`. La extension cruza eso con el historial real y avisa cuando la rebaja es humo.
 
 Si te sirve para una nota, links y kit de prensa aca:
-- Landing: https://preciorreal.com `[VERIFICAR]`
+- Landing: https://precio-real.firemandeveloper.com `[VERIFICAR]`
 - Web Store: [LINK_CHROME_STORE]
 - Kit prensa: https://github.com/larancibia/precio-real/blob/main/docs/PR-KIT.md
 
@@ -131,7 +131,7 @@ Para tener a mano si el periodista pide "mandame los datos clave en bullets":
 - Modelo: gratis, sin ads, sin tracking. Soporte opcional via Cafecito.
 - Codigo: open source, auditable en https://github.com/larancibia/precio-real.
 - Creador: Luis Arancibia, desarrollador argentino, proyecto solo. Sin empresa ni fondeo.
-- Disponibilidad: Chrome Web Store ([LINK_CHROME_STORE]), Hot Sale 2026 `[VERIFICAR fecha exacta]`.
+- Disponibilidad: Chrome Web Store ([LINK_CHROME_STORE]), Hot Sale 2026: 11 al 13 de mayo.
 
 ---
 
@@ -149,7 +149,7 @@ Para tener a mano si el periodista pide "mandame los datos clave en bullets":
 - [ ] Confirmar firma actual de cada periodista del listado (no enviar a redacciones genericas si se pudo identificar firma).
 - [ ] Personalizar el primer parrafo con una nota reciente real del periodista (no inventar).
 - [ ] Reemplazar todos los `[VERIFICAR]`, `[LINK_CHROME_STORE]`, `[NOMBRE]`, `[EMAIL_PERSONAL]`, `[HANDLE_X]`.
-- [ ] Confirmar que el dominio de la landing esta vivo (`preciorreal.com` o el que termine ganando).
+- [ ] Confirmar que el dominio de la landing esta vivo (`precio-real.firemandeveloper.com` o el que termine ganando).
 - [ ] Confirmar que el link al Chrome Web Store funciona y muestra la extension publicada.
 - [ ] Confirmar la cifra exacta de EcoGo (ano, categoria, ventana). Si no se logra confirmar, remover el dato y dejar el angulo cualitativo.
 - [ ] Tener 3 screenshots reales listos para mandar como adjuntos cuando el periodista los pida (no en el primer mail).
