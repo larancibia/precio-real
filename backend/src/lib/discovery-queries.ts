@@ -482,9 +482,6 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "casco bicicleta",
   "luz bicicleta led",
   "candado bicicleta",
-  // Ciclo 1612 — Pycca (Tucumán / nationwide)
-  "celular samsung tucuman",
-  "notebook hp tucuman",
   // Ciclo 1613 — invierno AR (junio-agosto 2026) alta conversión
   // Calefacción / abrigo
   "bolsa termoterapia",
@@ -516,4 +513,33 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "xbox series s",
   "juego xbox",
   "headset xbox",
+  // Ciclo 1613 — calzado invierno (alta rotación en MLA otoño/invierno AR)
+  "bota de lluvia",
+  "bota de cuero mujer",
+  "botines de cuero hombre",
+  "mocasines hombre cuero",
+  "zapatillas urbanas invierno",
+  // Ciclo 1613 — calefacción marcas nacionales
+  "estufa eskabe",
+  "estufa emege",
+  "estufa orbis",
+  "calefactor orbis",
+  "caloventor bajo consumo",
+  // Ciclo 1613 — ropa de cama invierno
+  "frazada",
+  "edredon doble",
+  "plumón cama",
+  "sabanas flaneladas",
+  // Ciclo 1613 — salud / bienestar invierno ampliado
+  "termometro digital infrarrojo",
+  "vaporizador vicks",
+  "nebulizador compacto",
+  // Ciclo 1613 — emergencias / cortes de luz invierno AR
+  "generador electrico",
+  "lampara de emergencia recargable",
+  "linterna frontal led",
+  // Ciclo 1613 — abrigo interior / complementos
+  "camiseta termica interior",
+  "medias de lana",
+  "bufanda polar",
 ];
