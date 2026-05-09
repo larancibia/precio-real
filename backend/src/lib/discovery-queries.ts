@@ -1525,4 +1525,70 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   // Hogar / cocina premium marcas
   "procesadora kitchenaid",
   "batidora planetaria professional",
+  // Ciclo 1632 — gaps verticales + alta rotación invierno AR 2026
+  // Electrónica portátil nuevos modelos
+  "xiaomi poco m6 pro",
+  "samsung galaxy a25",
+  "motorola moto g45",
+  "tablet android 10 pulgadas",
+  // Computación: componentes y accesorios faltantes
+  "ssd 2tb nvme",
+  "memoria ram 16gb ddr4",
+  "fuente de poder 650w",
+  "refrigeracion liquida 240mm",
+  "placa madre b550",
+  // Gaming: nuevos lanzamientos y periféricos
+  "joystick dualsense edge",
+  "auriculares hyperx cloud",
+  "monitor 240hz full hd",
+  "alfombra gaming xxl",
+  "silla secretlab titan",
+  // Electrónica hogar: TV y audio sin cobertura
+  "smart tv 70 pulgadas",
+  "smart tv nanocell lg",
+  "soundbar lg s95qr",
+  "proyector ultra short throw",
+  // Línea blanca: nuevos modelos 2026
+  "lavarropas con secadora 10kg",
+  "heladera bottom freezer",
+  "cocina teka 60cm",
+  "lavavajillas 12 cubiertos",
+  // Indumentaria invierno AR — alta demanda junio-agosto
+  "parka impermeable mujer",
+  "buzo canguro hombre",
+  "leggins termicos mujer",
+  "ropa de abrigo bebe",
+  "zapatillas urbanas hombre",
+  // Fitness / gym domicilio
+  "bicicleta de spinning smart",
+  "stepper escalador fitness",
+  "banda elastica resistencia set",
+  "colchoneta plegable gym",
+  "kettlebell hierro fundido",
+  // Mascotas: nuevas categorías alta demanda
+  "antiparasitario perro pipeta",
+  "arena premium gatos",
+  "juguete interactivo gato",
+  "correa manos libres running",
+  // Hogar: cocina gourmet y electrodomésticos
+  "licuadora de vaso potente",
+  "set cuchillos profesional 7 piezas",
+  "olla acero inoxidable 24cm",
+  "placa inductora portatil",
+  "thermomix alternativa",
+  // Auto / moto accesorios invierno
+  "llanta aluminio 15 pulgadas",
+  "amortiguador auto delantero",
+  "perfume auto madera",
+  "funda de auto impermeable",
+  // Salud / bienestar nuevas categorías
+  "silla de masajes cuerpo entero",
+  "lampara de sal himalaya grande",
+  "difusor aromas ultrasonico",
+  "cama de agua termica",
+  // Computación: trabajo remoto y estudio
+  "monitor 27 pulgadas 4k",
+  "webcam 4k 60fps",
+  "auriculares microsoft teams",
+  "mesa regulable altura electrica",
 ];
