@@ -979,6 +979,75 @@
         'meta[property="og:price:amount"]',
       ],
     },
+    // Ciclo 1596: Hisense AR (VTEX), TCL AR (Shopify), Pycca (Magento 2).
+    hisense: {
+      label: 'Hisense Argentina',
+      hostnameSuffix: 'hisense.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Hisense AR usa VTEX IO con tema custom. Mismos selectores VTEX estándar
+        // que otros appliance brands (Electrolux, Philco, BGH).
+        '.vtex-product-price-1-x-sellingPriceValue',
+        '.vtex-product-price-1-x-sellingPrice',
+        '.vtex-product-price-1-x-currencyContainer',
+        '[class*="sellingPriceValue" i]',
+        '[class*="sellingPrice" i]',
+        '[class*="currentPrice" i]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '[data-testid="pdp-price"]',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    tcl: {
+      label: 'TCL Argentina',
+      hostnameSuffix: 'tcl.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // TCL AR usa Shopify con tema custom. El precio de venta activo vive en
+        // .price-item--sale cuando hay descuento; sin descuento, en .price-item--regular.
+        // El precio de lista tachado (dentro de .price--on-sale) lo filtra
+        // isStrikethroughPrice por la clase del contenedor.
+        '.price__sale .price-item--sale',
+        '.price-item--sale',
+        '.price__regular .price-item--regular',
+        '.price-item--regular',
+        '[data-testid="product-price"]',
+        '[data-testid="price"]',
+        'span[class*="price-item" i]',
+        'span[class*="price" i]',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    pycca: {
+      label: 'Pycca',
+      hostnameSuffix: 'pycca.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Pycca (retailer de electrónica, Tucumán/nationwide) usa Magento 2
+        // con tema custom. Precio final en .price-final_price [data-price-amount]
+        // (US-formatted). El precio tachado (.old-price) lo filtra isStrikethroughPrice.
+        '.product-info-price .price-final_price [data-price-amount]',
+        '.product-info-price .price-final_price .price',
+        '.special-price [data-price-amount]',
+        '.special-price .price',
+        '.price-box .price-final_price [data-price-amount]',
+        '.price-box .price',
+        '[data-price-amount]',
+        '.product-price',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
   };
 
   const GENERIC_PRICE_SELECTORS = [

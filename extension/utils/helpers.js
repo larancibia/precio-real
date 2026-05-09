@@ -95,6 +95,10 @@
     'lenovo',
     'alphatec',
     'exo',
+    // Ciclo 1596: Hisense AR (VTEX), TCL AR (Shopify), Pycca (Magento 2).
+    'hisense',
+    'tcl',
+    'pycca',
   ];
 
   function detectSite(hostname) {
@@ -158,6 +162,10 @@
     if (h.endsWith('lenovo.com')) return 'lenovo';
     if (h.endsWith('alphatec.com.ar')) return 'alphatec';
     if (h.endsWith('exo.com.ar')) return 'exo';
+    // Ciclo 1596: Hisense AR (VTEX), TCL AR (Shopify), Pycca (Magento 2).
+    if (h.endsWith('hisense.com.ar')) return 'hisense';
+    if (h.endsWith('tcl.com.ar')) return 'tcl';
+    if (h.endsWith('pycca.com.ar')) return 'pycca';
     return null;
   }
 
@@ -899,6 +907,10 @@
     if (siteKey === 'lenovo') {
       if (/^\/ar\/(laptops?|tablets?|desktops?|workstations?|servers?|accessories|bundles?)(\/|$)/i.test(p)) return true;
     }
+    // Shopify (TCL AR y otros): /collections/<handle> son listados de categoría;
+    // /products/<handle> son PDPs. Un path que empieza en /collections/ y no
+    // tiene /products/ anidado es siempre un listado.
+    if (/^\/collections\/[^/]+(\/|$)/.test(p) && !/\/products\//.test(p)) return true;
     return false;
   }
 
@@ -944,6 +956,36 @@
         } catch (_) {}
         if (/\/product\//.test(location.pathname)) return true;
         // Caer al microdata check: WooCommerce siempre emite JSON-LD de Product.
+      }
+      // Magento 2 (Cetrogar, Rodo, Noblex, Venex, BGood, HP Tienda, Pycca):
+      // body tiene la clase catalog-product-view en todas las PDPs de Magento 2.
+      // Es el identificador más confiable: Magento lo agrega server-side antes de
+      // que JS hidrate, por lo que está disponible en document_idle.
+      if (siteKey === 'cetrogar' || siteKey === 'rodo' || siteKey === 'noblex' ||
+          siteKey === 'venex' || siteKey === 'bgood' || siteKey === 'hptienda' || siteKey === 'pycca') {
+        try {
+          if (document.body && document.body.classList.contains('catalog-product-view')) return true;
+        } catch (_) {}
+        // Magento 2 emite JSON-LD de Product: caer al microdata check.
+      }
+      // Shopify (TCL AR): PDPs tienen /products/ en la ruta y body.template-product.
+      if (siteKey === 'tcl') {
+        if (/\/products\//.test(location.pathname)) return true;
+        try {
+          if (document.body && document.body.classList.contains('template-product')) return true;
+        } catch (_) {}
+        // Shopify emite JSON-LD de Product en PDPs: caer al microdata check.
+      }
+      // PrestaShop (Todomodo, Alphatec): body.page-product o body.product-page
+      // está presente en todas las PDPs de PrestaShop por defecto.
+      if (siteKey === 'todomodo' || siteKey === 'alphatec') {
+        try {
+          if (document.body && (
+            document.body.classList.contains('page-product') ||
+            document.body.classList.contains('product-page')
+          )) return true;
+        } catch (_) {}
+        // PrestaShop emite JSON-LD de Product: caer al microdata check.
       }
       // Lenovo AR: PDP tiene /p/ o el pathname no es una categoría genérica.
       if (siteKey === 'lenovo') {

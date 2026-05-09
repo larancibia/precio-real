@@ -31,7 +31,8 @@
   const OBS_TIMEOUT_MS = 15000;
   // Retries iniciales antes de armar el MutationObserver: cubre el caso típico
   // donde el precio aparece tras un XHR <3s después de DOMContentLoaded.
-  const INITIAL_DELAYS_MS = [0, 400, 1000, 2000, 3500];
+  // Ciclo 1596: +5500ms para VTEX/SAP/Shopify que hidratan tarde en conexiones lentas.
+  const INITIAL_DELAYS_MS = [0, 400, 1000, 2000, 3500, 5500];
   // Fetch del backend: timeout corto + dos reintentos suaves. Sin esto, una
   // red flakey deja el badge en "sin datos" para siempre.
   const FETCH_TIMEOUT_MS = 6000;
@@ -424,6 +425,73 @@
     return { ok: false, history: [], stats: null };
   }
 
+  // Ciclo 1596: chequeo post-mount diferido para dos problemas conocidos:
+  //
+  // 1) CSS visibility reset: algunos retailers inyectan reglas globales que
+  //    pueden ocultar nuestro root (display:none, visibility:hidden). Detectamos
+  //    y restauramos con inline style !important.
+  //
+  // 2) CSS transform/filter stacking context: position:fixed es relativo al
+  //    viewport SALVO que un ancestro tenga transform/perspective/will-change/
+  //    filter/contain. Si detectamos que el badge no está en el cuadrante
+  //    top-right del viewport, intentamos hoistarlo a <html>.
+  //
+  // Ciclo 1597: multi-shot (300ms, 1500ms, 5000ms) para capturar CSS que carga
+  // tarde en VTEX IO, Next.js app-router, SAP Commerce/Hybris, y Shopify.
+  function schedulePostMountCheck(siteKey) {
+    function runCheck() {
+      const root = document.getElementById('precio-real-badge-root');
+      if (!root || !root.isConnected) return;
+      try {
+        const win = root.ownerDocument && root.ownerDocument.defaultView;
+        if (!win) return;
+        // 1) Visibility self-heal.
+        const cs = win.getComputedStyle(root);
+        if (cs.display === 'none' || cs.visibility === 'hidden') {
+          root.style.setProperty('display', 'block', 'important');
+          root.style.setProperty('visibility', 'visible', 'important');
+          log.debug(siteKey, 'badge CSS self-heal: visibility restored');
+        }
+        // opacity:0 + pointer-events:none es otro patrón de "oculto" que usan
+        // algunos retailers (Falabella, Jumbo) en nodos fuera del viewport.
+        if (cs.opacity === '0' && cs.pointerEvents === 'none') {
+          root.style.setProperty('opacity', '1', 'important');
+          root.style.setProperty('pointer-events', 'auto', 'important');
+          log.debug(siteKey, 'badge CSS self-heal: opacity/pointer-events restored');
+        }
+        // 2) Stacking context fix: si rect.right < vw/2, un ancestro tiene
+        //    un nuevo stacking context (transform, filter, perspective, will-change).
+        const vw = win.innerWidth || root.ownerDocument.documentElement.clientWidth || 0;
+        if (vw > 400) {
+          const rect = root.getBoundingClientRect();
+          if (rect.right < vw / 2) {
+            const docEl = root.ownerDocument.documentElement;
+            if (docEl && root.parentElement !== docEl) {
+              docEl.appendChild(root);
+              log.debug(siteKey, 'badge hoisted to <html> (CSS stacking context)');
+              return;
+            }
+          }
+          // Badge completamente fuera del viewport (top/bottom): will-change:transform
+          // en un ancestro puede desplazar el stacking context sin mover rect.right.
+          const vh = win.innerHeight || root.ownerDocument.documentElement.clientHeight || 0;
+          if (vh > 0 && (rect.bottom < -50 || rect.top > vh + 50)) {
+            const docEl = root.ownerDocument.documentElement;
+            if (docEl && root.parentElement !== docEl) {
+              docEl.appendChild(root);
+              log.debug(siteKey, 'badge hoisted to <html> (out-of-viewport stacking context)');
+            }
+          }
+        }
+      } catch (_) {}
+    }
+    // Tres disparos: 300ms (CSS crítico), 1500ms (post-hidratación VTEX/Next.js),
+    // 5000ms (SAP Commerce/Shopify scripts tardíos).
+    setTimeout(runCheck, 300);
+    setTimeout(runCheck, 1500);
+    setTimeout(runCheck, 5000);
+  }
+
   async function tryMount(siteKey, myToken) {
     if (myToken !== runToken) return false;
     let current, url, key;
@@ -477,6 +545,7 @@
     lastKey = key;
     lastPrice = current;
     log.debug(siteKey, 'mounted', verdict);
+    schedulePostMountCheck(siteKey);
     return true;
   }
 

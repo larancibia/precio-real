@@ -47,6 +47,9 @@
     "https://www.lenovo.com/ar/*",
     "https://*.alphatec.com.ar/*",
     "https://*.exo.com.ar/*",
+    "https://*.hisense.com.ar/*",
+    "https://*.tcl.com.ar/*",
+    "https://*.pycca.com.ar/*",
     "http://localhost:8787/*"
   ],
   "action": {
@@ -100,7 +103,10 @@
         "https://*.hptienda.com.ar/*",
         "https://www.lenovo.com/ar/*",
         "https://*.alphatec.com.ar/*",
-        "https://*.exo.com.ar/*"
+        "https://*.exo.com.ar/*",
+        "https://*.hisense.com.ar/*",
+        "https://*.tcl.com.ar/*",
+        "https://*.pycca.com.ar/*"
       ],
       "js": ["config.js", "utils/retailers.js", "utils/helpers.js", "utils/affiliates.js", "content/content.js"],
       "css": ["content/badge.css"],

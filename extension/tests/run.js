@@ -153,6 +153,16 @@ console.log('[precio-real tests] starting…');
     ['tienda.mi.com', 'xiaomi'],
     ['www.philco.com.ar', 'philco'],
     ['www.venex.com.ar', 'venex'],
+    // Ciclo 1596: Hisense AR, TCL AR, Pycca.
+    ['www.hisense.com.ar', 'hisense'],
+    ['www.tcl.com.ar', 'tcl'],
+    ['www.pycca.com.ar', 'pycca'],
+    // Ciclo 1594: Bgood, HP Tienda, Lenovo Store, Alphatec, EXO.
+    ['www.bgood.com.ar', 'bgood'],
+    ['www.hptienda.com.ar', 'hptienda'],
+    ['ar.lenovo.com', 'lenovo'],
+    ['www.alphatec.com.ar', 'alphatec'],
+    ['www.exo.com.ar', 'exo'],
     ['www.amazon.com', null],
     ['', null],
   ];
@@ -226,6 +236,11 @@ console.log('[precio-real tests] starting…');
   assertEq(PR.urlLooksLikeListing(null, '/marca/samsung'), true, '/marca');
   assertEq(PR.urlLooksLikeListing(null, '/p/MLA123456'), false, '/p/<id> is product');
   assertEq(PR.urlLooksLikeListing(null, '/producto/heladera-xyz'), false, '/producto is product');
+  // Ciclo 1596: Shopify /collections/ son listados; /products/ son PDPs.
+  assertEq(PR.urlLooksLikeListing('tcl', '/collections/televisores'), true, 'Shopify /collections/ is listing');
+  assertEq(PR.urlLooksLikeListing('tcl', '/collections/all'), true, 'Shopify /collections/all is listing');
+  assertEq(PR.urlLooksLikeListing('tcl', '/products/tcl-55-4k'), false, 'Shopify /products/ is product');
+  assertEq(PR.urlLooksLikeListing(null, '/collections/verano'), true, 'Shopify /collections/ generic is listing');
 }
 
 // fallbackClassify — clasificación con histórico sintético.
@@ -330,6 +345,24 @@ console.log('[precio-real tests] starting…');
     assert(
       Array.isArray(PR.RETAILERS[k] && PR.RETAILERS[k].selectors) && PR.RETAILERS[k].selectors.length > 0,
       `RETAILERS["${k}"].selectors not empty (ciclo 1599)`
+    );
+  }
+  // Ciclo 1594: Bgood, HP Tienda, Lenovo Store, Alphatec, EXO.
+  for (const k of ['bgood', 'hptienda', 'lenovo', 'alphatec', 'exo']) {
+    assert(PR.SUPPORTED_SITES.includes(k), `SUPPORTED_SITES includes ${k} (ciclo 1594)`);
+    assert(PR.RETAILERS && PR.RETAILERS[k], `RETAILERS["${k}"] exists (ciclo 1594)`);
+    assert(
+      Array.isArray(PR.RETAILERS[k] && PR.RETAILERS[k].selectors) && PR.RETAILERS[k].selectors.length > 0,
+      `RETAILERS["${k}"].selectors not empty (ciclo 1594)`
+    );
+  }
+  // Ciclo 1596: Hisense, TCL, Pycca.
+  for (const k of ['hisense', 'tcl', 'pycca']) {
+    assert(PR.SUPPORTED_SITES.includes(k), `SUPPORTED_SITES includes ${k} (ciclo 1596)`);
+    assert(PR.RETAILERS && PR.RETAILERS[k], `RETAILERS["${k}"] exists (ciclo 1596)`);
+    assert(
+      Array.isArray(PR.RETAILERS[k] && PR.RETAILERS[k].selectors) && PR.RETAILERS[k].selectors.length > 0,
+      `RETAILERS["${k}"].selectors not empty (ciclo 1596)`
     );
   }
 }
@@ -1231,6 +1264,55 @@ function makeContextWithLd(ldNodes) {
   } else {
     failed++;
     failures.push('classifyFromStats not exported (_classifyFromStats missing on PrecioReal)');
+  }
+}
+
+// isProductPageStrict — detección por body class para Magento 2, Shopify, PrestaShop.
+// Ciclo 1596: verifica los nuevos caminos de detección sin depender de DOM real.
+{
+  // Helper: crea un PR con body class personalizado y ruta específica.
+  function freshNsWithBodyClass(hostname, pathname, bodyClass) {
+    const ctx = makeContext({ hostname, pathname });
+    const classList = new Set(bodyClass ? bodyClass.split(' ') : []);
+    ctx.document.body = {
+      classList: {
+        contains: (c) => classList.has(c),
+      },
+    };
+    loadInto(ctx, 'utils/retailers.js');
+    loadInto(ctx, 'utils/helpers.js');
+    return ctx.window.PrecioReal;
+  }
+
+  // Magento 2: catalog-product-view en body → es PDP.
+  {
+    const PR = freshNsWithBodyClass('www.pycca.com.ar', '/heladera-samsung-360/p', 'catalog-product-view cms-index');
+    assert(PR.isProductPageStrict('pycca') === true, 'isProductPageStrict pycca: catalog-product-view body class');
+  }
+  {
+    const PR = freshNsWithBodyClass('www.cetrogar.com.ar', '/notebook-lenovo/p', 'catalog-product-view');
+    assert(PR.isProductPageStrict('cetrogar') === true, 'isProductPageStrict cetrogar: catalog-product-view body class');
+  }
+
+  // Shopify (TCL): /products/ en la ruta → es PDP.
+  {
+    const PR = freshNsWithBodyClass('www.tcl.com.ar', '/products/tcl-55-4k', '');
+    assert(PR.isProductPageStrict('tcl') === true, 'isProductPageStrict tcl: /products/ pathname');
+  }
+  // Shopify: body.template-product → es PDP.
+  {
+    const PR = freshNsWithBodyClass('www.tcl.com.ar', '/products/tcl-55-4k', 'template-product');
+    assert(PR.isProductPageStrict('tcl') === true, 'isProductPageStrict tcl: template-product body class');
+  }
+
+  // PrestaShop: page-product en body → es PDP.
+  {
+    const PR = freshNsWithBodyClass('www.todomodo.com.ar', '/celular-motorola-123.html', 'page-product');
+    assert(PR.isProductPageStrict('todomodo') === true, 'isProductPageStrict todomodo: page-product body class');
+  }
+  {
+    const PR = freshNsWithBodyClass('www.alphatec.com.ar', '/monitor-24/product', 'product-page');
+    assert(PR.isProductPageStrict('alphatec') === true, 'isProductPageStrict alphatec: product-page body class');
   }
 }
 
