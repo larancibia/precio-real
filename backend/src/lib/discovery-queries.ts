@@ -482,4 +482,38 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "casco bicicleta",
   "luz bicicleta led",
   "candado bicicleta",
+  // Ciclo 1612 — Pycca (Tucumán / nationwide)
+  "celular samsung tucuman",
+  "notebook hp tucuman",
+  // Ciclo 1613 — invierno AR (junio-agosto 2026) alta conversión
+  // Calefacción / abrigo
+  "bolsa termoterapia",
+  "guantes de cuero hombre",
+  "bufanda lana mujer",
+  "gorro tejido invierno",
+  "pantalon termico",
+  "chaleco de pluma",
+  "calza termica",
+  // Salud / bienestar invierno
+  "vaporizador de ambiente",
+  "inhalador nebulizador infantil",
+  "vitamina c efervescente",
+  // Tech / vuelta al cole (AR invierno = 2do semestre escolar)
+  "mochila universitaria",
+  "auriculares estudio para home office",
+  "tablet educativa",
+  "notebook core i3",
+  // Línea blanca temporada alta invierno
+  "secadora de ropa",
+  "deshumidificador",
+  "humidificador bebe",
+  // Entretenimiento hogar (invierno = más tiempo en casa)
+  "smart tv 32 pulgadas",
+  "parlante karaoke",
+  "consola retro",
+  // Gaming: lanzamientos esperados 2026 H2
+  "playstation 5 slim",
+  "xbox series s",
+  "juego xbox",
+  "headset xbox",
 ];
