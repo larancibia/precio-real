@@ -166,6 +166,21 @@
     'gearzone',
     'binario',
     'compupc',
+    // Ciclo 1618: retailers agregados a retailers.js/manifest en ciclo previo pero faltaban en helpers.
+    // Carsa (WooCommerce electrodomésticos regional), GrupoDIN (Magento 2 electrónica),
+    // Coppel AR (VTEX IO línea blanca/electrónica), Megatronics AR (Magento 2 gaming/IT),
+    // Mac Station (Shopify Apple Premium Reseller), Winpy AR (Next.js electrónica/gaming).
+    'carsa',
+    'grupodin',
+    'coppel',
+    'megatronics',
+    'macstation',
+    'winpy',
+    // Ciclo 1618: nuevos retailers Hot Sale AR. Autronic (WooCommerce electrónica/electrodomésticos
+    // regional), Megatrix (Shopify gaming/periféricos), Pixelstore (Shopify Apple reseller AR).
+    'autronic',
+    'megatrix',
+    'pixelstore',
   ];
 
   function detectSite(hostname) {
@@ -302,6 +317,17 @@
     if (h.endsWith('gearzone.com.ar')) return 'gearzone';
     if (h.endsWith('binario.com.ar')) return 'binario';
     if (h.endsWith('compupc.com.ar')) return 'compupc';
+    // Ciclo 1618: fix retailers que tenían entrada en retailers.js/manifest pero no en helpers.
+    if (h.endsWith('carsa.com.ar')) return 'carsa';
+    if (h.endsWith('grupodin.com')) return 'grupodin';
+    if (h.endsWith('coppel.com')) return 'coppel';
+    if (h.endsWith('megatronics.com.ar')) return 'megatronics';
+    if (h.endsWith('macstation.com.ar')) return 'macstation';
+    if (h.endsWith('winpy.com.ar')) return 'winpy';
+    // Ciclo 1618: nuevos retailers.
+    if (h.endsWith('autronic.com.ar')) return 'autronic';
+    if (h.endsWith('megatrix.com.ar')) return 'megatrix';
+    if (h.endsWith('pixelstore.com.ar')) return 'pixelstore';
     return null;
   }
 
@@ -1148,10 +1174,12 @@
       // Ciclo 1607: TGC AR también usa Magento 2.
       // Ciclo 1608: StartTech AR también usa Magento 2.
       // Ciclo 1609: PC Factory AR también usa Magento 2.
+      // Ciclo 1618: GrupoDIN AR y Megatronics AR también usan Magento 2.
       if (siteKey === 'cetrogar' || siteKey === 'rodo' || siteKey === 'noblex' ||
           siteKey === 'venex' || siteKey === 'bgood' || siteKey === 'hptienda' || siteKey === 'pycca' ||
           siteKey === 'microcenter' || siteKey === 'acer' || siteKey === 'tgc' || siteKey === 'starttech' ||
-          siteKey === 'pcfactory' || siteKey === 'nexstore' || siteKey === 'netizar' || siteKey === 'centurytech') {
+          siteKey === 'pcfactory' || siteKey === 'nexstore' || siteKey === 'netizar' || siteKey === 'centurytech' ||
+          siteKey === 'grupodin' || siteKey === 'megatronics') {
         try {
           if (document.body && document.body.classList.contains('catalog-product-view')) return true;
         } catch (_) {}
@@ -1165,9 +1193,12 @@
       // Ciclo 1609: Golden Shop AR también usa Shopify (accesorios/electrónica).
       // Ciclo 1615: I-Gaming Store AR también usa Shopify (gaming/hardware).
       // Ciclo 1616: Klibr AR y Lazer AR también usan Shopify (gaming periféricos/sillas).
+      // Ciclo 1617: GearZone AR también usa Shopify (gaming bundles/periféricos).
+      // Ciclo 1618: Mac Station AR, Megatrix AR y Pixelstore AR también usan Shopify.
       if (siteKey === 'tcl' || siteKey === 'ipoint' || siteKey === 'musimundo' || siteKey === 'compumundo' ||
           siteKey === 'coolbox' || siteKey === 'dexter' || siteKey === 'fullh4rd' || siteKey === 'goldenshop' ||
-          siteKey === 'ithink' || siteKey === 'igaming' || siteKey === 'klibr' || siteKey === 'lazer') {
+          siteKey === 'ithink' || siteKey === 'igaming' || siteKey === 'klibr' || siteKey === 'lazer' ||
+          siteKey === 'gearzone' || siteKey === 'macstation' || siteKey === 'megatrix' || siteKey === 'pixelstore') {
         if (/\/products\//.test(location.pathname)) return true;
         try {
           if (document.body && document.body.classList.contains('template-product')) return true;
@@ -1181,8 +1212,11 @@
       // Ciclo 1610: Zetta AR también usa WooCommerce (electrónica/computing).
       // Ciclo 1615: Powerplanet AR y Megastore AR también usan WooCommerce.
       // Ciclo 1616: PcArg AR también usa WooCommerce (componentes/hardware/gaming).
+      // Ciclo 1617: Binario AR y CompuPC AR también usan WooCommerce (componentes/gaming).
+      // Ciclo 1618: Carsa AR (electrodomésticos regional) y Autronic AR también usan WooCommerce.
       if (siteKey === 'olimpo' || siteKey === 'pchouse' || siteKey === 'zetta' || siteKey === 'soluciones' ||
-          siteKey === 'cablehogar' || siteKey === 'powerplanet' || siteKey === 'megastore' || siteKey === 'pcarg') {
+          siteKey === 'cablehogar' || siteKey === 'powerplanet' || siteKey === 'megastore' || siteKey === 'pcarg' ||
+          siteKey === 'binario' || siteKey === 'compupc' || siteKey === 'carsa' || siteKey === 'autronic') {
         try {
           if (document.body && document.body.classList.contains('single-product')) return true;
         } catch (_) {}
@@ -1222,8 +1256,9 @@
       // No incluimos fravega aquí porque usa VTEX Classic con URLs distintas.
       // Ciclo 1607: maxiconsumo también usa VTEX IO.
       // Ciclo 1609: maxihogar también usa VTEX IO (electrodomésticos).
+      // Ciclo 1618: coppel también usa VTEX IO (línea blanca/electrónica).
       const VTEX_IO_SITES = ['garbarino', 'jumbo', 'disco', 'easy', 'carrefour', 'changomas',
-                             'hisense', 'philco', 'newsan', 'maxiconsumo', 'maxihogar'];
+                             'hisense', 'philco', 'newsan', 'maxiconsumo', 'maxihogar', 'coppel'];
       if (VTEX_IO_SITES.indexOf(siteKey) !== -1) {
         if (/\/p$/.test(location.pathname)) return true;
         try {

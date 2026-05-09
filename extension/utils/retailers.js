@@ -2235,7 +2235,7 @@
         'meta[property="og:price:amount"]',
       ],
     },
-    // Ciclo 1617: CompuPC AR (WooCommerce hardware/PC armado).
+    // Ciclo 1617: CompuPC AR (WooCommerce hardware/PC armado). Ciclo 1618 ver abajo.
     compupc: {
       label: 'CompuPC',
       hostnameSuffix: 'compupc.com.ar',
@@ -2251,6 +2251,80 @@
         '[data-testid="product-price"]',
         '.product-price',
         '.summary .price',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    // Ciclo 1618: Autronic AR (WooCommerce electrónica/electrodomésticos regional —
+    // cadena con presencia en NOA, NEA, Cuyo y Centro). El precio de oferta vive en
+    // .price ins .woocommerce-Price-amount; sin oferta directamente en .woocommerce-Price-amount.
+    autronic: {
+      label: 'Autronic',
+      hostnameSuffix: 'autronic.com.ar',
+      currency: 'ARS',
+      selectors: [
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        'ins .woocommerce-Price-amount.amount bdi',
+        'ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount bdi',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        '.precio-actual',
+        '.precio-web',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    // Ciclo 1618: Megatrix AR (Shopify gaming/periféricos — headsets, teclados, mouse
+    // gaming, sillas, monitores). El precio de venta activo en .price-item--sale cuando
+    // hay descuento; sin descuento en .price-item--regular. También emite JSON-LD Product.
+    megatrix: {
+      label: 'Megatrix',
+      hostnameSuffix: 'megatrix.com.ar',
+      currency: 'ARS',
+      selectors: [
+        '.price__sale .price-item--sale',
+        '.price-item--sale',
+        '.price__regular .price-item--regular',
+        '.price-item--regular',
+        '[data-testid="product-price"]',
+        '[data-testid="price"]',
+        'span[class*="price-item" i]',
+        '[data-price-value]',
+        '.product__price',
+        '.product-price',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    // Ciclo 1618: Pixelstore AR (Shopify Apple Premium Reseller — MacBooks, iPhones,
+    // iPads, accesorios Apple). Mismo patrón de tema Shopify que Mac Center e iPoint:
+    // precio de venta en .price-item--sale; precio regular en .price-item--regular.
+    pixelstore: {
+      label: 'Pixelstore',
+      hostnameSuffix: 'pixelstore.com.ar',
+      currency: 'ARS',
+      selectors: [
+        '.price__sale .price-item--sale',
+        '.price-item--sale',
+        '.price__regular .price-item--regular',
+        '.price-item--regular',
+        '[data-testid="product-price"]',
+        '[data-testid="price"]',
+        'span[class*="price-item" i]',
+        '[data-price-value]',
+        '.product__price',
+        '.product-price',
+        '.precio-actual',
         '[itemprop="price"]',
         'meta[itemprop="price"]',
         'meta[property="product:price:amount"]',
