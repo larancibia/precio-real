@@ -7,8 +7,8 @@
   if (window.__precioRealLoaded) return;
   window.__precioRealLoaded = true;
 
-  // Ciclo 1604: versión del content script para facilitar debugging en consola.
-  const CONTENT_VERSION = '1604';
+  // Ciclo 1605: versión del content script para facilitar debugging en consola.
+  const CONTENT_VERSION = '1605';
 
   const PR = window.PrecioReal;
   if (!PR) { console.warn('[Precio Real] helpers not loaded'); return; }
@@ -562,11 +562,24 @@
                 // para position:fixed. Usado en temas Shopify modernos (Musimundo,
                 // Compumundo) y algunos temas Next.js con clipping decorativo.
                 const clipPath = acs.clipPath || '';
+                // Ciclo 1605: transform distinto de none crea stacking context para
+                // position:fixed incluso cuando will-change no lo refleja. Muy común
+                // en VTEX IO (transform: translateZ(0) para GPU acceleration), Shopify
+                // themes con animaciones de entrada, y Next.js con framer-motion.
+                // perspective distinto de none hace lo mismo (WebGL overlays, 3D carousels).
+                // mix-blend-mode distinto de normal también lo crea (efectos de overlay
+                // en temas premium de Garbarino, Frávega, y retailers Samsung/LG).
+                const transform = acs.transform || '';
+                const perspective = acs.perspective || '';
+                const mixBlendMode = acs.mixBlendMode || '';
                 if ((backdropFilter && backdropFilter !== 'none') ||
                     /strict|layout|paint/.test(contain) ||
                     isolation === 'isolate' ||
                     /transform|opacity|filter/.test(willChange) ||
-                    (clipPath && clipPath !== 'none')) {
+                    (clipPath && clipPath !== 'none') ||
+                    (transform && transform !== 'none') ||
+                    (perspective && perspective !== 'none') ||
+                    (mixBlendMode && mixBlendMode !== 'normal')) {
                   needsHoist = true;
                   break;
                 }
@@ -584,13 +597,16 @@
         }
       } catch (_) {}
     }
-    // Cuatro disparos: 300ms (CSS crítico), 1500ms (post-hidratación VTEX/Next.js),
+    // Cinco disparos: 300ms (CSS crítico), 1500ms (post-hidratación VTEX/Next.js),
     // 5000ms (SAP Commerce/Shopify scripts tardíos), 10000ms (analytics/tracking
-    // scripts que reescriben z-index o visibility en el body tardíamente).
+    // scripts que reescriben z-index o visibility en el body tardíamente),
+    // 20000ms (Ciclo 1605: GTM/pixel scripts que inyectan CSS extra muy tarde en
+    // retailers con muchos third-party tags como Garbarino, Naldo, Megatone).
     setTimeout(runCheck, 300);
     setTimeout(runCheck, 1500);
     setTimeout(runCheck, 5000);
     setTimeout(runCheck, 10000);
+    setTimeout(runCheck, 20000);
   }
 
   async function tryMount(siteKey, myToken) {
@@ -903,6 +919,9 @@
             // Ciclo 1601: Next.js App Router señaliza transiciones con data-pending;
             // VTEX Faststore usa data-fs-sku; data-loading marca carga de variante.
             'data-pending', 'data-fs-sku', 'data-loading',
+            // Ciclo 1605: data-fs-product-id (VTEX Faststore PDPs, ej. Garbarino nuevo)
+            // estaba en el variant observer pero no en el observer de montaje inicial.
+            'data-fs-product-id',
           ],
         });
       } else {
