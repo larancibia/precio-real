@@ -39,20 +39,14 @@
     return Number.isFinite(n) ? n : null;
   }
 
-  const PRICE_SELECTORS = {
-    mercadolibre: [
-      'meta[itemprop="price"]',
-      '.ui-pdp-price__second-line .andes-money-amount__fraction',
-      '.andes-money-amount__fraction',
-    ],
-    fravega: ['[data-test-id="product-price"]', 'span[class*="sale-price"]', 'span[class*="Price"]'],
-    garbarino: ['[data-testid="price"]', '.price-label', '.product-price'],
-    falabella: ['[data-testid="prices-0"]', '.copy10', 'span[class*="price"]'],
-    carrefour: ['[data-test-id="price"]', 'span[class*="currencyContainer"]'],
-    coto: ['.atg_store_newPrice', '.product_price'],
-  };
+  // Selectores por retailer viven en utils/retailers.js (issue #6).
+  // Fallback inline para defensa en profundidad si retailers.js no cargó.
+  const RETAILERS = (ns && ns.RETAILERS) || {};
+  const PRICE_SELECTORS = Object.fromEntries(
+    Object.entries(RETAILERS).map(([k, cfg]) => [k, cfg.selectors || []])
+  );
 
-  const GENERIC_PRICE_SELECTORS = [
+  const GENERIC_PRICE_SELECTORS = (ns && ns.GENERIC_PRICE_SELECTORS) || [
     'meta[itemprop="price"]',
     '[itemprop="price"]',
     '.price',
