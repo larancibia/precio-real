@@ -169,4 +169,34 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   // Hot Sale 2026 — audio premium
   "auriculares noise cancelling",
   "auriculares sony",
+  // Hot Sale 2026 — marcas phones (alta rotación en landing pages de HS)
+  "samsung galaxy",
+  "xiaomi celular",
+  "motorola celular",
+  "realme celular",
+  // Hot Sale 2026 — TV por marca (top vendidos en electrodomésticos HS)
+  "samsung smart tv",
+  "lg smart tv",
+  "tcl televisor",
+  // Hot Sale 2026 — notebooks por marca
+  "lenovo notebook",
+  "hp notebook",
+  "dell notebook",
+  "asus notebook",
+  // Hot Sale 2026 — electrodomésticos premium
+  "dyson aspiradora",
+  "roomba",
+  "philips airfryer",
+  // Hot Sale 2026 — gaming hardware
+  "nvidia rtx",
+  "procesador intel",
+  "procesador amd ryzen",
+  // Hot Sale 2026 — audio / foto adicional
+  "camara sony",
+  "camara canon",
+  "lente camara",
+  // Hot Sale 2026 — indumentaria deportiva adicional
+  "zapatillas puma",
+  "zapatillas under armour",
+  "ropa deportiva",
 ];

@@ -723,6 +723,30 @@
   // DOM los expone (data-* o JSON-LD).
   function productKey(href) {
     const base = canonicalUrl(href || location.href);
+
+    // Amazon: normalizar a /dp/ASIN para que URLs con /ref=... distintos apunten
+    // al mismo historial en el backend. Si el usuario ya eligió una variante,
+    // el DOM actualiza #landingAsin o data-csa-c-asin con el ASIN de la variante.
+    const siteKey = detectSite(location.hostname);
+    if (siteKey === 'amazon') {
+      const urlStr = href || location.href;
+      const m = urlStr.match(/\/(dp|gp\/product)\/([A-Z0-9]{10})/i);
+      if (m) {
+        let asin = m[2].toUpperCase();
+        try {
+          const landingEl = document.getElementById('landingAsin');
+          if (landingEl && landingEl.value && /^[A-Z0-9]{10}$/i.test(landingEl.value)) {
+            asin = landingEl.value.toUpperCase();
+          } else {
+            const csaEl = document.querySelector('[data-csa-c-asin]');
+            const csaAsin = csaEl && csaEl.getAttribute('data-csa-c-asin');
+            if (csaAsin && /^[A-Z0-9]{10}$/i.test(csaAsin)) asin = csaAsin.toUpperCase();
+          }
+        } catch (_) {}
+        return 'https://www.amazon.com.ar/dp/' + asin;
+      }
+    }
+
     let variant = '';
     try {
       // 1) Variante en el query (ML usa ?variation=...)
@@ -816,6 +840,18 @@
     if (location.search && /[?&]map=/.test(location.search) && !/[?&]sku=/.test(location.search)) {
       return true;
     }
+    // Amazon AR: search, browse, deals y tiendas de marca son listas, nunca PDPs.
+    if (siteKey === 'amazon') {
+      if (/^\/s(\?|$)/.test(p) || /^\/b(\?|$)/.test(p)) return true;
+      if (p.startsWith('/gp/browse') || p.startsWith('/gp/goldbox') || p.startsWith('/gp/deal')) return true;
+      if (p.startsWith('/deals/') || p.startsWith('/stores/')) return true;
+    }
+    // WooCommerce (Drean, HiperTehno): categorías y etiquetas son listados.
+    if (/^\/(product-category|product-tag)(\/|$)/i.test(p)) return true;
+    // PrestaShop (Todomodo): categorías tienen solo dígitos como prefijo de segmento.
+    if (siteKey === 'todomodo' && /^\/\d+[-\/]/.test(p) && !/\/[a-z0-9-]+-\d+\.html/.test(p)) return true;
+    // Paginación genérica: ningún PDP es paginated.
+    if (/\/page\/\d+(\/|$)/.test(p)) return true;
     return false;
   }
 
@@ -849,6 +885,18 @@
         if (/\/p\//.test(location.pathname)) return true;
         if (/MLA-?\d+/i.test(location.pathname)) return true;
         return false;
+      }
+      // Amazon: producto = /dp/ASIN o /gp/product/ASIN. Todo lo demás es listado/home.
+      if (siteKey === 'amazon') {
+        return /\/(dp|gp\/product)\/[A-Z0-9]{10}/i.test(location.pathname);
+      }
+      // WooCommerce (Drean, HiperTehno): single-product tiene body.single-product o /product/ en la ruta.
+      if (siteKey === 'drean' || siteKey === 'hipertehno') {
+        try {
+          if (document.body && document.body.classList.contains('single-product')) return true;
+        } catch (_) {}
+        if (/\/product\//.test(location.pathname)) return true;
+        // Caer al microdata check: WooCommerce siempre emite JSON-LD de Product.
       }
       if (hasProductMicrodata()) return true;
       // Fallback: existe nodo de precio típico en el viewport.

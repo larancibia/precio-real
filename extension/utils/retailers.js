@@ -723,6 +723,15 @@
         // formateado (ej "$ 1.234,56") que es el más fácil de parsear.
         '#corePrice_feature_div .a-price .a-offscreen',
         '#corePrice_feature_div .a-price-whole',
+        // Ciclo 1587: rediseño 2025/2026 — el buybox usa corePriceDisplay en lugar
+        // de corePrice para artículos con suscripción, renovados o con promo.
+        '#corePriceDisplay_desktop_feature_div .a-price .a-offscreen',
+        '#corePriceDisplay_desktop_feature_div .a-price-whole',
+        // Buy-box calificado (qualified buybox) con múltiples offers:
+        '#apex_desktop_qualifiedBuyBox .a-price .a-offscreen',
+        '#apex_desktop_qualifiedBuyBox .a-price-whole',
+        // Buy-box en accordion (productos con opciones de financiación/warranty):
+        '#buyBoxAccordion .a-price .a-offscreen',
         // Precio con descuento ("deal price"):
         '#priceblock_dealprice',
         '#priceblock_ourprice',
