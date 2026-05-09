@@ -30,7 +30,7 @@
         "https://*.carrefour.com.ar/*",
         "https://*.cotodigital3.com.ar/*"
       ],
-      "js": ["config.js", "utils/retailers.js", "utils/helpers.js", "content/content.js"],
+      "js": ["config.js", "utils/retailers.js", "utils/helpers.js", "utils/affiliates.js", "content/content.js"],
       "css": ["content/badge.css"],
       "run_at": "document_idle"
     }
