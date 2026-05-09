@@ -48,6 +48,12 @@
   // ARIA cada segundo sin que la variante cambie de verdad. Sin cap, el observer
   // se mantiene activo toda la sesión disparando schedule() en bucle.
   const VARIANT_OBS_MAX_FIRES = 200;
+  // Badge health watch: frecuencia y cantidad máxima de chequeos de "badge sigue
+  // en el DOM". Algunos SPAs con virtual-DOM (VTEX IO, Next.js App Router) borran
+  // nuestro root silenciosamente entre renders sin cambiar URL ni precio, lo que
+  // el variant observer no detecta porque no hay mutación de atributos.
+  const BADGE_HEALTH_CHECK_MS = 30_000;
+  const BADGE_HEALTH_MAX_CHECKS = 10;
 
   function isProductPage() {
     // Si helpers expone la versión strict (incluye filtro de URLs de listado),
@@ -479,6 +485,14 @@
           root.style.setProperty('pointer-events', 'auto', 'important');
           log.debug(siteKey, 'badge CSS self-heal: opacity/pointer-events restored');
         }
+        // z-index negativo o cero: algunos themes (Asus Store AR, Next.js con
+        // CSS-in-JS) asignan z-index:0 al body o a un wrapper que aplana el
+        // stacking context y entierra nuestro position:fixed bajo capas SVG/canvas.
+        const zIdx = parseInt(cs.zIndex, 10);
+        if (!isNaN(zIdx) && zIdx < 1) {
+          root.style.setProperty('z-index', '2147483647', 'important');
+          log.debug(siteKey, 'badge CSS self-heal: z-index restored');
+        }
         // 2) Stacking context fix: si rect.right < vw/2, un ancestro tiene
         //    un nuevo stacking context (transform, filter, perspective, will-change,
         //    backdrop-filter, contain:layout/paint/strict).
@@ -533,11 +547,13 @@
         }
       } catch (_) {}
     }
-    // Tres disparos: 300ms (CSS crítico), 1500ms (post-hidratación VTEX/Next.js),
-    // 5000ms (SAP Commerce/Shopify scripts tardíos).
+    // Cuatro disparos: 300ms (CSS crítico), 1500ms (post-hidratación VTEX/Next.js),
+    // 5000ms (SAP Commerce/Shopify scripts tardíos), 10000ms (analytics/tracking
+    // scripts que reescriben z-index o visibility en el body tardíamente).
     setTimeout(runCheck, 300);
     setTimeout(runCheck, 1500);
     setTimeout(runCheck, 5000);
+    setTimeout(runCheck, 10000);
   }
 
   async function tryMount(siteKey, myToken) {
@@ -701,6 +717,27 @@
     } catch (_) { variantObserver = null; }
   }
 
+  // Periódicamente verifica que el badge siga visible para el token activo.
+  // Rescata casos donde un SPA borra nuestro root silenciosamente sin disparar
+  // el variant observer (sin cambios de atributo ni childList en el wrapper).
+  function startBadgeHealthWatch(siteKey, myToken) {
+    let checks = 0;
+    function tick() {
+      if (myToken !== runToken) return;
+      if (!mounted) return;
+      if (++checks > BADGE_HEALTH_MAX_CHECKS) return;
+      const root = document.getElementById('precio-real-badge-root');
+      if (!root || !root.isConnected || !root.hasChildNodes()) {
+        mounted = false;
+        tryMount(siteKey, myToken).then((didMount) => {
+          if (didMount) schedulePostMountCheck(siteKey);
+        }).catch(() => {});
+      }
+      setTimeout(tick, BADGE_HEALTH_CHECK_MS);
+    }
+    setTimeout(tick, BADGE_HEALTH_CHECK_MS);
+  }
+
   async function run() {
     runToken++;
     const myToken = runToken;
@@ -745,6 +782,7 @@
       try {
         if (await tryMount(siteKey, myToken)) {
           startVariantObserver(siteKey, myToken);
+          startBadgeHealthWatch(siteKey, myToken);
           return;
         }
       } catch (e) {
@@ -762,6 +800,7 @@
         if (didMount) {
           teardownObserver();
           startVariantObserver(siteKey, myToken);
+          startBadgeHealthWatch(siteKey, myToken);
         }
       }).catch((e) => {
         log.warn('observer tryMount threw', e && e.message);
@@ -780,8 +819,19 @@
     try {
       observer = new MutationObserver(schedule);
       // Observar body con subtree puede ser ruidoso; lo compensamos con el debounce.
+      // Incluimos atributos de precio/variante para capturar retailers (VTEX, Magento 2,
+      // Next.js) que renderizan el precio inicial vía data-* sin añadir nodos al DOM.
       if (document.body) {
-        observer.observe(document.body, { childList: true, subtree: true });
+        observer.observe(document.body, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: [
+            'data-price', 'data-price-amount', 'data-internet-price', 'data-cmr-price',
+            'data-event-price', 'data-value', 'data-sku', 'data-product-id',
+            'data-variant-id', 'data-pricetype', 'data-price-type', 'aria-busy',
+          ],
+        });
       } else {
         observer = null;
       }
