@@ -1403,6 +1403,68 @@ function makeContextWithLd(ldNodes) {
     const PR = freshNsWithBodyClass('www.ipoint.com.ar', '/collections/iphone', '');
     assert(PR.urlLooksLikeListing('ipoint', '/collections/iphone') === true, 'urlLooksLikeListing ipoint: /collections/ is listing');
   }
+
+  // Ciclo 1604: VTEX IO retailers — pathname ending in /p → es PDP.
+  {
+    const PR = freshNsWithBodyClass('www.garbarino.com', '/smart-tv-samsung-55/p', '');
+    assert(PR.isProductPageStrict('garbarino') === true, 'isProductPageStrict garbarino: /p pathname VTEX IO');
+  }
+  {
+    const PR = freshNsWithBodyClass('www.jumbo.com.ar', '/heladera-samsung/p', '');
+    assert(PR.isProductPageStrict('jumbo') === true, 'isProductPageStrict jumbo: /p pathname VTEX IO');
+  }
+  {
+    const PR = freshNsWithBodyClass('www.carrefour.com.ar', '/tv-lg-65/p', '');
+    assert(PR.isProductPageStrict('carrefour') === true, 'isProductPageStrict carrefour: /p pathname VTEX IO');
+  }
+  {
+    const PR = freshNsWithBodyClass('www.easy.com.ar', '/taladro-bosch-pro/p', '');
+    assert(PR.isProductPageStrict('easy') === true, 'isProductPageStrict easy: /p pathname VTEX IO');
+  }
+  {
+    const PR = freshNsWithBodyClass('www.disco.com.ar', '/aceite-cocinero-900ml/p', '');
+    assert(PR.isProductPageStrict('disco') === true, 'isProductPageStrict disco: /p pathname VTEX IO');
+  }
+  {
+    const PR = freshNsWithBodyClass('www.newsan.com.ar', '/split-hisense-3000/p', '');
+    assert(PR.isProductPageStrict('newsan') === true, 'isProductPageStrict newsan: /p pathname VTEX IO');
+  }
+  {
+    const PR = freshNsWithBodyClass('www.hisense.com.ar', '/smart-tv-55u7k/p', '');
+    assert(PR.isProductPageStrict('hisense') === true, 'isProductPageStrict hisense: /p pathname VTEX IO');
+  }
+  // Ciclo 1604: VTEX IO con skuId query param → es PDP.
+  {
+    const ctx = makeContext({ hostname: 'www.garbarino.com', pathname: '/smart-tv-samsung-55/p', search: '?skuId=12345' });
+    ctx.document.body = { classList: { contains: () => false } };
+    loadInto(ctx, 'utils/retailers.js');
+    loadInto(ctx, 'utils/helpers.js');
+    const PR = ctx.window.PrecioReal;
+    assert(PR.isProductPageStrict('garbarino') === true, 'isProductPageStrict garbarino: skuId query param VTEX IO');
+  }
+
+  // Ciclo 1604: Musimundo / Compumundo (Shopify) — /products/ → es PDP.
+  {
+    const PR = freshNsWithBodyClass('www.musimundo.com', '/products/parlante-jbl-go3', '');
+    assert(PR.isProductPageStrict('musimundo') === true, 'isProductPageStrict musimundo: /products/ pathname Shopify');
+  }
+  {
+    const PR = freshNsWithBodyClass('www.compumundo.com.ar', '/products/notebook-lenovo-ideapad', '');
+    assert(PR.isProductPageStrict('compumundo') === true, 'isProductPageStrict compumundo: /products/ pathname Shopify');
+  }
+
+  // Ciclo 1604: productKey incluye skuId (VTEX variant param).
+  {
+    const PR = freshNs({ hostname: 'www.garbarino.com', pathname: '/smart-tv-55/p', search: '?skuId=12345' });
+    const key = PR.productKey('https://www.garbarino.com/smart-tv-55/p?skuId=12345');
+    assert(key.includes('skuId=12345'), 'productKey garbarino: skuId variant param included');
+  }
+  // Ciclo 1604: productKey incluye colorId (Falabella variant param).
+  {
+    const PR = freshNs({ hostname: 'www.falabella.com.ar', pathname: '/falabella-ar/product/123', search: '?colorId=negro' });
+    const key = PR.productKey('https://www.falabella.com.ar/falabella-ar/product/123?colorId=negro');
+    assert(key.includes('colorId=negro'), 'productKey falabella: colorId variant param included');
+  }
 }
 
 // ── Resultado ───────────────────────────────────────────────────────────────

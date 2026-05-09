@@ -7,8 +7,8 @@
   if (window.__precioRealLoaded) return;
   window.__precioRealLoaded = true;
 
-  // Ciclo 1602: versión del content script para facilitar debugging en consola.
-  const CONTENT_VERSION = '1603';
+  // Ciclo 1604: versión del content script para facilitar debugging en consola.
+  const CONTENT_VERSION = '1604';
 
   const PR = window.PrecioReal;
   if (!PR) { console.warn('[Precio Real] helpers not loaded'); return; }
@@ -558,10 +558,15 @@
                 // para position:fixed, enterrando el badge bajo otros elementos.
                 const isolation = acs.isolation || '';
                 const willChange = acs.willChange || '';
+                // Ciclo 1604: clip-path distinto de none también crea stacking context
+                // para position:fixed. Usado en temas Shopify modernos (Musimundo,
+                // Compumundo) y algunos temas Next.js con clipping decorativo.
+                const clipPath = acs.clipPath || '';
                 if ((backdropFilter && backdropFilter !== 'none') ||
                     /strict|layout|paint/.test(contain) ||
                     isolation === 'isolate' ||
-                    /transform|opacity|filter/.test(willChange)) {
+                    /transform|opacity|filter/.test(willChange) ||
+                    (clipPath && clipPath !== 'none')) {
                   needsHoist = true;
                   break;
                 }

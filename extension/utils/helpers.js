@@ -283,7 +283,11 @@
         || el.dataset.internetPrice   // Falabella / Sodimac
         || el.dataset.cmrPrice        // Falabella / Sodimac (tarjeta CMR)
         || el.dataset.eventPrice      // Falabella / Sodimac
-        || el.dataset.priceAmount;    // Magento 2 (Cetrogar, Rodo, Noblex)
+        || el.dataset.priceAmount     // Magento 2 (Cetrogar, Rodo, Noblex)
+        // Ciclo 1604: atributos adicionales observados en nuevos retailers.
+        || el.dataset.specialPrice    // Magento 2 precio de oferta (sale price real)
+        || el.dataset.fsPrice         // VTEX Faststore (data-fs-price)
+        || el.dataset.sellingPrice;   // Shopify apps custom (data-selling-price)
       if (dp) return { raw: dp, fromAttribute: true };
     }
     return { raw: el.textContent, fromAttribute: false };
@@ -817,7 +821,9 @@
     try {
       // 1) Variante en el query (ML usa ?variation=...)
       const u = new URL(href || location.href);
-      const variationParams = ['variation', 'sku', 'pid', 'productId', 'variant'];
+      // Ciclo 1604: skuId = VTEX (garbarino, jumbo, etc.), colorId = Falabella/Sodimac,
+      // itemId = VTEX legacy. Estos params cambian con la variante sin cambiar el pathname.
+      const variationParams = ['variation', 'sku', 'skuId', 'pid', 'productId', 'itemId', 'variant', 'colorId'];
       for (const k of variationParams) {
         const v = u.searchParams.get(k);
         if (v) { variant += `|${k}=${v}`; }
@@ -996,13 +1002,27 @@
         } catch (_) {}
         // Magento 2 emite JSON-LD de Product: caer al microdata check.
       }
-      // Shopify (TCL AR, iPoint AR): PDPs tienen /products/ en la ruta y body.template-product.
-      if (siteKey === 'tcl' || siteKey === 'ipoint') {
+      // Shopify (TCL AR, iPoint AR, Musimundo, Compumundo): PDPs tienen /products/ en la
+      // ruta y/o body.template-product. Musimundo/Compumundo usan Shopify custom theme.
+      if (siteKey === 'tcl' || siteKey === 'ipoint' || siteKey === 'musimundo' || siteKey === 'compumundo') {
         if (/\/products\//.test(location.pathname)) return true;
         try {
           if (document.body && document.body.classList.contains('template-product')) return true;
         } catch (_) {}
         // Shopify emite JSON-LD de Product en PDPs: caer al microdata check.
+      }
+      // Ciclo 1604: VTEX IO — PDPs siempre tienen pathname terminando en /p (antes del
+      // query string). También: skuId en query = variante de un PDP (siempre producto).
+      // Cubre: garbarino, jumbo, disco, easy, carrefour, changomas, hisense, philco, newsan.
+      // No incluimos fravega aquí porque usa VTEX Classic con URLs distintas.
+      const VTEX_IO_SITES = ['garbarino', 'jumbo', 'disco', 'easy', 'carrefour', 'changomas',
+                             'hisense', 'philco', 'newsan'];
+      if (VTEX_IO_SITES.indexOf(siteKey) !== -1) {
+        if (/\/p$/.test(location.pathname)) return true;
+        try {
+          if (new URL(location.href).searchParams.has('skuId')) return true;
+        } catch (_) {}
+        // VTEX IO emite JSON-LD de Product: caer al microdata check.
       }
       // PrestaShop (Todomodo, Alphatec): body.page-product o body.product-page
       // está presente en todas las PDPs de PrestaShop por defecto.
