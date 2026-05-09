@@ -37,6 +37,16 @@
   const FETCH_TIMEOUT_MS = 6000;
   const FETCH_RETRIES = 2;
   const FETCH_RETRY_BASE_MS = 600;
+  // Circuit breaker: si el backend falla N veces seguidas (timeout/red/5xx),
+  // dejamos de pegarle por COOLDOWN_MS para no consumir batería del usuario
+  // ni inundar la consola con warnings. El reset es automático al expirar el
+  // cooldown o ante el primer 200 después de eso.
+  const CIRCUIT_FAIL_THRESHOLD = 3;
+  const CIRCUIT_COOLDOWN_MS = 60_000;
+  // Cap defensivo del variant observer: algunos sitios re-renderean atributos
+  // ARIA cada segundo sin que la variante cambie de verdad. Sin cap, el observer
+  // se mantiene activo toda la sesión disparando schedule() en bucle.
+  const VARIANT_OBS_MAX_FIRES = 200;
 
   function isProductPage() {
     // Si helpers expone la versión strict (incluye filtro de URLs de listado),
@@ -189,8 +199,34 @@
     teardownVariantObserver();
   }
 
-  // fetch con timeout + retry. Devuelve {ok:true, history} o {ok:false}.
+  // Circuit breaker state. Compartido entre todos los tryMount de la sesión.
+  let circuitFails = 0;
+  let circuitOpenUntil = 0;
+
+  function circuitIsOpen() {
+    return circuitOpenUntil > 0 && Date.now() < circuitOpenUntil;
+  }
+
+  function circuitRecordFail() {
+    circuitFails++;
+    if (circuitFails >= CIRCUIT_FAIL_THRESHOLD) {
+      circuitOpenUntil = Date.now() + CIRCUIT_COOLDOWN_MS;
+      log.warn('backend circuit open (cooldown ' + (CIRCUIT_COOLDOWN_MS / 1000) + 's)');
+    }
+  }
+
+  function circuitRecordSuccess() {
+    circuitFails = 0;
+    circuitOpenUntil = 0;
+  }
+
+  // fetch con timeout + retry + circuit breaker. Devuelve {ok:true, history} o {ok:false}.
   async function fetchHistory(url) {
+    if (circuitIsOpen()) {
+      // Backend está marcado caído: no insistir hasta que pase cooldown.
+      log.debug(null, 'circuit open, skipping fetch', url);
+      return { ok: false, history: [] };
+    }
     let lastErr = null;
     for (let attempt = 0; attempt <= FETCH_RETRIES; attempt++) {
       const ctrl = new AbortController();
@@ -206,10 +242,13 @@
         if (res.ok) {
           const data = await res.json().catch(() => ({}));
           const history = Array.isArray(data && data.history) ? data.history : [];
+          circuitRecordSuccess();
           return { ok: true, history };
         }
         if (res.status === 404) {
           // No existe historial para esta URL: respuesta válida, sin retry.
+          // Cuenta como éxito a fines del breaker (el backend respondió).
+          circuitRecordSuccess();
           return { ok: true, history: [] };
         }
         // 5xx u otros: reintentar con backoff.
@@ -224,6 +263,7 @@
       }
     }
     if (lastErr) log.warn('fetch failed', lastErr.message || lastErr);
+    circuitRecordFail();
     return { ok: false, history: [] };
   }
 
@@ -281,11 +321,13 @@
   // de precio/variante, no re-renders cosméticos.
   let variantObserver = null;
   let variantTimer = null;
+  let variantFires = 0;
   const VARIANT_CHECK_MS = 1000;
 
   function teardownVariantObserver() {
     if (variantObserver) { try { variantObserver.disconnect(); } catch (_) {} variantObserver = null; }
     if (variantTimer) { clearTimeout(variantTimer); variantTimer = null; }
+    variantFires = 0;
   }
 
   function startVariantObserver(siteKey, myToken) {
@@ -293,6 +335,15 @@
     if (!document.body || typeof MutationObserver !== 'function') return;
     const schedule = () => {
       if (variantTimer) return;
+      // Cap defensivo: si el sitio dispara mutaciones en bucle indefinidamente
+      // (ej. carrusel que togglea aria-selected), cortamos el observer en vez
+      // de seguir gastando ciclos. La cobertura de variantes se pierde, pero
+      // la URL nav sigue cubierta por el listener de history.
+      if (++variantFires > VARIANT_OBS_MAX_FIRES) {
+        log.debug(siteKey, 'variant observer hit cap, tearing down');
+        teardownVariantObserver();
+        return;
+      }
       variantTimer = setTimeout(() => {
         variantTimer = null;
         if (myToken !== runToken) { teardownVariantObserver(); return; }
