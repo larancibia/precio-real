@@ -6,8 +6,8 @@
 /home               /                          301
 
 # Friendly aliases for legal pages (Chrome Web Store listing uses English slugs)
-/privacy            /privacidad.html           301
-/privacy-policy     /privacidad.html           301
+/privacy            /privacy-policy.html       301
+/privacy-policy     /privacy-policy.html       301
 /terms              /terminos.html             301
 /terms-of-service   /terminos.html             301
 
