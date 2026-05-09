@@ -15,6 +15,9 @@
     "https://*.musimundo.com/*",
     "https://*.cetrogar.com.ar/*",
     "https://*.megatone.net/*",
+    "https://diaonline.supermercadosdia.com.ar/*",
+    "https://*.jumbo.com.ar/*",
+    "https://*.disco.com.ar/*",
     "http://localhost:8787/*"
   ],
   "action": {
@@ -36,7 +39,10 @@
         "https://*.naldo.com.ar/*",
         "https://*.musimundo.com/*",
         "https://*.cetrogar.com.ar/*",
-        "https://*.megatone.net/*"
+        "https://*.megatone.net/*",
+        "https://diaonline.supermercadosdia.com.ar/*",
+        "https://*.jumbo.com.ar/*",
+        "https://*.disco.com.ar/*"
       ],
       "js": ["config.js", "utils/retailers.js", "utils/helpers.js", "utils/affiliates.js", "content/content.js"],
       "css": ["content/badge.css"],

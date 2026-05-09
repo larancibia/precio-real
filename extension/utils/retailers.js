@@ -92,6 +92,36 @@
         'span[class*="precio"]',
       ],
     },
+    dia: {
+      label: 'Día',
+      hostnameSuffix: 'diaonline.supermercadosdia.com.ar',
+      currency: 'ARS',
+      selectors: [
+        'meta[itemprop="price"]',
+        '.vtex-product-price-1-x-sellingPrice',
+        '[class*="sellingPrice"]',
+      ],
+    },
+    jumbo: {
+      label: 'Jumbo',
+      hostnameSuffix: 'jumbo.com.ar',
+      currency: 'ARS',
+      selectors: [
+        'meta[itemprop="price"]',
+        '.product-price__price',
+        '[class*="Price"]',
+      ],
+    },
+    disco: {
+      label: 'Disco',
+      hostnameSuffix: 'disco.com.ar',
+      currency: 'ARS',
+      selectors: [
+        'meta[itemprop="price"]',
+        '.product-price__price',
+        '[class*="Price"]',
+      ],
+    },
   };
 
   const GENERIC_PRICE_SELECTORS = [

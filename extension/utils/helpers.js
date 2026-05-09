@@ -14,7 +14,10 @@
     'naldo',
     'musimundo',
     'cetrogar',
-    'megatone'
+    'megatone',
+    'dia',
+    'jumbo',
+    'disco'
   ];
 
   function detectSite(hostname) {
@@ -30,6 +33,9 @@
     if (h.endsWith('musimundo.com')) return 'musimundo';
     if (h.endsWith('cetrogar.com.ar')) return 'cetrogar';
     if (h.endsWith('megatone.net')) return 'megatone';
+    if (h.endsWith('diaonline.supermercadosdia.com.ar')) return 'dia';
+    if (h.endsWith('jumbo.com.ar')) return 'jumbo';
+    if (h.endsWith('disco.com.ar')) return 'disco';
     return null;
   }
 
