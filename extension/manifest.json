@@ -31,6 +31,11 @@
     "https://*.bgh.com.ar/*",
     "https://*.noblex.com.ar/*",
     "https://*.whirlpool.com.ar/*",
+    "https://*.changomas.com.ar/*",
+    "https://*.electrolux.com.ar/*",
+    "https://*.drean.com.ar/*",
+    "https://*.motorola.com.ar/*",
+    "https://*.todomodo.com.ar/*",
     "http://localhost:8787/*"
   ],
   "action": {
@@ -68,7 +73,12 @@
         "https://*.philips.com.ar/*",
         "https://*.bgh.com.ar/*",
         "https://*.noblex.com.ar/*",
-        "https://*.whirlpool.com.ar/*"
+        "https://*.whirlpool.com.ar/*",
+        "https://*.changomas.com.ar/*",
+        "https://*.electrolux.com.ar/*",
+        "https://*.drean.com.ar/*",
+        "https://*.motorola.com.ar/*",
+        "https://*.todomodo.com.ar/*"
       ],
       "js": ["config.js", "utils/retailers.js", "utils/helpers.js", "utils/affiliates.js", "content/content.js"],
       "css": ["content/badge.css"],

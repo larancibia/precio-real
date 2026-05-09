@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <title>Precio Real</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="pr-header">
+      <h1>Precio Real</h1>
+      <p class="pr-tagline">Hot Sale sin sorpresas</p>
+    </header>
+
+    <main>
+      <section class="pr-row">
+        <span class="pr-label">Sitio detectado</span>
+        <span class="pr-value" id="pr-site">—</span>
+      </section>
+      <section class="pr-row">
+        <span class="pr-label">Producto</span>
+        <span class="pr-value" id="pr-product">—</span>
+      </section>
+
+      <div id="pr-verdict" class="pr-verdict"></div>
+      <div class="pr-chart-wrap">
+        <canvas id="pr-chart" width="300" height="120"></canvas>
+      </div>
+    </main>
+
+    <script src="../config.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>

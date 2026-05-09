@@ -75,6 +75,12 @@
     'bgh',
     'noblex',
     'whirlpool',
+    // Ciclo 1582: nuevos retailers Hot Sale AR.
+    'changomas',
+    'electrolux',
+    'drean',
+    'motorola',
+    'todomodo',
   ];
 
   function detectSite(hostname) {
@@ -112,6 +118,12 @@
     if (h.endsWith('bgh.com.ar')) return 'bgh';
     if (h.endsWith('noblex.com.ar')) return 'noblex';
     if (h.endsWith('whirlpool.com.ar')) return 'whirlpool';
+    // Ciclo 1582: nuevos retailers Hot Sale AR.
+    if (h.endsWith('changomas.com.ar')) return 'changomas';
+    if (h.endsWith('electrolux.com.ar')) return 'electrolux';
+    if (h.endsWith('drean.com.ar')) return 'drean';
+    if (h.endsWith('motorola.com.ar')) return 'motorola';
+    if (h.endsWith('todomodo.com.ar')) return 'todomodo';
     return null;
   }
 
@@ -203,8 +215,16 @@
       return { raw: el.textContent, fromAttribute: false };
     }
     // Algunos retailers exponen el precio como data-price="1234.56" en formato US.
+    // Falabella/Sodimac usan data-internet-price, data-cmr-price, data-event-price.
+    // Megatone/legacy stores usan data-price-amount.
     if (el.dataset) {
-      const dp = el.dataset.price || el.dataset.value || el.dataset.amount;
+      const dp = el.dataset.price
+        || el.dataset.value
+        || el.dataset.amount
+        || el.dataset.internetPrice   // Falabella / Sodimac
+        || el.dataset.cmrPrice        // Falabella / Sodimac (tarjeta CMR)
+        || el.dataset.eventPrice      // Falabella / Sodimac
+        || el.dataset.priceAmount;    // Magento 2 (Cetrogar, Rodo, Noblex)
       if (dp) return { raw: dp, fromAttribute: true };
     }
     return { raw: el.textContent, fromAttribute: false };

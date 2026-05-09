@@ -112,13 +112,23 @@
       selectors: [
         // Falabella usa data-internet-price / data-event-price / data-cmr-price
         // dependiendo del medio de pago. Internet price es el "neto" para todos.
+        // readPriceFromElement lee dataset.internetPrice / dataset.cmrPrice / dataset.eventPrice.
         '[data-internet-price]',
+        'li[data-internet-price]',
         '[data-testid="prices-0"] .copy10',
         '[data-testid="prices-0"]',
         '[data-testid="testPointer-bigPrice"]',
+        // Ciclo 1583: rediseño 2025 de Falabella — precio principal en .mkp-price
+        // y en el contenedor [data-pod="price"] del PDP. El .copy10 es la clase
+        // tipográfica "heading 10" del design system de Falabella.
+        '[data-pod="price"] [class*="copy10" i]',
+        '[data-pod="price"] .price',
+        '[class*="mkp-price" i]',
+        '[class*="pod-prices__price" i]',
+        '.pod-prices__price-current',
         'li[data-cmr-price]',
-        'li[data-internet-price]',
         '.copy10',
+        'span[class*="copy" i][data-testid]',
         'meta[itemprop="price"]',
         'meta[property="product:price:amount"]',
         'meta[property="og:price:amount"]',
@@ -191,7 +201,10 @@
       hostnameSuffix: 'musimundo.com',
       currency: 'ARS',
       selectors: [
-        // Musimundo (VTEX): el sellingPrice es el del producto seleccionado.
+        // Musimundo (VTEX IO): el sellingPrice es el del producto seleccionado.
+        // Ciclo 1583: Musimundo 2025 rediseño expone precio en
+        // [data-testid="pdp-price"] y [class*="ProductPrice" i] en su Casper 4.
+        '[data-testid="pdp-price"]',
         '[data-testid="price-value"]',
         '[data-testid="product-price"]',
         '[data-test-id="product-price"]',
@@ -205,6 +218,7 @@
         '[class*="sellingPriceValue" i]',
         '[class*="sellingPrice" i]',
         '[class*="currentPrice" i]',
+        '[class*="ProductPrice" i]',
         '.price-value',
         '.price-best-price',
         '.product-price',
@@ -324,14 +338,25 @@
       hostnameSuffix: 'easy.com.ar',
       currency: 'ARS',
       selectors: [
+        // Easy AR es VTEX IO con tema propio (easyargentina.com.ar → easy.com.ar).
+        // El precio principal vive en sellingPriceValue; también expone
+        // "easyargentina-store-theme" con clases hasheadas (idem Jumbo) + meta tags.
+        // Ciclo 1583: Easy expone precio en [data-testid="price-best-price"] en
+        // su rediseño 2025 y en .easyargentina-store-theme-* con hash variable.
         'meta[itemprop="price"]',
         'meta[property="product:price:amount"]',
         'meta[property="og:price:amount"]',
         '.vtex-product-price-1-x-sellingPriceValue',
         '.vtex-product-price-1-x-sellingPrice',
+        '.vtex-product-price-1-x-currencyContainer',
+        '[data-testid="price-best-price"]',
+        '[data-testid="price-value"]',
+        '[data-testid="product-price"]',
         '[class*="sellingPriceValue" i]',
         '[class*="sellingPrice" i]',
         '[class*="currentPrice" i]',
+        '[class*="bestPrice" i]',
+        '.product-price__price',
         'span[class*="price" i]',
       ],
     },
@@ -379,22 +404,32 @@
       hostnameSuffix: 'ribeiro.com.ar',
       currency: 'ARS',
       selectors: [
-        // Ribeiro está en una mezcla de SAP Commerce + tema custom: el precio
+        // Ribeiro usa SAP Commerce Cloud (Hybris) + tema custom. El precio
         // final vive en .product-detail__current o .price-now / .price-actual.
         // El "precio de lista" (tachado) vive en .price-was / .price-old.
+        // Ciclo 1583: Ribeiro 2025 expone también [data-testid="selling-price"]
+        // y .price__current en su rediseño SAP Hybris v22+. La meta itemprop
+        // siempre usa formato US (schema.org).
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+        '[data-testid="selling-price"]',
+        '[data-testid="product-price"]',
+        '[data-test-id="product-price"]',
         '.product-detail__current',
         '.product-detail__price-current',
+        '.price__current',
         '.price-now',
         '.price-actual',
         '.price-final',
         '.precio-actual',
-        '[data-testid="product-price"]',
-        '[data-test-id="product-price"]',
         'span[class*="priceNow" i]',
         'span[class*="currentPrice" i]',
-        'meta[itemprop="price"]',
-        'meta[property="product:price:amount"]',
-        'meta[property="og:price:amount"]',
+        // SAP Commerce genérico: el precio de venta final tiene class
+        // "value" dentro de .price-container o del PDP.
+        '.pdp-price .value',
+        '.product-info .price .value',
+        '[class*="price-container" i] .value',
       ],
     },
     compumundo: {
@@ -558,6 +593,100 @@
         '[data-testid="product-price"]',
         '.product-pdp-price',
         '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    // Ciclo 1582: nuevos retailers Hot Sale AR.
+    changomas: {
+      label: 'Changomás',
+      hostnameSuffix: 'changomas.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Changomás (ex-Walmart AR) migró a VTEX: mismos patrones que Jumbo/Disco.
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+        '.vtex-product-price-1-x-sellingPriceValue',
+        '.vtex-product-price-1-x-sellingPrice',
+        '.vtex-product-price-1-x-currencyContainer',
+        '.product-price__price',
+        '[class*="sellingPriceValue" i]',
+        '[class*="sellingPrice" i]',
+        '[class*="currentPrice" i]',
+        '[data-testid="price-value"]',
+        '[data-testid="product-price"]',
+      ],
+    },
+    electrolux: {
+      label: 'Electrolux',
+      hostnameSuffix: 'electrolux.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Electrolux AR usa VTEX-classic + Casper theme propio.
+        '.vtex-product-price-1-x-sellingPriceValue',
+        '.vtex-product-price-1-x-sellingPrice',
+        '.vtex-product-price-1-x-currencyContainer',
+        '[class*="sellingPriceValue" i]',
+        '[class*="sellingPrice" i]',
+        '[class*="currentPrice" i]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    drean: {
+      label: 'Drean',
+      hostnameSuffix: 'drean.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Drean AR usa WooCommerce. El precio de venta con descuento vive
+        // en .price ins .amount; sin descuento, en .woocommerce-Price-amount.
+        '.price ins .amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        '.product-price',
+        '[data-testid="product-price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    motorola: {
+      label: 'Motorola Store',
+      hostnameSuffix: 'motorola.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Motorola AR usa plataforma Lenovo e-commerce (Next.js/custom).
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '[data-test-id="product-price"]',
+        '.product-price__current',
+        '.product-price',
+        'span[class*="currentPrice" i]',
+        'span[class*="Price" i]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    todomodo: {
+      label: 'Todomodo',
+      hostnameSuffix: 'todomodo.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Todomodo usa PrestaShop customizado. El precio de venta es
+        // .current-price-value; .product-discount-price es el tachado.
+        '.current-price-value',
+        '.current-price .product-price',
+        '.product-price',
+        '[itemprop="price"]',
+        '[data-testid="product-price"]',
+        'span[class*="current-price" i]',
         'meta[itemprop="price"]',
         'meta[property="product:price:amount"]',
         'meta[property="og:price:amount"]',
