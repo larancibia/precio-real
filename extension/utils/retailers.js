@@ -2331,6 +2331,131 @@
         'meta[property="og:price:amount"]',
       ],
     },
+    // ── Ciclo 1623 ──────────────────────────────────────────────────────────
+    // Nuevos retailers Hot Sale AR 2026: Farmacity (WooCommerce health/beauty),
+    // Ripley AR (SAP Commerce department store), PC Box AR (WooCommerce gaming/hardware),
+    // Oster AR (VTEX electrodomésticos pequeños), Garmin Store AR (SPA custom wearables/GPS).
+    farmacity: {
+      label: 'Farmacity',
+      hostnameSuffix: 'farmacity.com',
+      currency: 'ARS',
+      selectors: [
+        // Farmacity AR usa WooCommerce con tema custom. El precio con descuento vive en
+        // .price ins .woocommerce-Price-amount; sin descuento en .woocommerce-Price-amount.
+        // En Hot Sale expone también [data-testid="product-price"] en su rediseño 2025.
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        'ins .woocommerce-Price-amount.amount bdi',
+        'ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount bdi',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        '.precio-actual',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    ripley: {
+      label: 'Ripley',
+      hostnameSuffix: 'ripley.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Ripley AR usa SAP Commerce Cloud (Hybris) con tema custom. El precio de venta
+        // activo vive en [data-testid="selling-price"] o en .product-price__current.
+        // El precio de lista (tachado) está en .product-price__list o .price-was.
+        '[data-testid="selling-price"]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price__current',
+        '.product-detail__current',
+        '.price__current',
+        '.price-now',
+        '.price-actual',
+        '.precio-actual',
+        'span[class*="currentPrice" i]',
+        'span[class*="priceNow" i]',
+        '.pdp-price .value',
+        '[class*="price-container" i] .value',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    pcbox: {
+      label: 'PC Box',
+      hostnameSuffix: 'pcbox.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // PC Box AR (gaming/hardware) usa WooCommerce con tema custom.
+        // Precio con descuento en .price ins .woocommerce-Price-amount; sin descuento directo.
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        'ins .woocommerce-Price-amount.amount bdi',
+        'ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount bdi',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        '.precio-actual',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    oster: {
+      label: 'Oster',
+      hostnameSuffix: 'oster.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Oster AR (electrodomésticos pequeños) usa VTEX IO con tema custom.
+        // Mismos selectores estándar VTEX que Electrolux, Philco, BGH, Hisense.
+        '.vtex-product-price-1-x-sellingPriceValue',
+        '.vtex-product-price-1-x-sellingPrice',
+        '.vtex-product-price-1-x-currencyContainer',
+        '[class*="sellingPriceValue" i]',
+        '[class*="sellingPrice" i]',
+        '[class*="currentPrice" i]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '[data-testid="pdp-price"]',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    garmin: {
+      label: 'Garmin Store',
+      hostnameSuffix: 'garmin.com',
+      currency: 'ARS',
+      selectors: [
+        // Garmin AR (garmin.com/es-AR/) usa una SPA React/custom con precios en
+        // [data-testid="product-price"] o en elementos con clase que contiene "Price".
+        // El manifest restringe la carga del script a las rutas /es-AR/* del dominio.
+        // JSON-LD Product siempre presente en todas las PDPs de Garmin.
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '[data-testid="selling-price"]',
+        '[data-testid="final-price"]',
+        '.product-price__current',
+        '.product-price__sale',
+        '[class*="ProductPrice" i]',
+        '[class*="CurrentPrice" i]',
+        '[class*="SalePrice" i]',
+        '[class*="FinalPrice" i]',
+        '.product-price',
+        'span[class*="price" i]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
   };
 
   const GENERIC_PRICE_SELECTORS = [

@@ -55,7 +55,7 @@ El angulo es bastante argento:
 - Esta hecha por un solo desarrollador argentino. No hay empresa ni fondeo detras.
 
 Si te sirve, te dejo:
-- Landing + FAQ: https://preciorreal.com
+- Landing + FAQ: https://precio-real.firemandeveloper.com
 - Chrome Web Store: [LINK_CHROME_STORE]
 - Kit de prensa (cifras, screenshots, logos): https://github.com/larancibia/precio-real/blob/main/docs/PR-KIT.md
 - Repo: https://github.com/larancibia/precio-real
@@ -64,8 +64,8 @@ Quedo a disposicion para una entrevista corta o para mandarte capturas concretas
 
 Gracias por el tiempo,
 Luis Arancibia
-[EMAIL_PERSONAL]
-[HANDLE_X]
+ale.larancibia@gmail.com
+@preciorreal_ar
 
 ---
 
@@ -82,7 +82,7 @@ Te tiro corto: lance **Precio Real**, una extension de Chrome gratis y open sour
 El dato fuerte: EcoGo midio que los precios suben **4-6%** las semanas previas al Hot Sale `[VERIFICAR]`. La extension cruza eso con el historial real y avisa cuando la rebaja es humo.
 
 Si te sirve para una nota, links y kit de prensa aca:
-- Landing: https://preciorreal.com
+- Landing: https://precio-real.firemandeveloper.com
 - Web Store: [LINK_CHROME_STORE]
 - Kit prensa: https://github.com/larancibia/precio-real/blob/main/docs/PR-KIT.md
 
@@ -125,13 +125,13 @@ Luis
 Para tener a mano si el periodista pide "mandame los datos clave en bullets":
 
 - Que es: extension de Chrome gratuita y open source que muestra historial real de precios en e-commerce argentinos.
-- Sitios soportados (v0.2.0): 96 e-commerce argentinos (lista completa en https://preciorreal.com).
+- Sitios soportados (v0.2.1): 96 e-commerce argentinos (lista completa en https://precio-real.firemandeveloper.com).
 - Dato fuerte: EcoGo midio aumentos de 4-6% las semanas previas al Hot Sale `[VERIFICAR ano/categorias]`. La extension cruza eso con el historial real y alerta cuando la "rebaja" es trucha.
 - Privacidad: corre local, no pide registro ni email, no envia datos personales. Permisos minimos (`storage`, `activeTab`).
 - Modelo: gratis, sin ads, sin tracking. Soporte opcional via Cafecito.
 - Codigo: open source, auditable en https://github.com/larancibia/precio-real.
 - Creador: Luis Arancibia, desarrollador argentino, proyecto solo. Sin empresa ni fondeo.
-- Disponibilidad: Chrome Web Store ([LINK_CHROME_STORE]), Hot Sale 2026: 13 al 15 de mayo.
+- Disponibilidad: Chrome Web Store (pendiente de aprobación — ZIP v0.2.1 listo), Hot Sale 2026: 11 al 13 de mayo.
 
 ---
 
@@ -148,8 +148,8 @@ Para tener a mano si el periodista pide "mandame los datos clave en bullets":
 
 - [ ] Confirmar firma actual de cada periodista del listado (no enviar a redacciones genericas si se pudo identificar firma).
 - [ ] Personalizar el primer parrafo con una nota reciente real del periodista (no inventar).
-- [ ] Reemplazar todos los `[VERIFICAR]`, `[LINK_CHROME_STORE]`, `[NOMBRE]`, `[EMAIL_PERSONAL]`, `[HANDLE_X]`.
-- [x] Dominio confirmado: `preciorreal.com` (canonical en toda la landing y extension). Deploy listo en Cloudflare Pages (#29).
+- [ ] Reemplazar todos los `[VERIFICAR]`, `[LINK_CHROME_STORE]`, `[NOMBRE]`, `ale.larancibia@gmail.com`, `@preciorreal_ar`.
+- [x] Dominio confirmado: `precio-real.firemandeveloper.com` (canonical en toda la landing y extension). Deploy listo en Cloudflare Pages (#29).
 - [ ] Confirmar que el link al Chrome Web Store funciona y muestra la extension publicada.
 - [ ] Confirmar la cifra exacta de EcoGo (ano, categoria, ventana). Si no se logra confirmar, remover el dato y dejar el angulo cualitativo.
 - [ ] Tener 3 screenshots reales listos para mandar como adjuntos cuando el periodista los pida (no en el primer mail).

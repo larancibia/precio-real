@@ -1,6 +1,6 @@
 // Helpers replicados acá: el popup es contexto separado del content script.
 // Usar el config compartido (config.js cargado antes en popup.html).
-const BACKEND = (typeof window !== 'undefined' && window.PrecioRealConfig && window.PrecioRealConfig.API_BASE) || 'http://localhost:8787';
+const BACKEND = (typeof window !== 'undefined' && window.PrecioRealConfig && window.PrecioRealConfig.API_BASE) || 'https://precio-real-api.arancibialuisalejandro.workers.dev';
 
 const SITE_LABELS = {
   mercadolibre: 'Mercado Libre',

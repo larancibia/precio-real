@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Precio Real",
-  "version": "0.2.0",
-  "description": "Detectá descuentos truchos en Hot Sale: historial real de precios en 96 e-commerce argentinos. Sin cuenta, sin tracking.",
+  "version": "0.2.2",
+  "description": "Detectá descuentos truchos en Hot Sale: historial real de precios en 101 e-commerce argentinos. Sin cuenta, sin tracking.",
   "permissions": ["storage", "activeTab"],
   "host_permissions": [
     "https://*.mercadolibre.com.ar/*",
@@ -101,7 +101,12 @@
     "https://*.coppel.com/*",
     "https://*.megatronics.com.ar/*",
     "https://*.macstation.com.ar/*",
-    "https://*.winpy.com.ar/*"
+    "https://*.winpy.com.ar/*",
+    "https://*.farmacity.com/*",
+    "https://*.ripley.com.ar/*",
+    "https://*.pcbox.com.ar/*",
+    "https://*.oster.com.ar/*",
+    "https://www.garmin.com/es-AR/*"
   ],
   "action": {
     "default_popup": "popup/popup.html",
@@ -209,7 +214,12 @@
         "https://*.coppel.com/*",
         "https://*.megatronics.com.ar/*",
         "https://*.macstation.com.ar/*",
-        "https://*.winpy.com.ar/*"
+        "https://*.winpy.com.ar/*",
+        "https://*.farmacity.com/*",
+        "https://*.ripley.com.ar/*",
+        "https://*.pcbox.com.ar/*",
+        "https://*.oster.com.ar/*",
+        "https://www.garmin.com/es-AR/*"
       ],
       "js": ["config.js", "utils/retailers.js", "utils/helpers.js", "utils/affiliates.js", "content/content.js"],
       "css": ["content/badge.css"],

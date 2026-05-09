@@ -181,6 +181,14 @@
     'autronic',
     'megatrix',
     'pixelstore',
+    // Ciclo 1623: Farmacity (WooCommerce health/beauty), Ripley AR (SAP Commerce department
+    // store), PC Box AR (WooCommerce gaming/hardware), Oster AR (VTEX electrodomésticos),
+    // Garmin Store AR (SPA custom wearables/GPS — manifest restringe a /es-AR/ paths).
+    'farmacity',
+    'ripley',
+    'pcbox',
+    'oster',
+    'garmin',
   ];
 
   function detectSite(hostname) {
@@ -328,6 +336,13 @@
     if (h.endsWith('autronic.com.ar')) return 'autronic';
     if (h.endsWith('megatrix.com.ar')) return 'megatrix';
     if (h.endsWith('pixelstore.com.ar')) return 'pixelstore';
+    // Ciclo 1623: Farmacity, Ripley AR, PC Box AR, Oster AR, Garmin AR.
+    // Garmin usa garmin.com global; el manifest restringe la carga a /es-AR/* paths.
+    if (h.endsWith('farmacity.com')) return 'farmacity';
+    if (h.endsWith('ripley.com.ar')) return 'ripley';
+    if (h.endsWith('pcbox.com.ar')) return 'pcbox';
+    if (h.endsWith('oster.com.ar')) return 'oster';
+    if (h.endsWith('garmin.com')) return 'garmin';
     return null;
   }
 

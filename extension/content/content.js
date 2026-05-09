@@ -7,14 +7,14 @@
   if (window.__precioRealLoaded) return;
   window.__precioRealLoaded = true;
 
-  // Ciclo 1620: versión del content script para facilitar debugging en consola.
-  const CONTENT_VERSION = '1620';
+  // Ciclo 1623: versión del content script para facilitar debugging en consola.
+  const CONTENT_VERSION = '1623';
 
   const PR = window.PrecioReal;
   if (!PR) { console.warn('[Precio Real] helpers not loaded'); return; }
 
   // Usar config compartido para que el switch dev↔prod sea un solo archivo.
-  const BACKEND = (window.PrecioRealConfig && window.PrecioRealConfig.API_BASE) || 'http://localhost:8787';
+  const BACKEND = (window.PrecioRealConfig && window.PrecioRealConfig.API_BASE) || 'https://precio-real-api.arancibialuisalejandro.workers.dev';
 
   // Logger condicional. Si falta (helpers viejo), fallback a console.
   const log = (PR && PR.log) || {
@@ -816,10 +816,14 @@
       // Watch for variant-relevant attribute changes only (no `class` — too
       // noisy, casi todos los retailers togglan clases por hover/focus). Si una
       // variante cambia también suele cambiar SKU o aria-checked.
+      // Ciclo 1622: characterData:true captura actualizaciones in-place del texto
+      // del precio (skeleton loaders, hidratación diferida en VTEX Faststore v3,
+      // Shopify headless) que no generan mutaciones childList/attributes.
       variantObserver.observe(document.body, {
         childList: true,
         subtree: true,
         attributes: true,
+        characterData: true,
         attributeFilter: [
           // Variantes: SKU/product-id/variant-id se actualizan al cambiar swatch.
           'data-sku', 'data-product-sku', 'data-product-id', 'data-variant-id',
@@ -888,6 +892,12 @@
           // data-option-index (temas Shopify custom con picker multi-opción),
           // data-selected-option (algunos temas WooCommerce custom con AJAX variation).
           'data-variant', 'data-option-index', 'data-selected-option',
+          // Ciclo 1622: data-final-price (Falabella AR, WooCommerce con precios de
+          // oferta), data-sale-price (Shopify themes que exponen el precio de venta
+          // directamente en el swatch), data-offer-price (temas Shopify custom como
+          // Olimpo AR, Maxiconsumo), data-list-price (precio de lista visible en
+          // badges de descuento, indicador de que el precio "real" cambió).
+          'data-final-price', 'data-sale-price', 'data-offer-price', 'data-list-price',
         ],
       });
     } catch (_) { variantObserver = null; }
@@ -998,6 +1008,16 @@
       document.addEventListener('variantChange', scheduleCheck, { passive: true });
       // VTEX IO / Faststore: productView se despacha al cambiar SKU en SPA.
       document.addEventListener('vtex:productView', scheduleCheck, { passive: true });
+      // Ciclo 1622: PrestaShop (Todomodo, iPoint, retailers PS 1.7+): updatedProduct
+      // se despacha cuando cambia la combination seleccionada y el precio se actualizó.
+      document.addEventListener('updatedProduct', scheduleCheck, { passive: true });
+      // Ciclo 1622: eventos genéricos usados por varios retailers custom y headless.
+      // price:updated: retailers con frontend propio (Newsan, BGH tienda oficial) que
+      // emiten este evento al cargar el precio vía API. product:update: algunos temas
+      // WooCommerce custom (AEG, Electrolux AR, Drean outlet) y Magento 2 con módulos
+      // de personalización que despachan product:update al cambiar configuración.
+      document.addEventListener('price:updated', scheduleCheck, { passive: true });
+      document.addEventListener('product:update', scheduleCheck, { passive: true });
     } catch (_) { /* entorno sin addEventListener: el variant observer MutationObserver lo cubre */ }
   }
 
@@ -1017,6 +1037,11 @@
       '?wc-ajax=', '/wp-json/wc/',              // WooCommerce AJAX
       '/rest/v1/products', '/rest/v2/',         // Magento 2 REST
       '/api/price', '/api/product', '/graphql', // Genérico + GraphQL headless
+      // Ciclo 1623: patrones adicionales para retailers nuevos.
+      '/api/prices', '/api/catalog/price',      // SAP Commerce (Ripley, Ribeiro), farmacity custom
+      '/api/pdp', '/pdp/pricing',               // SAP Hybris PDP pricing endpoints
+      '/pages/product.json',                    // Shopify legacy product page data
+      '/api/fulfillment', '/api/availability',  // Garmin / retailers con stock+precio combinado
     ];
     let schedTimer = null;
     try {
@@ -1171,6 +1196,10 @@
             // Ciclo 1618: data-variant (Shopify minimal), data-option-index (picker
             // multi-opción Shopify custom), data-selected-option (WooCommerce AJAX).
             'data-variant', 'data-option-index', 'data-selected-option',
+            // Ciclo 1622: precio de oferta/venta/lista expuesto como data-* en el
+            // elemento del swatch o en el contenedor de precio. Mismos atributos que
+            // el variant observer para consistencia de cobertura en carga inicial.
+            'data-final-price', 'data-sale-price', 'data-offer-price', 'data-list-price',
           ],
         });
       } else {
