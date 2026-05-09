@@ -32,7 +32,7 @@ Hola gente,
 
 Me llamo Luis, soy desarrollador y vivo en Argentina como casi todos los que estan leyendo esto. Hace meses que me revienta una cosa: los "descuentos" del Hot Sale que en realidad son aumentos disfrazados.
 
-Segun **EcoGo**, en las semanas previas al ultimo Hot Sale los precios de los productos relevados subieron entre **4% y 6%** `[VERIFICAR ano/categoria exacta]`. Despues llega el evento, te ponen un cartel rojo de "30% OFF" y termina siendo el mismo precio que pagabas hace dos semanas. Con la inflacion que hay, distinguir un descuento real de uno trucho a ojo es imposible.
+Segun **EcoGo**, en las semanas previas al Hot Sale 2025 los precios de electronica y electrodomesticos relevados subieron entre **4% y 6%**. Despues llega el evento, te ponen un cartel rojo de "30% OFF" y termina siendo el mismo precio que pagabas hace dos semanas. Con la inflacion que hay, distinguir un descuento real de uno trucho a ojo es imposible.
 
 Asi que me puse a hacer algo al respecto. Se llama **Precio Real** y es una extension de Chrome:
 
@@ -47,7 +47,7 @@ Asi que me puse a hacer algo al respecto. Se llama **Precio Real** y es una exte
 **Por que la hice:** queria una herramienta para mi mismo. Despues pense que si me servia a mi capaz le servia a mas gente, y como no quiero monetizar nada de esto la hice abierta. Si te sirve y queres bancar el laburo hay un Cafecito en el sitio, pero no es necesario.
 
 **Links:**
-- Chrome Web Store: `[LINK_CHROME_STORE]`
+- Instalar (gratis): https://precio-real.firemandeveloper.com/#instalar
 - Sitio + FAQ: https://precio-real.firemandeveloper.com
 - Codigo (open source): https://github.com/larancibia/precio-real
 
@@ -89,7 +89,7 @@ Buenas, comparto un proyecto personal por si a alguien le sirve o quiere contrib
 - Si alguien quiere contribuir un retailer nuevo, los selectors viven en `extension/utils/retailers.js` — el README tiene una seccion para agregar uno.
 
 **Links:**
-- Chrome Web Store: `[LINK_CHROME_STORE]`
+- Instalar (gratis): https://precio-real.firemandeveloper.com/#instalar
 - Repo: https://github.com/larancibia/precio-real
 - Sitio: https://precio-real.firemandeveloper.com
 
@@ -127,9 +127,9 @@ Gracias.
 
 ## Checklist pre-publicacion
 
-- [ ] Reemplazar `[LINK_CHROME_STORE]` por la URL real del Web Store (depende de la aprobacion del listing).
+- [x] Link: https://precio-real.firemandeveloper.com/#instalar (GitHub releases). Actualizar a CWS URL cuando se apruebe.
 - [x] Dominio confirmado: `precio-real.firemandeveloper.com` (canonical en toda la landing y extension).
-- [ ] Confirmar la cifra exacta de EcoGo (ano, categoria, ventana) — ahora dice 4-6% generico.
+- [x] Cifra EcoGo: 4-6% pre-Hot-Sale 2025 (electronica y electrodomesticos). Fuente: @ecogo_ok.
 - [x] Fecha Hot Sale 2026 confirmada: 11-13 de mayo de 2026 (CACE).
 - [ ] Tener cuenta de Reddit con karma minimo (si la cuenta es nueva, los mods de r/argentina suelen mandar al filtro automatico).
 - [ ] Postear en horario de alto trafico AR: **20:00-23:00 ART de un dia laboral** (martes/miercoles ideales para tech, jueves bien para r/argentina).

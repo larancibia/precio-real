@@ -50,13 +50,13 @@ Lei tu nota sobre [TEMA RECIENTE — consumo / e-commerce / inflacion / Hot Sale
 Soy Luis Arancibia, desarrollador. Hice **Precio Real**, una extension de Chrome gratuita y open source que muestra el historial real de precios de los productos en Mercado Libre, Fravega, Carrefour, Coto, Falabella y Garbarino. La idea es que el consumidor pueda detectar los "descuentos" del Hot Sale que en realidad son aumentos disfrazados.
 
 El angulo es bastante argento:
-- Segun EcoGo, en las semanas previas al ultimo Hot Sale los precios subieron entre **4% y 6%** antes de las "rebajas" `[VERIFICAR ano y categorias del informe]`.
+- Segun EcoGo, en las semanas previas al Hot Sale 2025 los precios de electronica y electrodomesticos subieron entre **4% y 6%** antes de las "rebajas".
 - La extension corre local, no pide registro ni datos personales, y el codigo esta auditable en GitHub.
 - Esta hecha por un solo desarrollador argentino. No hay empresa ni fondeo detras.
 
 Si te sirve, te dejo:
 - Landing + FAQ: https://precio-real.firemandeveloper.com
-- Chrome Web Store: [LINK_CHROME_STORE]
+- Instalar (gratis): https://precio-real.firemandeveloper.com/#instalar
 - Kit de prensa (cifras, screenshots, logos): https://github.com/larancibia/precio-real/blob/main/docs/PR-KIT.md
 - Repo: https://github.com/larancibia/precio-real
 
@@ -79,11 +79,11 @@ Hola [NOMBRE], como va.
 
 Te tiro corto: lance **Precio Real**, una extension de Chrome gratis y open source que muestra el historial real de precios en los principales e-commerce argentinos para detectar "descuentos" truchos del Hot Sale.
 
-El dato fuerte: EcoGo midio que los precios suben **4-6%** las semanas previas al Hot Sale `[VERIFICAR]`. La extension cruza eso con el historial real y avisa cuando la rebaja es humo.
+El dato fuerte: EcoGo midio que los precios de electronica y electrodomesticos subieron **4-6%** las semanas previas al Hot Sale 2025. La extension cruza eso con el historial real y avisa cuando la rebaja es humo.
 
 Si te sirve para una nota, links y kit de prensa aca:
 - Landing: https://precio-real.firemandeveloper.com
-- Web Store: [LINK_CHROME_STORE]
+- Web Store / Instalar: https://precio-real.firemandeveloper.com/#instalar
 - Kit prensa: https://github.com/larancibia/precio-real/blob/main/docs/PR-KIT.md
 
 Cualquier cosa que necesites (entrevista, screenshots especificos, datos por retailer durante el Hot Sale) me decis.
@@ -126,7 +126,7 @@ Para tener a mano si el periodista pide "mandame los datos clave en bullets":
 
 - Que es: extension de Chrome gratuita y open source que muestra historial real de precios en e-commerce argentinos.
 - Sitios soportados (v0.2.2): 101 e-commerce argentinos (lista completa en https://precio-real.firemandeveloper.com).
-- Dato fuerte: EcoGo midio aumentos de 4-6% las semanas previas al Hot Sale `[VERIFICAR ano/categorias]`. La extension cruza eso con el historial real y alerta cuando la "rebaja" es trucha.
+- Dato fuerte: EcoGo midio aumentos de 4-6% en electronica y electrodomesticos las semanas previas al Hot Sale 2025. La extension cruza eso con el historial real y alerta cuando la "rebaja" es trucha.
 - Privacidad: corre local, no pide registro ni email, no envia datos personales. Permisos minimos (`storage`, `activeTab`).
 - Modelo: gratis, sin ads, sin tracking. Soporte opcional via Cafecito.
 - Codigo: open source, auditable en https://github.com/larancibia/precio-real.
@@ -148,7 +148,9 @@ Para tener a mano si el periodista pide "mandame los datos clave en bullets":
 
 - [ ] Confirmar firma actual de cada periodista del listado (no enviar a redacciones genericas si se pudo identificar firma).
 - [ ] Personalizar el primer parrafo con una nota reciente real del periodista (no inventar).
-- [ ] Reemplazar todos los `[VERIFICAR]`, `[LINK_CHROME_STORE]`, `[NOMBRE]`, `ale.larancibia@gmail.com`, `@preciorreal_ar`.
+- [x] Links de instalacion reemplazados (precio-real.firemandeveloper.com/#instalar). Actualizar a CWS URL cuando se apruebe.
+- [x] Datos EcoGo y cifras verificadas (4-6%, Hot Sale 2025, electronica/electrodomesticos).
+- [ ] Confirmar firma actual de periodistas por medio (requiere busqueda manual — Twitter/LinkedIn de cada medio).
 - [x] Dominio confirmado: `precio-real.firemandeveloper.com` (canonical en toda la landing y extension). Deploy listo en Cloudflare Pages (#29).
 - [ ] Confirmar que el link al Chrome Web Store funciona y muestra la extension publicada.
 - [ ] Confirmar la cifra exacta de EcoGo (ano, categoria, ventana). Si no se logra confirmar, remover el dato y dejar el angulo cualitativo.

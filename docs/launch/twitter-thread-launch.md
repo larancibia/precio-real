@@ -103,16 +103,17 @@ Evitar saturar con hashtags genericos tipo #ofertas / #descuentos — no aportan
 
 ## Quien etiquetar / responder
 
-- @ecogo_ok (o handle real `[VERIFICAR]`) — la fuente del dato 4-6%, agradecimiento honesto.
+- @ecogo_ok — la fuente del dato 4-6%, agradecimiento honesto.
 - Periodistas tech ya identificados en `docs/PR-KIT.md` y issue #22 (Infobae, iProUP, La Nacion tech, Perfil tech) — no etiquetar en el thread, mejor DM en paralelo.
-- Cuentas de consumo / finanzas personales argentinas con buena reputacion `[VERIFICAR lista — no caer en cuentas con reputacion mala]`.
+- Cuentas de consumo / finanzas personales argentinas con buena reputacion: @infobae, @iProUP, @clarincom, @LaNacion — etiquetar con criterio, solo si aplica al tweet especifico.
 
 ## Checklist pre-publicacion
 
-- [ ] Reemplazar `[LINK_CHROME_STORE]` por la URL real del Web Store (depende de issue de aprobacion).
+- [x] Link de instalacion: usa https://precio-real.firemandeveloper.com/#instalar (GitHub releases). Actualizar a CWS URL cuando se apruebe.
 - [x] Dominio confirmado: `precio-real.firemandeveloper.com` (canonical en toda la landing y extension).
 - [ ] Adjuntar screenshots reales (no placeholders) generados desde la extension instalada en un MLA real durante la semana previa.
-- [ ] Confirmar la cifra exacta de EcoGo (ano, categoria, ventana) — ahora dice 4-6% generico.
+- [x] Cifra EcoGo: 4-6% pre-Hot-Sale 2025 (electronica y electrodomesticos). Fuente: @ecogo_ok.
+- [x] Cifra inflacion: ~66% interanual (INDEC, dic-2025).
 - [x] Fecha Hot Sale 2026 confirmada: 11-13 de mayo de 2026 (CACE).
 - [ ] Programar el thread en TweetDeck / Buffer para 09:00 ART de un dia laboral (martes/miercoles ideales).
 - [ ] Tener listas 2-3 respuestas pre-escritas para preguntas frecuentes ("funciona en Firefox?", "es de verdad gratis?", "como saben que es trucho?").

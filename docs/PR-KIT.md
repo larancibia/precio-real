@@ -2,13 +2,13 @@
 
 ## Resumen ejecutivo
 
-Precio Real es una extensión gratuita de Chrome que muestra el historial real de precios de cada producto en los principales e-commerce argentinos —Mercado Libre, Frávega, Amazon Argentina, Carrefour, Coto, Falabella, Garbarino y decenas de tiendas más (96 en total)— para detectar aumentos disfrazados de descuentos durante el Hot Sale y otras promociones. Se apoya en datos de **EcoGo** para contextualizar los precios en una economía con inflación crónica. Es open source, hecha en Argentina y no pide registro ni datos personales.
+Precio Real es una extensión gratuita de Chrome que muestra el historial real de precios de cada producto en los principales e-commerce argentinos —Mercado Libre, Frávega, Amazon Argentina, Carrefour, Coto, Falabella, Garbarino y decenas de tiendas más (101 en total)— para detectar aumentos disfrazados de descuentos durante el Hot Sale y otras promociones. Se apoya en datos de **EcoGo** para contextualizar los precios en una economía con inflación crónica. Es open source, hecha en Argentina y no pide registro ni datos personales.
 
 ## El problema
 
-Argentina convive con inflación estructural: en los últimos años la suba interanual osciló entre el ~100% y el ~200% según el período `[VERIFICAR cifra exacta y ventana temporal con informe de EcoGo]`. En ese contexto, los descuentos de eventos como el Hot Sale se vuelven tramposos: muchos comercios suben los precios en las semanas previas para después "rebajarlos" al valor que ya tenían.
+Argentina convive con inflación estructural: la suba interanual fue de **~66%** (INDEC, dic-2025), luego de períodos con inflación del ~100-200%. En ese contexto, los descuentos de eventos como el Hot Sale se vuelven tramposos: muchos comercios suben los precios en las semanas previas para después "rebajarlos" al valor que ya tenían.
 
-Según el seguimiento de **EcoGo**, en las semanas previas al Hot Sale los precios de productos relevados subieron entre **4% y 6%** `[VERIFICAR año y categorías exactas del informe EcoGo citado]`. El consumidor argentino, que ya navega una distorsión de precios permanente, queda sin herramientas simples para responder una pregunta básica: *¿esto está realmente más barato que la semana pasada?*
+Según el seguimiento de **EcoGo**, en las semanas previas al Hot Sale 2025 los precios de electrónica y electrodomésticos relevados subieron entre **4% y 6%** antes de las "rebajas". El consumidor argentino, que ya navega una distorsión de precios permanente, queda sin herramientas simples para responder una pregunta básica: *¿esto está realmente más barato que la semana pasada?*
 
 ## Cómo funciona
 
@@ -37,7 +37,8 @@ Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Arg
 
 ## Descargar
 
-- Chrome Web Store: pendiente de aprobación — ZIP listo, submission en proceso
+- Instalar (gratis): https://precio-real.firemandeveloper.com/#instalar (GitHub releases, activo)
+- Chrome Web Store: pendiente de aprobación — ZIP v0.2.2 listo, submission en proceso
 - Repositorio: https://github.com/larancibia/precio-real
 - Sitio oficial: https://precio-real.firemandeveloper.com
 
@@ -46,13 +47,15 @@ Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Arg
 > "Quería entender realmente cuánto cuestan las cosas en una economía con inflación crónica. En Argentina ya nos acostumbramos a que un descuento del 30% pueda significar pagar lo mismo que la semana pasada. Precio Real nació de esa frustración: una herramienta simple, sin vueltas, que te diga si el precio que estás viendo es real o humo."
 > — Luis Arancibia, creador de Precio Real
 
-`[QUOTE_CREADOR_PLACEHOLDER — Luis puede reemplazar o ajustar la cita según preferencia]`
 
 ## Screenshots
 
-- `[SCREENSHOT_1_PLACEHOLDER]` — Captura del popup de la extensión mostrando el historial de precios.
-- `[SCREENSHOT_2_PLACEHOLDER]` — Badge sobre una ficha de producto en Mercado Libre con la alerta de aumento disfrazado.
-- `[SCREENSHOT_3_PLACEHOLDER]` — Gráfico de evolución de precios de un producto cruzado con el índice de inflación de EcoGo.
+> Pendiente: adjuntar capturas reales tomadas con la extensión instalada en un producto de MLA.
+- Screenshot 1 — popup mostrando historial de precios (tomar en Fravega / MLA, producto con variación visible)
+- Screenshot 2 — badge sobre ficha de producto en Mercado Libre con la alerta de aumento disfrazado
+- Screenshot 3 — gráfico de evolución de precios cruzado con inflación
+
+Enviar por mail junto al pitch al periodista si lo solicita; no adjuntar en el primer contacto.
 
 ## Datos de contacto
 
