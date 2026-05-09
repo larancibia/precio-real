@@ -161,6 +161,30 @@
         campaign: 'descuento-real',
       },
     },
+    ribeiro: {
+      enabled: true,
+      utm: {
+        source: 'precio-real',
+        medium: 'extension',
+        campaign: 'descuento-real',
+      },
+    },
+    compumundo: {
+      enabled: true,
+      utm: {
+        source: 'precio-real',
+        medium: 'extension',
+        campaign: 'descuento-real',
+      },
+    },
+    samsung: {
+      enabled: true,
+      utm: {
+        source: 'precio-real',
+        medium: 'extension',
+        campaign: 'descuento-real',
+      },
+    },
   };
 
   function applyUtm(rawUrl, utm) {

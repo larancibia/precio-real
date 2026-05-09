@@ -63,7 +63,10 @@
     'sodimac',
     'easy',
     'hendel',
-    'rodo'
+    'rodo',
+    'ribeiro',
+    'compumundo',
+    'samsung'
   ];
 
   function detectSite(hostname) {
@@ -86,6 +89,11 @@
     if (h.endsWith('easy.com.ar')) return 'easy';
     if (h.endsWith('hendel.com.ar')) return 'hendel';
     if (h.endsWith('rodo.com.ar')) return 'rodo';
+    if (h.endsWith('ribeiro.com.ar')) return 'ribeiro';
+    if (h.endsWith('compumundo.com.ar')) return 'compumundo';
+    // Samsung opera shop.samsung.com.ar (Hybris) y, ocasionalmente, samsung.com/ar.
+    // Solo nos interesa el e-commerce AR, no la home global.
+    if (h.endsWith('samsung.com.ar')) return 'samsung';
     return null;
   }
 
@@ -291,9 +299,22 @@
       // camelCase (oldPrice, originalPrice, listPrice, regularPrice, wasPrice,
       // productPriceOld), Magento (old-price, special-price-from), Shopify
       // (price--compare-at, price__compare-at), txt-strike, sale-price-from.
-      if (/line-through|strike|crossed|old[-_]?price|oldprice|previous[-_]?price|prev[-_]?price|list[-_]?price|listprice|regular[-_]?price|regularprice|was[-_]?price|wasprice|antes|tachad|original[-_]?price|originalprice|compare[-_]?at|compareat|product[-_]?price[-_]?old|priceold|txt[-_]?strike|crossed[-_]?out|crossedout|from[-_]?price|fromprice|reference[-_]?price|referenceprice|previousprice|preciotachado|precio[-_]?anterior|sale[-_]?off|saleoff|msrp|retail[-_]?price|retailprice|before[-_]?price|beforeprice|pretty[-_]?strike|pre[-_]?discount|prediscount|de\s*\$|wasamount|was[-_]?amount/i.test(cls)) {
+      if (/line-through|strike|crossed|old[-_]?price|oldprice|previous[-_]?price|prev[-_]?price|list[-_]?price|listprice|regular[-_]?price|regularprice|was[-_]?price|wasprice|antes|tachad|original[-_]?price|originalprice|compare[-_]?at|compareat|product[-_]?price[-_]?old|priceold|txt[-_]?strike|crossed[-_]?out|crossedout|from[-_]?price|fromprice|reference[-_]?price|referenceprice|previousprice|preciotachado|precio[-_]?anterior|sale[-_]?off|saleoff|msrp|retail[-_]?price|retailprice|before[-_]?price|beforeprice|pretty[-_]?strike|pre[-_]?discount|prediscount|de\s*\$|wasamount|was[-_]?amount|viejo[-_]?precio|viejoprecio|precio[-_]?lista|preciolista|precio[-_]?viejo|precioviejo|crossed[-_]?price|crossedprice|was__|de[-_]?price|deprice|recommended[-_]?retail|recommendedretail|rrp|pvp|catalog[-_]?price|catalogprice|standard[-_]?price|standardprice|undiscounted|non[-_]?sale|nonsale|price__was|price--was|price-was|wasvalue|was[-_]?value/i.test(cls)) {
         return true;
       }
+      // Atributos data-* específicos de algunos retailers AR (Samsung Hybris,
+      // Falabella) que marcan el precio anterior con data-pricetype="WAS" o
+      // similar. Más confiable que adivinar por clase.
+      try {
+        const priceType = node.getAttribute && node.getAttribute('data-pricetype');
+        if (priceType && /^was$|^old$|^prev$|^previous$|^list$/i.test(priceType.trim())) {
+          return true;
+        }
+        const priceRole = node.getAttribute && node.getAttribute('data-price-type');
+        if (priceRole && /^was$|^old$|^list$|^reference$/i.test(priceRole.trim())) {
+          return true;
+        }
+      } catch (_) { /* ignore */ }
       // Inline style (algunos retailers usan style="text-decoration: line-through")
       try {
         const inline = (node.getAttribute && node.getAttribute('style')) || '';
@@ -339,6 +360,17 @@
     if (/\b\d{1,2}\s+pagos?\s+(de|sin|fijos)\b/i.test(ownText)) return true;
     // "Precio por mes" / "Precio mensual" explícito.
     if (/\bprecio\s+mensual\b/i.test(ownText)) return true;
+    // Ciclo 12: tarjetas específicas AR + "tasa fija" + "X cuotas fijas".
+    // Tarjeta Naranja, Tarjeta Shopping, Tarjeta Cencosud, Más Cuotas (BNA)
+    // suelen aparecer dentro del bloque de financiación con precio mensual.
+    if (/\btarjeta\s+(naranja|shopping|cencosud|carrefour|nativa)\b/i.test(ownText)) return true;
+    if (/\bm[aá]s\s+cuotas\b/i.test(ownText)) return true;
+    if (/\btasa\s+(fija|cero)\b/i.test(ownText)) return true;
+    if (/\b\d{1,2}\s+cuotas\s+fijas?\b/i.test(ownText)) return true;
+    // "Plan Z" / "Plan Ahora 12/30" sin la palabra cuota explícita.
+    if (/\bplan\s+(ahora|cuotas|z|sueldo)\b/i.test(ownText)) return true;
+    // "Promoción bancaria" / "promo banco" textuales.
+    if (/\bpromo(?:ci[oó]n)?\s+(banc[oa]ria|banco|tarjeta)\b/i.test(ownText)) return true;
     // 2) Ancestros: buscar contenedores marcados como cuotas/promo/instalment.
     let node = el;
     for (let i = 0; i < 4 && node; i++) {
@@ -348,7 +380,9 @@
       const blob = `${cls} ${id} ${dataTest}`;
       // installment / cuota / finance / monthly / promo bancaria / mensual / Ahora-12 (Argentina) /
       // Cuota Simple, financiacion, pagos-fijos, finance-row, paymentplan.
-      if (/installment|cuota|finance|finan|monthly|per[-_]?month|permonth|promo[-_]?banc|promobanc|mensual|ahora[-_]?12|ahora12|ahora-?\d{1,2}|nowx\d|cuota[-_]?simple|cuotasimple|payment[-_]?plan|paymentplan|pago[-_]?fijo|pagofijo/i.test(blob)) return true;
+      // Ciclo 12: tarjeta-naranja, tarjeta-shopping, mas-cuotas, recurring-payment,
+      // subscription-price, month-payment, plan-z, plan-sueldo.
+      if (/installment|cuota|finance|finan|monthly|per[-_]?month|permonth|promo[-_]?banc|promobanc|mensual|ahora[-_]?12|ahora12|ahora-?\d{1,2}|nowx\d|cuota[-_]?simple|cuotasimple|payment[-_]?plan|paymentplan|pago[-_]?fijo|pagofijo|tarjeta[-_]?naranja|tarjetanaranja|tarjeta[-_]?shopping|tarjetashopping|tarjeta[-_]?cencosud|m[aá]s[-_]?cuotas|mascuotas|recurring[-_]?payment|recurringpayment|subscription[-_]?price|subscriptionprice|subscription[-_]?payment|month[-_]?payment|monthpayment|plan[-_]?(ahora|z|sueldo)|tasa[-_]?fija|tasafija|finance[-_]?row|financerow/i.test(blob)) return true;
       node = node.parentElement;
     }
     return false;
@@ -381,6 +415,37 @@
         if (cs.visibility === 'hidden' || cs.visibility === 'collapse') return true;
       }
     } catch (_) { /* ignore */ }
+    return false;
+  }
+
+  // Detecta nodos que son loading skeletons / shimmer placeholders. Algunos
+  // retailers (VTEX, Next.js con React Suspense) renderizan en el DOM un
+  // <span class="skeleton"> con texto placeholder ("0,00", "—", "$ 0,00")
+  // antes de hidratar el precio real. Si lo agarramos, mostramos el badge
+  // sobre un precio inventado que en 1–2 segundos cambiará. Filtrarlo evita
+  // falsos positivos en la primera pasada y deja que el observer espere al
+  // valor real.
+  function isLoadingSkeleton(el) {
+    if (!el || !el.tagName) return false;
+    const tag = el.tagName.toLowerCase();
+    if (tag === 'meta' || tag === 'link' || tag === 'script') return false;
+    let node = el;
+    for (let i = 0; i < 4 && node; i++) {
+      const cls = ((node.className && node.className.baseVal) || node.className || '') + '';
+      // Patrones cross-framework: Bootstrap (placeholder-glow, placeholder-wave),
+      // Tailwind (animate-pulse), Material/MUI (MuiSkeleton), VTEX/Next custom
+      // (skeleton-loader, content-loader, shimmer, is-loading, loading-pulse,
+      // pulse-loading, react-loading-skeleton).
+      if (/\bskeleton\b|skeleton[-_]loader|skeletonloader|\bshimmer\b|loading[-_]?placeholder|loadingplaceholder|placeholder[-_]?glow|placeholderglow|placeholder[-_]?wave|placeholderwave|\bis[-_]?loading\b|isloading|loading[-_]?pulse|loadingpulse|pulse[-_]?loading|pulseloading|\banimate[-_]?pulse\b|animatepulse|content[-_]?loader|contentloader|MuiSkeleton|react[-_]?loading[-_]?skeleton|react-loading-skeleton|sk[-_]?loading|skloading/i.test(cls)) {
+        return true;
+      }
+      // Algunos retailers usan aria-busy="true" en el wrapper mientras hidratan.
+      try {
+        const ab = node.getAttribute && node.getAttribute('aria-busy');
+        if (ab === 'true') return true;
+      } catch (_) { /* ignore */ }
+      node = node.parentElement;
+    }
     return false;
   }
 
@@ -497,6 +562,18 @@
   // Issue #2: parser por retailer devuelve {price, currency, retailer}.
   function extractPriceInfo(siteKey) {
     const retailer = siteKey || detectSite(location.hostname) || null;
+    // Currency mismatch hard-stop: si el documento declara una moneda distinta
+    // de ARS (algunos retailers AR muestran USD para electrónicos importados),
+    // no clasificamos — el histórico del backend está en ARS y el cruce daría
+    // falsos descuentos/inflados. Una currency null o ARS sigue el camino normal.
+    // Permitimos también currencies vacías o "$" mal codificadas.
+    try {
+      const declared = detectDocumentCurrency();
+      if (declared && declared !== 'ARS' && /^[A-Z]{3}$/.test(declared)) {
+        log.debug(retailer, 'document currency mismatch, skipping', declared);
+        return null;
+      }
+    } catch (_) { /* fail open: si la detección falla, intentar */ }
     const siteSelectors = (retailer && PRICE_SELECTORS[retailer]) ? PRICE_SELECTORS[retailer] : [];
     const selectors = [...siteSelectors, ...GENERIC_PRICE_SELECTORS];
 
@@ -511,6 +588,8 @@
         // Saltar nodos ocultos (display:none / visibility:hidden / aria-hidden).
         // Excepto meta tags, que siempre son "ocultos" pero válidos.
         if (isHiddenNode(el)) continue;
+        // Saltar loading skeletons / shimmer placeholders (todavía hidratando).
+        if (isLoadingSkeleton(el)) continue;
         // Saltar precios visiblemente tachados (precio anterior, "antes").
         if (isStrikethroughPrice(el)) continue;
         // Saltar precios que en realidad son cuotas mensuales o promos
@@ -707,6 +786,7 @@
   ns.isStrikethroughPrice = isStrikethroughPrice;
   ns.isInstallmentPrice = isInstallmentPrice;
   ns.isHiddenNode = isHiddenNode;
+  ns.isLoadingSkeleton = isLoadingSkeleton;
   ns.isPriceSane = isPriceSane;
   ns.isPlaceholderPriceText = isPlaceholderPriceText;
   ns.detectDocumentCurrency = detectDocumentCurrency;

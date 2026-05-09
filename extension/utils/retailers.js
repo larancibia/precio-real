@@ -318,6 +318,72 @@
         'span[class*="price" i]',
       ],
     },
+    ribeiro: {
+      label: 'Ribeiro',
+      hostnameSuffix: 'ribeiro.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Ribeiro está en una mezcla de SAP Commerce + tema custom: el precio
+        // final vive en .product-detail__current o .price-now / .price-actual.
+        // El "precio de lista" (tachado) vive en .price-was / .price-old.
+        '.product-detail__current',
+        '.product-detail__price-current',
+        '.price-now',
+        '.price-actual',
+        '.price-final',
+        '.precio-actual',
+        '[data-testid="product-price"]',
+        '[data-test-id="product-price"]',
+        'span[class*="priceNow" i]',
+        'span[class*="currentPrice" i]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    compumundo: {
+      label: 'Compumundo',
+      hostnameSuffix: 'compumundo.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Compumundo es hermana de Garbarino (mismo grupo): comparte buena
+        // parte del stack VTEX/Next.js, así que los selectores son muy similares.
+        '[data-testid="product-price"]',
+        '[data-test-id="product-price"]',
+        '[data-testid="price"]',
+        '[data-test-id="price"]',
+        '.vtex-product-price-1-x-sellingPriceValue',
+        '[class*="sellingPrice" i]',
+        '.product-price',
+        '.price-label',
+        'span[class*="sc-" i][class*="Price" i]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    samsung: {
+      label: 'Samsung Store',
+      hostnameSuffix: 'samsung.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Samsung Argentina usa SAP Hybris: el precio principal vive en
+        // .price-discount__current o .price-info__finalprice. El precio anterior
+        // (tachado) está marcado con data-pricetype="WAS" — lo filtra
+        // isStrikethroughPrice por la clase, pero por las dudas no lo selectamos.
+        '.price-discount__current',
+        '.price-info__finalprice',
+        '.product-info-price__current-price',
+        '[data-testid="product-price"]',
+        '.pd-price__current-price',
+        '[data-pricetype="finalPrice"]',
+        'span[class*="finalPrice" i]',
+        'span[class*="currentPrice" i]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
   };
 
   const GENERIC_PRICE_SELECTORS = [

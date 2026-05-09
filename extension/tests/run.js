@@ -129,6 +129,9 @@ console.log('[precio-real tests] starting…');
     ['www.easy.com.ar', 'easy'],
     ['www.hendel.com.ar', 'hendel'],
     ['www.rodo.com.ar', 'rodo'],
+    ['www.ribeiro.com.ar', 'ribeiro'],
+    ['www.compumundo.com.ar', 'compumundo'],
+    ['shop.samsung.com.ar', 'samsung'],
     ['www.amazon.com', null],
     ['', null],
   ];
@@ -264,13 +267,16 @@ console.log('[precio-real tests] starting…');
   assert(k2.includes('variation=4242'), 'productKey incluye variation query');
 }
 
-// RETAILERS coverage — los 17 retailers del manifest.json.
+// RETAILERS coverage — los 20 retailers del manifest.json (+3 ciclo 12).
 {
   const PR = freshNs();
   const expected = [
     'mercadolibre', 'fravega', 'garbarino', 'falabella', 'carrefour', 'coto',
     'naldo', 'musimundo', 'cetrogar', 'megatone', 'dia', 'jumbo', 'disco',
     'sodimac', 'easy', 'hendel', 'rodo',
+    // Ciclo 12: Ribeiro (SAP Commerce), Compumundo (sister Garbarino, VTEX),
+    // Samsung Argentina (Hybris).
+    'ribeiro', 'compumundo', 'samsung',
   ];
   for (const k of expected) {
     assert(PR.RETAILERS && PR.RETAILERS[k], `RETAILERS["${k}"] exists`);
@@ -279,6 +285,10 @@ console.log('[precio-real tests] starting…');
       `RETAILERS["${k}"].selectors not empty`
     );
   }
+  // SUPPORTED_SITES debe incluir los 3 nuevos.
+  assert(PR.SUPPORTED_SITES.includes('ribeiro'), 'SUPPORTED_SITES includes ribeiro');
+  assert(PR.SUPPORTED_SITES.includes('compumundo'), 'SUPPORTED_SITES includes compumundo');
+  assert(PR.SUPPORTED_SITES.includes('samsung'), 'SUPPORTED_SITES includes samsung');
 }
 
 // ── Mini-DOM nodos sintéticos para testear helpers que esperan elementos ────
@@ -344,6 +354,44 @@ function fakeEl({ tag = 'span', className = '', text = '', attrs = {}, parent = 
       `isStrikethroughPrice class "${c}"`
     );
   }
+  // Ciclo 12: nuevos patrones (viejo-precio, precio-lista, RRP, PVP, was__,
+  // crossed-price, was-value).
+  const cicl12Cases = [
+    'viejo-precio', 'viejoPrecio', 'precio-lista', 'precioLista', 'precio-viejo',
+    'precioViejo', 'crossed-price', 'crossedPrice', 'was__price', 'price__was',
+    'price--was', 'recommended-retail', 'recommendedRetail', 'rrp', 'pvp',
+    'catalog-price', 'catalogPrice', 'standard-price', 'standardPrice',
+    'undiscounted', 'non-sale', 'nonSale', 'wasvalue', 'was-value',
+  ];
+  for (const c of cicl12Cases) {
+    assertEq(
+      PR.isStrikethroughPrice(fakeEl({ tag: 'span', className: c })),
+      true,
+      `isStrikethroughPrice class "${c}" (ciclo 12)`
+    );
+  }
+  // data-pricetype="WAS" (Samsung Hybris) y similares.
+  assertEq(
+    PR.isStrikethroughPrice(fakeEl({ tag: 'span', attrs: { 'data-pricetype': 'WAS' } })),
+    true,
+    'isStrikethroughPrice data-pricetype=WAS'
+  );
+  assertEq(
+    PR.isStrikethroughPrice(fakeEl({ tag: 'span', attrs: { 'data-pricetype': 'was' } })),
+    true,
+    'isStrikethroughPrice data-pricetype=was lowercase'
+  );
+  assertEq(
+    PR.isStrikethroughPrice(fakeEl({ tag: 'span', attrs: { 'data-price-type': 'list' } })),
+    true,
+    'isStrikethroughPrice data-price-type=list'
+  );
+  // data-pricetype="finalPrice" NO debería matchear (es el bueno).
+  assertEq(
+    PR.isStrikethroughPrice(fakeEl({ tag: 'span', attrs: { 'data-pricetype': 'finalPrice' } })),
+    false,
+    'isStrikethroughPrice data-pricetype=finalPrice (not strikethrough)'
+  );
   // Falsos negativos esperados (clases que NO deberían matchear).
   const safe = ['price', 'product-price', 'sale-price', 'final-price', 'andes-money-amount'];
   for (const c of safe) {
@@ -459,6 +507,102 @@ function fakeEl({ tag = 'span', className = '', text = '', attrs = {}, parent = 
   const paymentPlan = fakeEl({ tag: 'div', className: 'payment-plan-info' });
   const pricePP = fakeEl({ tag: 'span', text: '$1.234', parent: paymentPlan });
   assertEq(PR.isInstallmentPrice(pricePP), true, 'isInstallmentPrice ancestor payment-plan');
+
+  // Ciclo 12: tarjeta-naranja, tarjeta-shopping, "más cuotas", "tasa fija",
+  // "X cuotas fijas", "Plan Ahora 12", "Plan Z", recurring-payment ancestor.
+  assertEq(
+    PR.isInstallmentPrice(fakeEl({ tag: 'span', text: 'Tarjeta Naranja en 12 cuotas' })),
+    true,
+    'isInstallmentPrice "Tarjeta Naranja"'
+  );
+  assertEq(
+    PR.isInstallmentPrice(fakeEl({ tag: 'span', text: 'Tarjeta Shopping' })),
+    true,
+    'isInstallmentPrice "Tarjeta Shopping"'
+  );
+  assertEq(
+    PR.isInstallmentPrice(fakeEl({ tag: 'span', text: 'Más cuotas con tu banco' })),
+    true,
+    'isInstallmentPrice "Más cuotas"'
+  );
+  assertEq(
+    PR.isInstallmentPrice(fakeEl({ tag: 'span', text: '12 cuotas fijas de $1.234' })),
+    true,
+    'isInstallmentPrice "X cuotas fijas"'
+  );
+  assertEq(
+    PR.isInstallmentPrice(fakeEl({ tag: 'span', text: 'Plan Ahora 12' })),
+    true,
+    'isInstallmentPrice "Plan Ahora 12"'
+  );
+  assertEq(
+    PR.isInstallmentPrice(fakeEl({ tag: 'span', text: 'Tasa fija 0%' })),
+    true,
+    'isInstallmentPrice "Tasa fija"'
+  );
+  assertEq(
+    PR.isInstallmentPrice(fakeEl({ tag: 'span', text: 'Promoción bancaria del banco' })),
+    true,
+    'isInstallmentPrice "Promoción bancaria"'
+  );
+  // Ancestros nuevos.
+  const tarjetaNaranja = fakeEl({ tag: 'div', className: 'tarjeta-naranja-row' });
+  const priceTN = fakeEl({ tag: 'span', text: '$1.234', parent: tarjetaNaranja });
+  assertEq(PR.isInstallmentPrice(priceTN), true, 'isInstallmentPrice ancestor tarjeta-naranja');
+  const masCuotas = fakeEl({ tag: 'div', className: 'mas-cuotas-block' });
+  const priceMC = fakeEl({ tag: 'span', text: '$1.234', parent: masCuotas });
+  assertEq(PR.isInstallmentPrice(priceMC), true, 'isInstallmentPrice ancestor mas-cuotas');
+  const subscription = fakeEl({ tag: 'div', className: 'subscription-price' });
+  const priceSub = fakeEl({ tag: 'span', text: '$1.234', parent: subscription });
+  assertEq(PR.isInstallmentPrice(priceSub), true, 'isInstallmentPrice ancestor subscription-price');
+}
+
+// isLoadingSkeleton (ciclo 12) — descarta nodos shimmer/skeleton/loading.
+{
+  const PR = freshNs();
+  // Patrones cross-framework.
+  const skelCases = [
+    'skeleton', 'skeleton-loader', 'skeletonLoader', 'shimmer', 'loading-placeholder',
+    'loadingPlaceholder', 'placeholder-glow', 'placeholderGlow', 'placeholder-wave',
+    'is-loading', 'isLoading', 'loading-pulse', 'pulse-loading', 'pulseLoading',
+    'animate-pulse', 'animatePulse', 'content-loader', 'contentLoader', 'MuiSkeleton',
+    'react-loading-skeleton', 'sk-loading',
+  ];
+  for (const c of skelCases) {
+    assertEq(
+      PR.isLoadingSkeleton(fakeEl({ tag: 'span', className: c })),
+      true,
+      `isLoadingSkeleton class "${c}"`
+    );
+  }
+  // aria-busy=true en el wrapper.
+  assertEq(
+    PR.isLoadingSkeleton(fakeEl({ tag: 'span', attrs: { 'aria-busy': 'true' } })),
+    true,
+    'isLoadingSkeleton aria-busy=true'
+  );
+  // Wrapper skeleton, child precio.
+  const skelParent = fakeEl({ tag: 'div', className: 'skeleton' });
+  const priceChild = fakeEl({ tag: 'span', className: 'price', parent: skelParent });
+  assertEq(PR.isLoadingSkeleton(priceChild), true, 'isLoadingSkeleton via parent skeleton');
+  // Clases normales no skeleton.
+  const normalCases = ['price', 'product-price', 'sale-price', 'final-price', 'andes-money-amount'];
+  for (const c of normalCases) {
+    assertEq(
+      PR.isLoadingSkeleton(fakeEl({ tag: 'span', className: c })),
+      false,
+      `isLoadingSkeleton class "${c}" (should not match)`
+    );
+  }
+  // meta tag siempre false.
+  assertEq(
+    PR.isLoadingSkeleton(fakeEl({ tag: 'meta', className: 'skeleton' })),
+    false,
+    'isLoadingSkeleton meta tag (always false)'
+  );
+  // Defensivo.
+  assertEq(PR.isLoadingSkeleton(null), false, 'isLoadingSkeleton null');
+  assertEq(PR.isLoadingSkeleton(undefined), false, 'isLoadingSkeleton undefined');
 }
 
 // isHiddenNode — display:none, visibility:hidden, aria-hidden=true.
@@ -692,6 +836,49 @@ function makeContextWithLd(ldNodes) {
   ]);
   const info = PR.extractPriceInfo('mercadolibre');
   assert(!info, 'ld+json: all OutOfStock → null');
+}
+
+// Ciclo 12: currency mismatch hard-stop en extractPriceInfo. Si el documento
+// declara USD/EUR/etc, no devolvemos precio porque el histórico es ARS.
+{
+  function makeContextWithCurrencyAndLd(currency, ldNodes) {
+    const ctx = makeContext();
+    ctx.document.querySelector = (sel) => {
+      if (sel === 'meta[property="og:price:currency"]' && currency) {
+        return { getAttribute: () => currency };
+      }
+      return null;
+    };
+    ctx.document.querySelectorAll = (sel) => {
+      if (sel === 'script[type="application/ld+json"]') {
+        return ldNodes.map((n) => ({ textContent: typeof n === 'string' ? n : JSON.stringify(n) }));
+      }
+      return [];
+    };
+    loadInto(ctx, 'utils/retailers.js');
+    loadInto(ctx, 'utils/helpers.js');
+    return ctx.window.PrecioReal;
+  }
+  // ARS declarado: pasa.
+  const prArs = makeContextWithCurrencyAndLd('ARS', [
+    { '@type': 'Product', offers: { '@type': 'Offer', price: 9999 } },
+  ]);
+  const infoArs = prArs.extractPriceInfo('mercadolibre');
+  assert(infoArs && infoArs.price === 9999, 'extractPriceInfo: ARS currency passes');
+
+  // USD declarado: hard-stop, devuelve null.
+  const prUsd = makeContextWithCurrencyAndLd('USD', [
+    { '@type': 'Product', offers: { '@type': 'Offer', price: 9999 } },
+  ]);
+  const infoUsd = prUsd.extractPriceInfo('mercadolibre');
+  assert(!infoUsd, 'extractPriceInfo: USD currency → null (hard-stop)');
+
+  // Sin currency declarada: pasa (fail-open).
+  const prNone = makeContextWithCurrencyAndLd(null, [
+    { '@type': 'Product', offers: { '@type': 'Offer', price: 9999 } },
+  ]);
+  const infoNone = prNone.extractPriceInfo('mercadolibre');
+  assert(infoNone && infoNone.price === 9999, 'extractPriceInfo: no currency → pass (fail-open)');
 }
 
 // ── Resultado ───────────────────────────────────────────────────────────────

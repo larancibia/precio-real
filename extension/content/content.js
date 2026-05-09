@@ -386,6 +386,12 @@
           // data-internet-price). Si cambia, el precio cambió.
           'data-price-amount', 'data-internet-price', 'data-cmr-price',
           'data-fs-price-variant',
+          // Ciclo 12: Samsung Hybris (data-pricetype), retailers SAP Commerce
+          // (data-product-code), Next.js con styled-components que cambian
+          // el className del wrapper de precio al re-render (lo capturamos como
+          // un "cambio de variante" defensivo si todo lo otro falla).
+          'data-pricetype', 'data-price-type', 'data-product-code',
+          'aria-busy',
         ],
       });
     } catch (_) { variantObserver = null; }
@@ -499,6 +505,28 @@
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') maybeRunOnLocationChange();
     });
+    // Ciclo 12: poll de URL como red de seguridad final. Algunos SPAs (sobre
+    // todo Next.js con app-router custom) reasignan history.pushState DESPUÉS
+    // del content script (antes de que nuestro wrap exista en su closure), o
+    // navegan vía Symbol/Proxy que evade nuestro wrapper. Un poll cada 1500ms
+    // los primeros 60s + cada 5s después es barato (un querySelector + string
+    // compare por tick) y rescata esos casos. Si vemos cambio, disparamos el
+    // mismo evento que dispara hookHistory.
+    let pollTicks = 0;
+    let lastPolledHref = location.href;
+    const pollOnce = () => {
+      try {
+        if (location.href !== lastPolledHref) {
+          lastPolledHref = location.href;
+          window.dispatchEvent(new Event('precio-real:locationchange'));
+        }
+      } catch (_) { /* ignore */ }
+      pollTicks++;
+      // Slow down después de 60s (40 ticks a 1500ms ≈ 60s).
+      const delay = pollTicks < 40 ? 1500 : 5000;
+      setTimeout(pollOnce, delay);
+    };
+    setTimeout(pollOnce, 1500);
   }
   hookHistory();
 
