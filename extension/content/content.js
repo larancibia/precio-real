@@ -7,8 +7,8 @@
   if (window.__precioRealLoaded) return;
   window.__precioRealLoaded = true;
 
-  // Ciclo 1617: versión del content script para facilitar debugging en consola.
-  const CONTENT_VERSION = '1617';
+  // Ciclo 1618: versión del content script para facilitar debugging en consola.
+  const CONTENT_VERSION = '1618';
 
   const PR = window.PrecioReal;
   if (!PR) { console.warn('[Precio Real] helpers not loaded'); return; }
@@ -876,6 +876,10 @@
           // venden bundles — GearZone, Lazer, Klibr — donde el ID del bundle
           // identifica la configuración elegida y determina el precio final).
           'data-sku-id', 'data-product-form-id', 'data-selected-sku', 'data-bundle-id',
+          // Ciclo 1618: data-variant (Shopify temas minimal que omiten el sufijo -id),
+          // data-option-index (temas Shopify custom con picker multi-opción),
+          // data-selected-option (algunos temas WooCommerce custom con AJAX variation).
+          'data-variant', 'data-option-index', 'data-selected-option',
         ],
       });
     } catch (_) { variantObserver = null; }
@@ -931,6 +935,64 @@
     }
   }
 
+  // Ciclo 1618: detección de cambios de variante basada en eventos DOM nativos.
+  // Complementa el MutationObserver para plataformas que despachan eventos
+  // en lugar de (o además de) mutar atributos:
+  //
+  //  • WooCommerce variable products: evento `change` en .variations_form cuando
+  //    el usuario elige un atributo (talle, color, capacidad). El framework
+  //    actualiza el precio vía XHR y cambia el DOM ~300ms después del change.
+  //
+  //  • Shopify themes (Dawn, Debut, themes custom): evento `variant:change`
+  //    CustomEvent despachado en document cuando el picker de variantes confirma
+  //    la selección. También capturamos `variantChange` (snake-camelCase variant).
+  //
+  //  • VTEX IO / Faststore: evento `vtex:productView` que el runtime despacha
+  //    cuando el PDP recarga datos de producto al cambiar variante (colorId,
+  //    skuId) en un SPA sin cambiar la URL.
+  //
+  // En todos los casos debounceamos 500ms para esperar que el DOM estabilice
+  // el nuevo precio antes de llamar tryMount.
+  function startEventBasedVariantDetection(siteKey, myToken) {
+    let evTimer = null;
+    function scheduleCheck() {
+      if (evTimer) return;
+      evTimer = setTimeout(() => {
+        evTimer = null;
+        if (myToken !== runToken) return;
+        if (!mounted) return;
+        let current = null, key = null;
+        try {
+          current = PR.extractPrice(siteKey);
+          key = getProductKey(location.href);
+        } catch (_) { return; }
+        if (!current) return;
+        if (key === lastKey && current === lastPrice) return;
+        if (key !== lastKey) userClosedForKey = null;
+        log.debug(siteKey, 'event-based variant change', { key, current });
+        tryMount(siteKey, myToken).catch((e) => {
+          log.warn('event variant tryMount threw', e && e.message);
+        });
+      }, 500);
+    }
+    try {
+      // WooCommerce: `change` en el formulario de variantes.
+      document.addEventListener('change', (e) => {
+        const t = e.target;
+        if (t && typeof t.closest === 'function') {
+          if (t.closest('.variations_form, form.cart[data-product_id], .woocommerce-variation-add-to-cart')) {
+            scheduleCheck();
+          }
+        }
+      }, { passive: true, capture: false });
+      // Shopify: variant:change y variantChange CustomEvents.
+      document.addEventListener('variant:change', scheduleCheck, { passive: true });
+      document.addEventListener('variantChange', scheduleCheck, { passive: true });
+      // VTEX IO / Faststore: productView se despacha al cambiar SKU en SPA.
+      document.addEventListener('vtex:productView', scheduleCheck, { passive: true });
+    } catch (_) { /* entorno sin addEventListener: el variant observer MutationObserver lo cubre */ }
+  }
+
   async function run() {
     runToken++;
     const myToken = runToken;
@@ -975,6 +1037,7 @@
       try {
         if (await tryMount(siteKey, myToken)) {
           startVariantObserver(siteKey, myToken);
+          startEventBasedVariantDetection(siteKey, myToken);
           startBadgeHealthWatch(siteKey, myToken);
           return;
         }
@@ -993,6 +1056,7 @@
         if (didMount) {
           teardownObserver();
           startVariantObserver(siteKey, myToken);
+          startEventBasedVariantDetection(siteKey, myToken);
           startBadgeHealthWatch(siteKey, myToken);
         }
       }).catch((e) => {
@@ -1049,6 +1113,9 @@
             // (Shopify custom multi-section), data-selected-sku (CompraGamer engine),
             // data-bundle-id (gaming bundles: klibr, lazer, pcarg).
             'data-sku-id', 'data-product-form-id', 'data-selected-sku', 'data-bundle-id',
+            // Ciclo 1618: data-variant (Shopify minimal), data-option-index (picker
+            // multi-opción Shopify custom), data-selected-option (WooCommerce AJAX).
+            'data-variant', 'data-option-index', 'data-selected-option',
           ],
         });
       } else {

@@ -1466,4 +1466,63 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "acolchado de plumas naturales",
   "ropa de cama bamboo",
   "toallas de baño premium",
+  // Ciclo 1631 — conectividad hogareña, nuevos modelos y gaps verticales
+  // WiFi / redes hogar
+  "router mesh wifi 6",
+  "modem router gigabit",
+  // Cocina / electrodomésticos sin cobertura
+  "cocina vitroceramica 4 zonas",
+  "campana extractora 60cm",
+  // Smartphones nuevos modelos 2026 H1
+  "samsung galaxy a56",
+  "motorola edge 60 pro",
+  "xiaomi 15 ultra",
+  // Computación portátil nuevos modelos
+  "notebook asus vivobook",
+  "notebook lenovo ideapad slim",
+  // Audio premium marca
+  "auriculares sony wh1000xm5",
+  "auriculares bose quietcomfort",
+  // Línea blanca premium sin cobertura
+  "heladera samsung french door",
+  "lavavajillas bosch 13 cubiertos",
+  // Fitness domicilio conectado
+  "bicicleta spinning conectada",
+  "pesas ajustables selecttech",
+  // Bebés / puericultura premium
+  "cochecito bugaboo fox5",
+  // Smart home nuevos dispositivos
+  "amazon echo show pantalla",
+  "robot aspiradora xiaomi s20",
+  // Indumentaria invierno AR — nueva cobertura
+  "chaleco de plumas hombre",
+  "ropa de ski completo",
+  "guantes termicos trabajo",
+  // Herramientas cordless adicionales
+  "atornillador makita 18v",
+  "taladro percutor inalambrico bosch",
+  // Gaming: nuevos títulos y hardware
+  "juego ps5 exclusivo 2026",
+  "tarjeta capturadora elgato 4k",
+  // Mascotas: nutrición y salud
+  "alimento premium perro adulto",
+  "snacks saludables gato",
+  // Vehículos accesorios de alta rotación
+  "cubierta auto 185/65 r15",
+  "gps garmin auto",
+  // Relojes / joyería premium
+  "reloj casio g-shock",
+  "reloj seiko automatico",
+  // Textil ropa cama invierno nuevo
+  "acolchado plumas doble",
+  "frazada polar queen",
+  // Computación: periféricos premium sin cobertura
+  "impresora multifuncion laser color",
+  "escaner de documentos portatil",
+  // Salud avanzada / bienestar
+  "monitor holter cardiaco",
+  "bascula con analisis corporal",
+  // Hogar / cocina premium marcas
+  "procesadora kitchenaid",
+  "batidora planetaria professional",
 ];
