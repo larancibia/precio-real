@@ -1110,4 +1110,70 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "brujula de orientacion",
   "filtro de agua purificador portatil",
   "saco de dormir ultraligero",
+  // Ciclo 1625 — post-Hot Sale / pre-invierno AR (mayo-junio 2026)
+  // Termoformado / vajilla caliente (aumento de demanda en frío)
+  "jarra termica acero",
+  "taza termica doble pared",
+  "contenedor termico alimentos",
+  // Calefacción ecológica / eficiencia energética
+  "estufa a leña hierro fundido",
+  "termoventilador bajo consumo",
+  "calefactor ceramico",
+  // Ciclo 1625 — electrónica portátil: nuevos modelos y accesorios 2026
+  "xiaomi redmi pad 2",
+  "samsung galaxy tab a9",
+  "ipad 10ma generacion",
+  "notebook macbook air m3",
+  // Ciclo 1625 — audio / música en casa (invierno = más tiempo indoor)
+  "equipo de musica bluetooth",
+  "minicomponente samsung",
+  "vinilo disco lp",
+  "cassette deck restaurado",
+  // Ciclo 1625 — conectividad / trabajo remoto invierno
+  "monitor portatil 15 pulgadas",
+  "docking station usb c",
+  "teclado bluetooth mac",
+  "mouse ergonomico vertical",
+  // Ciclo 1625 — gaming / PC components: upgrade temporada baja
+  "nvidia geforce rtx 4070",
+  "amd radeon rx 7800 xt",
+  "memoria ram ddr5 32gb",
+  "placa madre b650",
+  "gabinete atx full tower",
+  // Ciclo 1625 — electrodomésticos cocina invierno AR
+  "fondue electrico",
+  "raclette grill electrico",
+  "olla arrocera digital",
+  "freidora de aire xl 8l",
+  "grill de contacto electrico",
+  // Ciclo 1625 — calzado deporte / lifestyle 2026 AR
+  "zapatillas converse all star",
+  "zapatillas vans old skool",
+  "zapatillas hoka running",
+  "zapatillas on running cloud",
+  // Ciclo 1625 — cuidado del hogar / limpieza
+  "aspiradora sin cable dyson",
+  "robot aspiradora lidar",
+  "mopa electrostatica recargable",
+  "purificador de agua osmosis inversa",
+  // Ciclo 1625 — streaming / entretenimiento digital
+  "joystick xbox inalambrico",
+  "control ps5 edge",
+  "audifono gaming pc usb",
+  "capturador video hdmi usb",
+  // Ciclo 1625 — belleza / cuidado personal
+  "rizador de cabello ceramico",
+  "alisadora de cabello profesional",
+  "maquina de afeitar electrica gillette",
+  "cepillo sonic oral b",
+  // Ciclo 1625 — accesorios premium iPhone / Android
+  "funda silicona iphone 16",
+  "protector pantalla samsung s25",
+  "cargador magsafe 15w",
+  "soporte magsafe auto",
+  // Ciclo 1625 — outdoor / camping post-temporada (precio bajo, stock verano)
+  "sleeping pad aislante",
+  "mochila trekking 50l",
+  "bastones trekking telescopicos",
+  "botella hidratacion camelbak",
 ];
