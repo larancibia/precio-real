@@ -40,8 +40,8 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Precio Real — extensión que muestra el precio histórico real de cada producto">
-  <meta property="og:updated_time" content="2026-05-09T21:00:00-03:00">
-  <meta property="article:modified_time" content="2026-05-09T21:00:00-03:00">
+  <meta property="og:updated_time" content="2026-05-09T23:00:00-03:00">
+  <meta property="article:modified_time" content="2026-05-09T23:00:00-03:00">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
@@ -89,7 +89,7 @@
     ],
     "screenshot": "https://preciorreal.com/og-image.png",
     "datePublished": "2026-04-15",
-    "dateModified": "2026-05-09T21:00:00-03:00",
+    "dateModified": "2026-05-09T23:00:00-03:00",
     "author": {
       "@type": "Organization",
       "name": "Precio Real",
@@ -334,8 +334,8 @@
       "cssSelector": [".hero__title", ".hero__subtitle", "#how-title", "#faq-title"]
     },
     "datePublished": "2026-04-15",
-    "dateModified": "2026-05-09T21:00:00-03:00",
-    "lastReviewed": "2026-05-09T21:00:00-03:00",
+    "dateModified": "2026-05-09T23:00:00-03:00",
+    "lastReviewed": "2026-05-09T23:00:00-03:00",
     "breadcrumb": {
       "@type": "BreadcrumbList",
       "itemListElement": [
@@ -602,7 +602,7 @@
     "headline": "Precio Real: detectá los aumentos disfrazados de descuentos en el Hot Sale Argentina 2026",
     "description": "El Hot Sale Argentina 2026 comienza el 13 de mayo. Precio Real te muestra el historial real de precios de cada producto en 47 e-commerce argentinos para que no te vendan humo.",
     "datePublished": "2026-05-09",
-    "dateModified": "2026-05-09T21:00:00-03:00",
+    "dateModified": "2026-05-09T23:00:00-03:00",
     "inLanguage": "es-AR",
     "url": "https://preciorreal.com/",
     "isPartOf": {
@@ -819,7 +819,7 @@
     <div class="hero__inner">
       <h1 class="hero__title">Precio Real</h1>
       <p class="hero__subtitle" id="hero-subtitle">
-        Hot Sale Argentina 2026 empieza el <strong>13 de mayo</strong> — quedan 4 días.
+        Hot Sale Argentina 2026 empieza el <strong>13 de mayo</strong>.
         Según <strong>EcoGo</strong>, los precios ya subieron entre <strong>4% y 6%</strong>
         en las semanas previas. <span class="hero__highlight">Precio Real</span> te muestra
         el precio histórico real de cada producto para que no comprés humo.
@@ -1093,6 +1093,69 @@
         </p>
       </div>
     </section>
+
+    <!-- Hot Sale LIVE section — visible solo durante el evento (13-15 mayo) via JS -->
+    <section id="hot-sale-live" class="section section--live" aria-labelledby="live-title" hidden>
+      <div class="section__inner section__inner--center">
+        <h2 id="live-title" class="section__title">
+          <span aria-hidden="true">🔥</span> Hot Sale 2026 — activo ahora
+        </h2>
+        <p class="section__lead">El evento está en curso. Usá Precio Real para distinguir los descuentos reales de los truchos antes de comprar.</p>
+
+        <div class="live-tips">
+          <div class="live-tip">
+            <span class="live-tip__icon" aria-hidden="true">✓</span>
+            <div>
+              <strong>Revisá el badge antes de cada compra</strong>
+              <p>Si dice PRECIO INFLADO, el descuento es sobre un precio que ya subieron. Buscá en otra tienda o esperá.</p>
+            </div>
+          </div>
+          <div class="live-tip">
+            <span class="live-tip__icon" aria-hidden="true">📊</span>
+            <div>
+              <strong>Mirá el mínimo histórico, no el precio anterior</strong>
+              <p>El "precio tachado" lo pone la tienda. El mínimo histórico de Precio Real es el dato real.</p>
+            </div>
+          </div>
+          <div class="live-tip">
+            <span class="live-tip__icon" aria-hidden="true">🏪</span>
+            <div>
+              <strong>Comparar entre tiendas es clave</strong>
+              <p>El mismo producto puede estar en PRECIO REAL en Frávega y INFLADO en Garbarino. Checkeá las dos.</p>
+            </div>
+          </div>
+          <div class="live-tip">
+            <span class="live-tip__icon" aria-hidden="true">⚡</span>
+            <div>
+              <strong>Badge NEUTRAL = no es oferta, no es trampa</strong>
+              <p>El precio no cambió significativamente. Está bien comprarlo si te conviene, pero no apures la decisión por el "Hot Sale".</p>
+            </div>
+          </div>
+        </div>
+
+        <a href="/checklist-hot-sale-2026.html" class="btn btn--primary" style="margin-top:1.5rem;">Ver checklist completo por categoría</a>
+      </div>
+    </section>
+    <style>
+      .section--live { background: linear-gradient(135deg, rgba(255,90,0,.08) 0%, rgba(255,160,0,.05) 100%); border-top: 2px solid rgba(255,120,0,.35); border-bottom: 2px solid rgba(255,120,0,.35); }
+      .live-tips { display: grid; gap: 1.25rem; margin: 2rem auto 0; max-width: 720px; }
+      @media (min-width: 640px) { .live-tips { grid-template-columns: 1fr 1fr; } }
+      .live-tip { display: flex; gap: .9rem; align-items: flex-start; background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.1rem; text-align: left; }
+      .live-tip__icon { font-size: 1.4rem; flex-shrink: 0; margin-top: .1rem; }
+      .live-tip strong { display: block; color: var(--text); margin-bottom: .3rem; font-size: .95rem; }
+      .live-tip p { color: var(--text-muted); font-size: .88rem; margin: 0; line-height: 1.5; }
+    </style>
+    <script>
+    (function () {
+      var HS_START = new Date('2026-05-13T00:00:00-03:00').getTime();
+      var HS_END   = new Date('2026-05-16T00:00:00-03:00').getTime();
+      var now = Date.now();
+      if (now >= HS_START && now < HS_END) {
+        var sec = document.getElementById('hot-sale-live');
+        if (sec) sec.removeAttribute('hidden');
+      }
+    })();
+    </script>
 
     <section id="stats" class="section section--stats" aria-labelledby="stats-title">
       <div class="section__inner section__inner--center">
