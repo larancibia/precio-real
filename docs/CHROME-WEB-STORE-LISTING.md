@@ -3,7 +3,7 @@
 Material listo para pegar en el formulario de submission de la Chrome Web Store
 para Precio Real v0.2.0. Idioma principal: español (Argentina).
 
-> Última revisión: 2026-05-09 (v6 — sincronizado con manifest v0.2.0 de 47 retailers, ciclo 1614).
+> Última revisión: 2026-05-09 (v8 — sincronizado con manifest v0.2.0 de 76 retailers, ciclo 1626).
 > Mantener sincronizado con `extension/manifest.json`, `landing/index.html` y
 > `landing/privacidad.html`. Si se agregan retailers en el manifest, actualizar acá
 > y en privacidad.html antes de re-submit.
@@ -15,7 +15,7 @@ para Precio Real v0.2.0. Idioma principal: español (Argentina).
 | Campo | Valor |
 |-------|-------|
 | Name (max 75 chars) | `Precio Real — historial real de precios en Argentina` |
-| Short summary (max 132 chars) | `Detectá descuentos truchos en Hot Sale: historial real de precios en 47 e-commerce argentinos. Sin cuenta, sin tracking.` |
+| Short summary (max 132 chars) | `Detectá descuentos truchos en Hot Sale: historial real de precios en 76 e-commerce argentinos. Sin cuenta, sin tracking.` |
 | Category | Shopping |
 | Language | Spanish (Argentina) — `es-AR` |
 | Website / Homepage URL | `https://preciorreal.com` |
@@ -44,7 +44,7 @@ CÓMO FUNCIONA
 QUÉ INCLUYE
 - Historial de precios real por producto.
 - Alertas de aumentos disfrazados de descuento.
-- 47 sitios soportados v0.2.0: Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Argentina, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store, LG Argentina, Sony Store, Philips Argentina, BGH, Noblex, Whirlpool, Changomás, Electrolux Argentina, Drean, Motorola Store, Todomodo, Amazon Argentina, HiperTehno, Xiaomi Mi Store Argentina, Philco Argentina, Venex, BGood, HP Tienda, Lenovo Argentina, Alphatec, Exo Computación, Hisense Argentina, TCL Argentina, Pycca, Newsan, Asus Store Argentina y Mac Center.
+- 76 sitios soportados v0.2.0: Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Argentina, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store, LG Argentina, Sony Store, Philips Argentina, BGH, Noblex, Whirlpool, Changomás, Electrolux, Drean, Motorola Store, Todomodo, Amazon Argentina, HiperTehno, Xiaomi Mi Store, Philco Argentina, Venex, BGood, HP Tienda, Lenovo Argentina, Alphatec, Exo, Hisense Argentina, TCL Argentina, Pycca, Newsan, Asus Store Argentina, Mac Center, Full, Micro Center, iPoint, Acer Store, Coolbox, Olimpo, Dexter, TGC, Maxiconsumo, FullH4rd, Start Tech PC, PC House, Zetta, Geek Store, Computodo, MaxiHogar, PC Factory, CompraGamer, Golden Shop, Soluciones, Arredondo, iThink, Nexstore, Cable Hogar, Bit, Digital Haus, InStore, Staples y Gotta.
 - Datos de inflación de EcoGo para contextualizar los precios.
 
 PRIVACIDAD
@@ -72,14 +72,14 @@ According to EcoGo, prices in Argentina rise 4%–6% in the weeks before Hot Sal
 
 HOW IT WORKS
 - Install in one click. No account, no personal data.
-- Browse Mercado Libre, Frávega, Garbarino, Falabella, Carrefour, Amazon Argentina, or any of the 47 supported sites.
+- Browse Mercado Libre, Frávega, Garbarino, Falabella, Carrefour, Amazon Argentina, or any of the 76 supported sites.
 - When you open a product page, a badge shows the verdict: real price, inflated, or neutral.
 - If the "discount" hides a prior price hike, we tell you.
 
 WHAT'S INCLUDED
 - Real price history per product.
 - Alerts for fake discounts (price-hike-then-markdown tactics).
-- 47 supported Argentine e-commerce sites (v0.2.0): Mercado Libre, Frávega, Garbarino, Falabella, Carrefour, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store, LG Argentina, Sony Store, Philips Argentina, BGH, Noblex, Whirlpool, Changomás, Electrolux Argentina, Drean, Motorola Store, Todomodo, Amazon Argentina, HiperTehno, Xiaomi Mi Store Argentina, Philco Argentina, Venex, BGood, HP Tienda, Lenovo Argentina, Alphatec, Exo Computación, Hisense Argentina, TCL Argentina, Pycca, Newsan, Asus Store Argentina, and Mac Center.
+- 76 supported Argentine e-commerce sites (v0.2.0): Mercado Libre, Frávega, Garbarino, Falabella, Carrefour, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store, LG Argentina, Sony Store, Philips Argentina, BGH, Noblex, Whirlpool, Changomás, Electrolux, Drean, Motorola Store, Todomodo, Amazon Argentina, HiperTehno, Xiaomi Mi Store Argentina, Philco Argentina, Venex, BGood, HP Tienda, Lenovo Argentina, Alphatec, Exo, Hisense Argentina, TCL Argentina, Pycca, Newsan, Asus Store Argentina, Mac Center, Full, Micro Center, iPoint, Acer Store, Coolbox, Olimpo, Dexter, TGC, Maxiconsumo, FullH4rd, Start Tech PC, PC House, Zetta, Geek Store, Computodo, MaxiHogar, PC Factory, CompraGamer, Golden Shop, Soluciones, Arredondo, iThink, Nexstore, Cable Hogar, Bit, Digital Haus, InStore, Staples, and Gotta.
 - EcoGo inflation data to contextualize prices.
 
 PRIVACY
@@ -115,7 +115,7 @@ Se usa para leer la pestaña activa cuando el usuario navega un sitio soportado,
 La extensión inyecta un content script en estos sitios de e-commerce argentinos para detectar la ficha de producto, leer el precio publicado y mostrar el historial real. No se accede a otros sitios fuera de esta lista.
 ```
 
-Dominios solicitados (47 retailers de e-commerce argentino):
+Dominios solicitados (76 retailers de e-commerce argentino):
 - `https://*.mercadolibre.com.ar/*`
 - `https://*.fravega.com/*`
 - `https://*.garbarino.com/*`
@@ -164,6 +164,35 @@ Dominios solicitados (47 retailers de e-commerce argentino):
 - `https://*.newsan.com.ar/*`
 - `https://store.asus.com/ar/*`
 - `https://*.maccenter.com.ar/*`
+- `https://*.full.com.ar/*`
+- `https://*.microcenter.com.ar/*`
+- `https://*.ipoint.com.ar/*`
+- `https://store.acer.com/es-ar/*`
+- `https://*.coolbox.com.ar/*`
+- `https://*.olimpo.com.ar/*`
+- `https://*.dexter.com.ar/*`
+- `https://*.tgc.com.ar/*`
+- `https://*.maxiconsumo.com/*`
+- `https://*.fullh4rd.com.ar/*`
+- `https://*.startechpc.com.ar/*`
+- `https://*.phouse.com.ar/*`
+- `https://*.zetta.net.ar/*`
+- `https://*.geekstore.com.ar/*`
+- `https://*.computodo.com.ar/*`
+- `https://*.maxihogar.com.ar/*`
+- `https://*.pcfactory.com.ar/*`
+- `https://*.compragamer.com/*`
+- `https://*.goldenshop.com.ar/*`
+- `https://*.soluciones.com.ar/*`
+- `https://*.arredondo.com.ar/*`
+- `https://*.ithink.com.ar/*`
+- `https://*.nexstore.com.ar/*`
+- `https://*.cablehogar.com.ar/*`
+- `https://*.bit.ar/*`
+- `https://*.digitalhaus.com.ar/*`
+- `https://*.instore.com.ar/*`
+- `https://*.staples.com.ar/*`
+- `https://*.gotta.com.ar/*`
 
 ### Remote code use
 ```
