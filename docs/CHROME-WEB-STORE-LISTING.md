@@ -216,7 +216,7 @@ Dominios solicitados (96 retailers de e-commerce argentino):
 
 ### Remote code use
 ```
-La extensión NO ejecuta código remoto. Todo el JavaScript está empaquetado dentro del .zip subido a la Chrome Web Store. La única comunicación de red es una llamada GET a https://precio-real.firemandeveloper.com/api/price para obtener el historial de un producto.
+La extensión NO ejecuta código remoto. Todo el JavaScript está empaquetado dentro del .zip subido a la Chrome Web Store. La única comunicación de red es una llamada GET a https://precio-real-api.arancibialuisalejandro.workers.dev/api/price para obtener el historial de un producto.
 ```
 
 ### Data usage disclosures (sección "Privacy practices")

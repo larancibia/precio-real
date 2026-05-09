@@ -38,7 +38,7 @@ Asi que me puse a hacer algo al respecto. Se llama **Precio Real** y es una exte
 
 - **Gratis**, sin registro, sin email, sin tarjeta.
 - **Open source**, codigo en GitHub.
-- Funciona en **Mercado Libre Argentina, Fravega, Garbarino, Falabella, Carrefour Digital y Coto Digital**.
+- Funciona en **96 e-commerce argentinos**: Mercado Libre, Fravega, Garbarino, Falabella, Carrefour, Coto, Naldo, Musimundo, Cetrogar, Megatone, Jumbo, Disco, Sodimac, Amazon Argentina, Samsung Store, HP Tienda, Lenovo, CompraGamer, FullH4rd, PC Factory y muchos mas (lista completa en preciorreal.com).
 - Cuando entras a una ficha de producto, te muestra el **historial real de precios** de las ultimas semanas y te avisa si el "descuento" oculta un aumento previo.
 - Permisos minimos: `storage` y `activeTab`. Nada de tracking de terceros, nada de mandar datos a ningun lado.
 
@@ -48,13 +48,13 @@ Asi que me puse a hacer algo al respecto. Se llama **Precio Real** y es una exte
 
 **Links:**
 - Chrome Web Store: `[LINK_CHROME_STORE]`
-- Sitio + FAQ: https://precio-real.firemandeveloper.com `[VERIFICAR dominio]`
+- Sitio + FAQ: https://preciorreal.com
 - Codigo (open source): https://github.com/larancibia/precio-real
 
 **Que feedback me sirve mas:**
 1. Si encontras un producto con un "descuento" que es trucho, mandame el link en los comentarios — lo subo como ejemplo.
 2. Si te falla en algun sitio especifico, decime cual y que producto.
-3. Si queres que agregue un retailer que no esta (Naldo, Musimundo, Megatone, etc.), votenmelos en los comentarios y los priorizo segun los upvotes.
+3. Si queres que agregue un retailer que no esta todavia, dejalo en los comentarios y lo priorizo segun el interes.
 
 Gracias por leer. Cualquier cosa la respondo aca abajo.
 
@@ -80,7 +80,7 @@ Buenas, comparto un proyecto personal por si a alguien le sirve o quiere contrib
 **Stack rapido:**
 - Extension: Manifest V3, content scripts por retailer (`extension/content/`), retailer config en `extension/utils/retailers.js`.
 - Backend: cron que descubre los top 500 productos populares de MLA y refresca precios periodicamente (`backend/src/scrapers/`).
-- Sitios soportados v0.1.0: Mercado Libre AR, Fravega, Garbarino, Falabella AR, Carrefour AR, Coto Digital.
+- Sitios soportados v0.2.0: 96 e-commerce argentinos (lista completa en https://preciorreal.com).
 - Sin telemetria de terceros, permisos minimos (`storage`, `activeTab`).
 
 **Por que lo abri:**
@@ -91,7 +91,7 @@ Buenas, comparto un proyecto personal por si a alguien le sirve o quiere contrib
 **Links:**
 - Chrome Web Store: `[LINK_CHROME_STORE]`
 - Repo: https://github.com/larancibia/precio-real
-- Sitio: https://precio-real.firemandeveloper.com `[VERIFICAR dominio]`
+- Sitio: https://preciorreal.com
 
 **Donde me vendria una mano:**
 - Probar la extension en sitios que tengan layouts raros (paginas de campanas, listings, busquedas) y reportar issues.
@@ -128,9 +128,9 @@ Gracias.
 ## Checklist pre-publicacion
 
 - [ ] Reemplazar `[LINK_CHROME_STORE]` por la URL real del Web Store (depende de la aprobacion del listing).
-- [ ] Confirmar dominio (`precio-real.firemandeveloper.com` vs. `precio-real.com` — `docs/PR-KIT.md` lo marca como pendiente de verificar).
+- [x] Dominio confirmado: `preciorreal.com` (canonical en toda la landing y extension).
 - [ ] Confirmar la cifra exacta de EcoGo (ano, categoria, ventana) — ahora dice 4-6% generico.
-- [ ] Confirmar fecha exacta de inicio del Hot Sale 2026.
+- [x] Fecha Hot Sale 2026 confirmada: 13-15 de mayo de 2026 (CACE).
 - [ ] Tener cuenta de Reddit con karma minimo (si la cuenta es nueva, los mods de r/argentina suelen mandar al filtro automatico).
 - [ ] Postear en horario de alto trafico AR: **20:00-23:00 ART de un dia laboral** (martes/miercoles ideales para tech, jueves bien para r/argentina).
 - [ ] Tener listo un comentario propio fijo (sticky) con el TL;DR + links — los redditors no leen el cuerpo entero, leen el primer comentario.
