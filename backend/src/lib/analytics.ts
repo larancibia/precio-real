@@ -18,6 +18,8 @@ export function computeStats(history: PriceRow[], nowSec?: number): PriceStats {
       inflated: false,
       baseline_at: null,
       baseline_age_days: null,
+      price_min: null,
+      price_max: null,
     };
   }
 
@@ -71,6 +73,16 @@ export function computeStats(history: PriceRow[], nowSec?: number): PriceStats {
     baseline_age_days = Math.max(0, Math.round((ref - baseline_at) / DAY_SEC));
   }
 
+  // Price range across the full history window. Lets callers render chart
+  // Y-axis bounds or "precio más bajo / más alto en el período" copy without
+  // scanning the history array client-side.
+  let price_min: number | null = null;
+  let price_max: number | null = null;
+  for (const row of history) {
+    if (price_min === null || row.price < price_min) price_min = row.price;
+    if (price_max === null || row.price > price_max) price_max = row.price;
+  }
+
   return {
     current_price,
     price_7d_ago,
@@ -78,5 +90,7 @@ export function computeStats(history: PriceRow[], nowSec?: number): PriceStats {
     inflated,
     baseline_at,
     baseline_age_days,
+    price_min,
+    price_max,
   };
 }

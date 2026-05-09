@@ -31,6 +31,11 @@ export interface PriceStats {
   // Lets the client render accurate copy ("vs precio de hace 6 días") instead
   // of hard-coding "7 días" — the cron's bucket may pick anywhere in [5, 14] d.
   baseline_age_days: number | null;
+  // Min and max price seen across the history window. Null when history is empty.
+  // Useful for rendering chart Y-axis bounds and showing "precio más bajo / más
+  // alto en el período" copy without the client scanning the full history array.
+  price_min: number | null;
+  price_max: number | null;
 }
 
 export interface WaybackSnapshot {

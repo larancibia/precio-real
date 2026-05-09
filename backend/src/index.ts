@@ -25,6 +25,11 @@
  *   GET  /api/sellers?limit=<n>  → { count, results: [{ seller, product_count, price_count, last_scraped_at }] }
  *                                  Top sellers ranked by number of tracked products.
  *                                  Useful for the landing page "vendedores más seguidos" widget.
+ *   GET  /api/compare?urls=<url1>,<url2>,...  → { count, results: [{ url, found, product?, ...stats }] }
+ *                                  Batch price lookup for up to COMPARE_MAX_URLS URLs.
+ *                                  Each item carries the same fields as /api/price (minus full history).
+ *                                  Useful for the extension's "comparar en otras tiendas" panel and
+ *                                  for the landing page's product-vs-product widget.
  *   POST /api/scrape/wayback?url=<url> → { inserted, scanned, failed }
  *   POST /api/scrape/run         → manual trigger of the scheduled scraper (debug/seed)
  *   *                             → 404
@@ -405,6 +410,114 @@ async function handleSellers(request: Request, env: Env): Promise<Response> {
   );
 }
 
+// Maximum URLs accepted by /api/compare in a single request.
+// Bounded to keep D1 read cost predictable (each URL = 2 queries: product lookup + price fetch).
+const COMPARE_MAX_URLS = 5;
+// History rows fetched per product for compare (fewer than /api/price — we only need stats,
+// not the full chart). 30 days gives a reliable 7-day baseline without a large payload.
+const COMPARE_HISTORY_LIMIT = 30;
+const CACHE_COMPARE = "public, max-age=300, stale-while-revalidate=900";
+
+interface CompareItem {
+  url: string;
+  found: boolean;
+  product?: Pick<ProductRow, "id" | "title" | "seller" | "image_url">;
+  current_price?: number | null;
+  price_7d_ago?: number | null;
+  real_discount_pct?: number | null;
+  inflated?: boolean;
+  baseline_age_days?: number | null;
+  price_min?: number | null;
+  price_max?: number | null;
+  last_scraped_at?: number | null;
+}
+
+async function lookupOne(target: string, env: Env): Promise<CompareItem> {
+  // Tolerant lookup: exact match first, then normalized fallback.
+  let product = await env.DB
+    .prepare("SELECT id, url, title, seller, image_url, created_at FROM products WHERE url = ?1")
+    .bind(target)
+    .first<ProductRow>();
+
+  if (!product) {
+    let normalized: string | null = null;
+    try { normalized = normalizeMLUrl(target); } catch { normalized = null; }
+    if (normalized && normalized !== target) {
+      product = await env.DB
+        .prepare("SELECT id, url, title, seller, image_url, created_at FROM products WHERE url = ?1")
+        .bind(normalized)
+        .first<ProductRow>();
+    }
+  }
+
+  if (!product) {
+    return { url: target, found: false };
+  }
+
+  const history = await env.DB
+    .prepare(
+      "SELECT price, currency, scraped_at FROM prices WHERE product_id = ?1 ORDER BY scraped_at DESC LIMIT ?2",
+    )
+    .bind(product.id, COMPARE_HISTORY_LIMIT)
+    .all<PriceRow>();
+
+  const rows = history.results ?? [];
+  const stats = computeStats(rows);
+  const last_scraped_at = rows.length > 0 ? rows[0].scraped_at : null;
+
+  return {
+    url: product.url,
+    found: true,
+    product: {
+      id: product.id,
+      title: product.title,
+      seller: product.seller,
+      image_url: product.image_url,
+    },
+    current_price: stats.current_price,
+    price_7d_ago: stats.price_7d_ago,
+    real_discount_pct: stats.real_discount_pct,
+    inflated: stats.inflated,
+    baseline_age_days: stats.baseline_age_days,
+    price_min: stats.price_min,
+    price_max: stats.price_max,
+    last_scraped_at,
+  };
+}
+
+async function handleCompare(request: Request, env: Env): Promise<Response> {
+  const url = new URL(request.url);
+  const rawUrls = url.searchParams.get("urls") ?? "";
+  if (!rawUrls.trim()) {
+    return json({ error: "Missing required query parameter: urls (comma-separated list)" }, 400);
+  }
+
+  // Split, trim whitespace, deduplicate, cap at COMPARE_MAX_URLS.
+  const seen = new Set<string>();
+  const targets: string[] = [];
+  for (const u of rawUrls.split(",")) {
+    const trimmed = u.trim();
+    if (!trimmed || seen.has(trimmed)) continue;
+    seen.add(trimmed);
+    targets.push(trimmed);
+    if (targets.length >= COMPARE_MAX_URLS) break;
+  }
+
+  if (targets.length === 0) {
+    return json({ error: "No valid URLs provided" }, 400);
+  }
+
+  // Run all lookups concurrently — each is 2 D1 queries (product + prices).
+  // COMPARE_MAX_URLS=5 keeps the fan-out bounded.
+  const results = await Promise.all(targets.map((t) => lookupOne(t, env)));
+
+  return json(
+    { count: results.length, results },
+    200,
+    { "Cache-Control": CACHE_COMPARE },
+  );
+}
+
 async function handleWaybackScrape(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
   const target = url.searchParams.get("url");
@@ -521,6 +634,15 @@ export default {
     if (request.method === "GET" && url.pathname === "/api/sellers") {
       try {
         return await handleSellers(request, env);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        return json({ error: "Internal error", detail: message }, 500);
+      }
+    }
+
+    if (request.method === "GET" && url.pathname === "/api/compare") {
+      try {
+        return await handleCompare(request, env);
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unknown error";
         return json({ error: "Internal error", detail: message }, 500);
