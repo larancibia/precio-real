@@ -22,6 +22,7 @@ import { computeStats } from "../src/lib/analytics";
 import { extractMLAId, normalizeMLUrl } from "../src/lib/ml-url";
 import { parseArgentinePrice, extractPriceFromHTML } from "../src/lib/price-parse";
 import { clampLimit, clampMinDrop, fetchMovers } from "../src/lib/movers";
+import { isTransientHttpStatus, isRetriableError, withRetry } from "../src/lib/retry";
 import {
   formatYYYYMMDD,
   wayback14ToUnix,
@@ -330,6 +331,59 @@ function assertEq<T>(actual: T, expected: T, msg: string): void {
   );
 }
 
+// ── retry: isTransientHttpStatus ────────────────────────────────────────────
+{
+  // Transient codes documented in lib/retry.ts.
+  assertEq(isTransientHttpStatus(408), true, "isTransientHttpStatus 408 (timeout)");
+  assertEq(isTransientHttpStatus(425), true, "isTransientHttpStatus 425 (too early)");
+  assertEq(isTransientHttpStatus(429), true, "isTransientHttpStatus 429 (rate limit)");
+  assertEq(isTransientHttpStatus(500), true, "isTransientHttpStatus 500");
+  assertEq(isTransientHttpStatus(502), true, "isTransientHttpStatus 502");
+  assertEq(isTransientHttpStatus(503), true, "isTransientHttpStatus 503");
+  assertEq(isTransientHttpStatus(504), true, "isTransientHttpStatus 504");
+  assertEq(isTransientHttpStatus(599), true, "isTransientHttpStatus 599 (custom 5xx)");
+
+  // Non-transient: 2xx, 3xx, most 4xx.
+  assertEq(isTransientHttpStatus(200), false, "isTransientHttpStatus 200");
+  assertEq(isTransientHttpStatus(204), false, "isTransientHttpStatus 204");
+  assertEq(isTransientHttpStatus(301), false, "isTransientHttpStatus 301");
+  assertEq(isTransientHttpStatus(400), false, "isTransientHttpStatus 400");
+  assertEq(isTransientHttpStatus(401), false, "isTransientHttpStatus 401");
+  assertEq(isTransientHttpStatus(403), false, "isTransientHttpStatus 403");
+  assertEq(isTransientHttpStatus(404), false, "isTransientHttpStatus 404 (not found ≠ transient)");
+  assertEq(isTransientHttpStatus(410), false, "isTransientHttpStatus 410 (gone)");
+}
+
+// ── retry: isRetriableError ─────────────────────────────────────────────────
+{
+  assertEq(isRetriableError(null), false, "isRetriableError null → false");
+  assertEq(isRetriableError(undefined), false, "isRetriableError undefined → false");
+  assertEq(isRetriableError("string"), false, "isRetriableError non-Error string → false");
+  assertEq(isRetriableError(123), false, "isRetriableError number → false");
+  assertEq(isRetriableError(new Error("boring failure")), false, "isRetriableError plain Error → false");
+
+  const aborted = new Error("The operation was aborted");
+  aborted.name = "AbortError";
+  assertEq(isRetriableError(aborted), true, "isRetriableError AbortError name");
+
+  assertEq(isRetriableError(new Error("Request aborted by client")), true, "isRetriableError 'aborted' message");
+  assertEq(isRetriableError(new Error("network is unreachable")), true, "isRetriableError 'network' message");
+  assertEq(isRetriableError(new Error("connect ECONNRESET 1.2.3.4:443")), true, "isRetriableError ECONNRESET");
+  assertEq(isRetriableError(new Error("ETIMEDOUT")), true, "isRetriableError ETIMEDOUT");
+  assertEq(isRetriableError(new Error("fetch failed")), true, "isRetriableError 'fetch failed'");
+  assertEq(isRetriableError(new Error("socket hang up")), true, "isRetriableError 'socket hang up'");
+  assertEq(isRetriableError(new Error("operation timeout")), true, "isRetriableError 'timeout' message");
+
+  // Caller-flagged transient HTTP error
+  const httpErr = new Error("ML API 503");
+  (httpErr as Error & { transient?: boolean }).transient = true;
+  assertEq(isRetriableError(httpErr), true, "isRetriableError flagged transient");
+
+  const httpErr404 = new Error("ML API 404");
+  (httpErr404 as Error & { transient?: boolean }).transient = false;
+  assertEq(isRetriableError(httpErr404), false, "isRetriableError flagged non-transient");
+}
+
 // ── movers: fetchMovers (in-memory D1 stub) ─────────────────────────────────
 //
 // The D1 stub captures the bound parameters and returns a fixed result set
@@ -430,6 +484,137 @@ async function main(): Promise<void> {
   ];
   const skipBad = await fetchMovers(stubEnv(bad), { nowSec: NOW, minDropPct: -100 });
   assertEq(skipBad.length, 0, "fetchMovers: zero baseline_price rows are skipped");
+
+  // ── retry: withRetry behaviour ────────────────────────────────────────────
+  {
+    // Zero-delay sleep override: lets us assert the loop's branching without
+    // making the harness wait through real backoff.
+    const noSleep = async (_ms: number): Promise<void> => {
+      // intentionally no-op
+    };
+
+    // Happy path: first try succeeds, no retries.
+    {
+      let calls = 0;
+      const out = await withRetry(
+        async () => {
+          calls++;
+          return "ok";
+        },
+        { maxAttempts: 3, baseDelayMs: 1, sleep: noSleep },
+      );
+      assertEq(out, "ok", "withRetry: first-try success returns value");
+      assertEq(calls, 1, "withRetry: first-try success → 1 call");
+    }
+
+    // Retriable error then success on attempt 2.
+    {
+      let calls = 0;
+      const transient = new Error("ML API 503 transient");
+      (transient as Error & { transient?: boolean }).transient = true;
+      const out = await withRetry(
+        async () => {
+          calls++;
+          if (calls === 1) throw transient;
+          return "recovered";
+        },
+        { maxAttempts: 3, baseDelayMs: 1, sleep: noSleep },
+      );
+      assertEq(out, "recovered", "withRetry: 1 retriable failure → recovers");
+      assertEq(calls, 2, "withRetry: 1 retriable failure → 2 calls");
+    }
+
+    // Non-retriable error short-circuits: no retries even with attempts left.
+    {
+      let calls = 0;
+      let thrown: unknown = null;
+      try {
+        await withRetry(
+          async () => {
+            calls++;
+            throw new Error("permanent 404 not found");
+          },
+          { maxAttempts: 5, baseDelayMs: 1, sleep: noSleep },
+        );
+      } catch (err) {
+        thrown = err;
+      }
+      assertEq(calls, 1, "withRetry: non-retriable error → 1 call (no retries)");
+      assertEq(
+        thrown instanceof Error && thrown.message === "permanent 404 not found",
+        true,
+        "withRetry: non-retriable rethrows",
+      );
+    }
+
+    // Exhausts retry budget: maxAttempts=3 + always retriable → 3 calls then throw.
+    {
+      let calls = 0;
+      let thrown: unknown = null;
+      const transient = new Error("network unreachable");
+      try {
+        await withRetry(
+          async () => {
+            calls++;
+            throw transient;
+          },
+          { maxAttempts: 3, baseDelayMs: 1, sleep: noSleep },
+        );
+      } catch (err) {
+        thrown = err;
+      }
+      assertEq(calls, 3, "withRetry: budget exhausted → maxAttempts calls");
+      assertEq(thrown === transient, true, "withRetry: budget exhausted → throws last error");
+    }
+
+    // Sleep is called between attempts (and ONLY between), with linear backoff.
+    {
+      const delays: number[] = [];
+      const recordSleep = async (ms: number): Promise<void> => {
+        delays.push(ms);
+      };
+      let calls = 0;
+      try {
+        await withRetry(
+          async () => {
+            calls++;
+            const err = new Error("transient 503");
+            (err as Error & { transient?: boolean }).transient = true;
+            throw err;
+          },
+          { maxAttempts: 3, baseDelayMs: 100, sleep: recordSleep },
+        );
+      } catch {
+        // expected: budget exhausts
+      }
+      assertEq(calls, 3, "withRetry sleep test: 3 attempts");
+      // Linear backoff: between attempt 1→2 sleeps 100*(0+1)=100ms,
+      //                between attempt 2→3 sleeps 100*(1+1)=200ms.
+      // No sleep AFTER the final attempt (would be wasteful).
+      assertEq(delays, [100, 200], "withRetry: linear backoff 100ms, 200ms");
+    }
+
+    // maxAttempts=1 means "no retries at all".
+    {
+      let calls = 0;
+      let thrown: unknown = null;
+      try {
+        await withRetry(
+          async () => {
+            calls++;
+            const err = new Error("always transient");
+            (err as Error & { transient?: boolean }).transient = true;
+            throw err;
+          },
+          { maxAttempts: 1, baseDelayMs: 1, sleep: noSleep },
+        );
+      } catch (err) {
+        thrown = err;
+      }
+      assertEq(calls, 1, "withRetry maxAttempts=1: single call");
+      assertEq(thrown instanceof Error, true, "withRetry maxAttempts=1: still throws on failure");
+    }
+  }
 }
 
 main()

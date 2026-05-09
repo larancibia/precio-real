@@ -36,6 +36,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { DISCOVERY_QUERIES } from "../src/lib/discovery-queries";
+import { isTransientHttpStatus, withRetry } from "../src/lib/retry";
 import { SEED_FIXTURES, type SeedFixture } from "./seed-fixtures";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -179,9 +180,8 @@ async function fetchQueryOnce(query: string): Promise<MLSearchItem[]> {
       signal: controller.signal,
     });
     if (!res.ok) {
-      const transient = res.status === 429 || res.status >= 500;
       const err = new Error(`ML API ${res.status} for query=${query}`);
-      (err as Error & { transient?: boolean }).transient = transient;
+      (err as Error & { transient?: boolean }).transient = isTransientHttpStatus(res.status);
       throw err;
     }
     const body = (await res.json()) as MLSearchResponse;
@@ -192,28 +192,13 @@ async function fetchQueryOnce(query: string): Promise<MLSearchItem[]> {
 }
 
 async function fetchQuery(query: string): Promise<MLSearchItem[]> {
-  let lastErr: unknown = null;
-  for (let attempt = 0; attempt <= FETCH_MAX_RETRIES; attempt++) {
-    try {
-      return await fetchQueryOnce(query);
-    } catch (err) {
-      lastErr = err;
-      // Retry on AbortError (timeout), network errors, and transient HTTP.
-      const isAbort =
-        err instanceof Error && (err.name === "AbortError" || err.message.includes("aborted"));
-      const isTransientHttp =
-        err instanceof Error && (err as Error & { transient?: boolean }).transient === true;
-      const isNetwork =
-        err instanceof Error &&
-        !isTransientHttp &&
-        !(err as Error & { transient?: boolean }).transient &&
-        !err.message.startsWith("ML API ");
-      const retriable = isAbort || isTransientHttp || isNetwork;
-      if (!retriable || attempt === FETCH_MAX_RETRIES) break;
-      await sleep(FETCH_RETRY_DELAY_MS * (attempt + 1));
-    }
-  }
-  throw lastErr instanceof Error ? lastErr : new Error(String(lastErr));
+  // Retry budget shared with src/scrapers/discovery.ts via lib/retry.ts so
+  // the local seed and the prod cron handle ML hiccups identically.
+  return withRetry(() => fetchQueryOnce(query), {
+    maxAttempts: FETCH_MAX_RETRIES + 1,
+    baseDelayMs: FETCH_RETRY_DELAY_MS,
+    sleep,
+  });
 }
 
 async function main(): Promise<void> {

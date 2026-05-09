@@ -16,6 +16,7 @@
  */
 
 import { DISCOVERY_QUERIES } from "../lib/discovery-queries";
+import { isTransientHttpStatus, withRetry } from "../lib/retry";
 
 const ML_USER_AGENT = "precio-real/0.1 (+https://precioreal.ar)";
 const ML_TIMEOUT_MS = 10_000;
@@ -25,6 +26,12 @@ const ML_TIMEOUT_MS = 10_000;
 // duplicates across queries don't count as new rows.
 const LIMIT_PER_QUERY = 20;
 const DISCOVERY_CONCURRENCY = 5;
+// Retry budget for ML's public search. Mirrors scripts/seed.ts so cron and
+// local seed behave identically when ML returns 429/5xx. Three total tries
+// with linear 750ms backoff = worst-case ~2.25s extra latency per failing
+// query, well under CF subrequest budgets at DISCOVERY_CONCURRENCY=5.
+const ML_MAX_ATTEMPTS = 3;
+const ML_RETRY_BASE_MS = 750;
 
 interface MLSearchItem {
   id?: unknown;
@@ -50,7 +57,7 @@ export interface DiscoveryResult {
   failed: number;
 }
 
-async function fetchSearch(query: string): Promise<MLSearchItem[]> {
+async function fetchSearchOnce(query: string): Promise<MLSearchItem[]> {
   const url =
     `https://api.mercadolibre.com/sites/MLA/search?q=${encodeURIComponent(query)}` +
     `&limit=${LIMIT_PER_QUERY}`;
@@ -66,17 +73,29 @@ async function fetchSearch(query: string): Promise<MLSearchItem[]> {
       signal: controller.signal,
     });
     if (!res.ok) {
-      console.warn(`[discovery] search ${query} → ${res.status}`);
-      return [];
+      // Tag transient HTTP errors so withRetry retries them; permanent ones
+      // (404/410/etc) bubble out immediately and we just log + move on.
+      const err = new Error(`ML search ${res.status} for query=${query}`);
+      (err as Error & { transient?: boolean }).transient = isTransientHttpStatus(res.status);
+      throw err;
     }
     const body = (await res.json()) as MLSearchResponse;
     return body.results ?? [];
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.warn(`[discovery] search ${query} failed: ${message}`);
-    return [];
   } finally {
     clearTimeout(timeout);
+  }
+}
+
+async function fetchSearch(query: string): Promise<MLSearchItem[]> {
+  try {
+    return await withRetry(() => fetchSearchOnce(query), {
+      maxAttempts: ML_MAX_ATTEMPTS,
+      baseDelayMs: ML_RETRY_BASE_MS,
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn(`[discovery] search ${query} failed after retries: ${message}`);
+    return [];
   }
 }
 
