@@ -1,0 +1,28 @@
+# Cloudflare Pages — redirects
+# Docs: https://developers.cloudflare.com/pages/configuration/redirects/
+
+# Canonical home — drop /index.html and /home from URLs
+/index.html         /                          301
+/home               /                          301
+
+# Friendly aliases for legal pages (Chrome Web Store listing uses English slugs)
+/privacy            /privacidad.html           301
+/privacy-policy     /privacidad.html           301
+/terms              /terminos.html             301
+/terms-of-service   /terminos.html             301
+
+# Friendly aliases for the Hot Sale guide
+/hot-sale           /guia-hot-sale.html        301
+/guia               /guia-hot-sale.html        301
+
+# Optional vanity for the GitHub repo
+/github             https://github.com/larancibia/precio-real   302
+/repo               https://github.com/larancibia/precio-real   302
+
+# Cafecito tip jar
+/cafecito           https://cafecito.app/precioreal             302
+/coffee             https://cafecito.app/precioreal             302
+
+# Chrome Web Store listing (placeholder — update when published)
+/install            /#instalar                 302
+/chrome             /#instalar                 302
