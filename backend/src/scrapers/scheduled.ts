@@ -1,13 +1,24 @@
 /**
  * Scheduled cron handler — refreshes ML prices every 6h (issue #11).
- * Reads up to 100 products, fetches current price via ML API, inserts a new
- * `prices` row. Does NOT update `products` (cron is a refresh, not an upsert).
+ *
+ * Steps:
+ *   1. Discovery: ensure the top popular MLA products are present in `products`
+ *      (INSERT OR IGNORE — no overwrites). See `discovery.ts`.
+ *   2. Scrape: pick the most-recently-tracked products (ORDER BY id DESC) up to
+ *      PRODUCT_LIMIT and insert a fresh `prices` row for each via the public
+ *      ML items API. Does NOT update `products` (cron is a refresh, not upsert).
+ *
+ * The 500 cap reflects the issue's "top 500 Hot Sale" target. ML doesn't expose
+ * an official Hot Sale list publicly, so we approximate by querying the popular
+ * categories (see discovery.ts) — at 25 queries × 20 results = up to 500 unique
+ * candidates per discovery run.
  */
 
 import { extractMLAId } from "../lib/ml-url";
 import { fetchMLItem } from "./ml-api";
+import { runDiscovery } from "./discovery";
 
-const PRODUCT_LIMIT = 100;
+const PRODUCT_LIMIT = 500;
 const BATCH_SIZE = 10;
 
 interface ProductRow {
@@ -17,6 +28,14 @@ interface ProductRow {
 
 interface ScheduledEnv {
   DB: D1Database;
+}
+
+export interface ScheduledResult {
+  scraped: number;
+  failed: number;
+  skipped: number;
+  considered: number;
+  discovery: { queries: number; candidates: number; inserted: number; failed: number };
 }
 
 async function fetchAndInsert(row: ProductRow, mlaId: string, env: ScheduledEnv): Promise<void> {
@@ -38,19 +57,25 @@ async function fetchAndInsert(row: ProductRow, mlaId: string, env: ScheduledEnv)
     .run();
 }
 
-export async function runScheduledScrape(
-  env: ScheduledEnv,
-): Promise<{ scraped: number; failed: number; skipped: number }> {
-  // TODO: filter by "popular" / Hot Sale list later — for now scope is bounded by limit.
+export async function runScheduledScrape(env: ScheduledEnv): Promise<ScheduledResult> {
+  const discovery = await runDiscovery(env).catch((err) => {
+    const message = err instanceof Error ? err.message : String(err);
+    console.warn(`[cron] discovery threw: ${message}`);
+    return { queries: 0, candidates: 0, inserted: 0, failed: 0 };
+  });
+
+  // Newest-first so freshly discovered popular items get refreshed before older
+  // long-tail products. Bounded by PRODUCT_LIMIT to keep the cron under CF
+  // subrequest budgets (each fetchMLItem = 1 outbound fetch).
   const result = await env.DB
-    .prepare("SELECT id, url FROM products LIMIT ?1")
+    .prepare("SELECT id, url FROM products ORDER BY id DESC LIMIT ?1")
     .bind(PRODUCT_LIMIT)
     .all<ProductRow>();
 
   const rows = result.results ?? [];
   if (rows.length === 0) {
-    console.log("[cron] scraped=0 failed=0 skipped=0");
-    return { scraped: 0, failed: 0, skipped: 0 };
+    console.log("[cron] scraped=0 failed=0 skipped=0 (empty products table)");
+    return { scraped: 0, failed: 0, skipped: 0, considered: 0, discovery };
   }
 
   let scraped = 0;
@@ -82,6 +107,8 @@ export async function runScheduledScrape(
     }
   }
 
-  console.log(`[cron] scraped=${scraped} failed=${failed} skipped=${skipped}`);
-  return { scraped, failed, skipped };
+  console.log(
+    `[cron] considered=${rows.length} scraped=${scraped} failed=${failed} skipped=${skipped}`,
+  );
+  return { scraped, failed, skipped, considered: rows.length, discovery };
 }

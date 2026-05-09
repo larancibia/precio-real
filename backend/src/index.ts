@@ -5,10 +5,11 @@
  *   GET  /api/health             → { ok: true }
  *   GET  /api/price?url=<url>    → { product, current_price, price_7d_ago, real_discount_pct, inflated, history }
  *   POST /api/scrape/wayback?url=<url> → { inserted, scanned, failed }
+ *   POST /api/scrape/run         → manual trigger of the scheduled scraper (debug/seed)
  *   *                             → 404
  *
  * Cron:
- *   "0 *\/6 * * *" → runScheduledScrape (refreshes prices for all tracked products)
+ *   "0 *\/6 * * *" → runScheduledScrape (top 500 popular MLA products, issue #11)
  */
 
 import type { ProductRow, PriceRow } from "./types";
@@ -133,6 +134,16 @@ export default {
     if (request.method === "POST" && url.pathname === "/api/scrape/wayback") {
       try {
         return await handleWaybackScrape(request, env);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        return json({ error: "Internal error", detail: message }, 500);
+      }
+    }
+
+    if (request.method === "POST" && url.pathname === "/api/scrape/run") {
+      try {
+        const result = await runScheduledScrape(env);
+        return json(result);
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unknown error";
         return json({ error: "Internal error", detail: message }, 500);
