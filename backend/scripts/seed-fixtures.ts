@@ -16,7 +16,7 @@
  *   - Prices are realistic 2026 ARS snapshots and only used as the anchor
  *     for the synthetic 60-day history pattern; they don't have to match
  *     the live price.
- *   - We bundle ~45 items: full coverage of every entry in
+ *   - We bundle ~55 items: full coverage of every entry in
  *     DISCOVERY_QUERIES so the fallback exercises the same vertical mix as
  *     the live cron, and the bucket rotation still has plenty of rows to
  *     fill the chart in dev.
@@ -178,6 +178,42 @@ export const SEED_FIXTURES: readonly SeedFixture[] = [
     seller_nickname: "EPSON",
     query: "impresora",
   },
+  {
+    permalink: "https://www.mercadolibre.com.ar/auriculares-inalambricos-apple-airpods-2da-gen/p/MLA34010001",
+    title: "Auriculares Inalámbricos Apple AirPods 2da Gen",
+    price: 199999,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "APPLE",
+    query: "auriculares inalambricos",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/drone-dji-mini-2-se-fly-more-combo/p/MLA34010002",
+    title: "Drone DJI Mini 2 SE Fly More Combo",
+    price: 829000,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "DJI",
+    query: "drone",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/disco-solido-ssd-kingston-a400-480gb-sata/p/MLA34010003",
+    title: "Disco Sólido SSD Kingston A400 480GB SATA",
+    price: 49999,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "KINGSTON",
+    query: "ssd",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/memoria-ram-crucial-8gb-ddr4-3200mhz/p/MLA34010004",
+    title: "Memoria RAM Crucial 8GB DDR4 3200MHz",
+    price: 39999,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "CRUCIAL",
+    query: "memoria ram",
+  },
   // Línea blanca / electrodomésticos
   {
     permalink: "https://www.mercadolibre.com.ar/heladera-no-frost-whirlpool-wrm45-375l/p/MLA13900000",
@@ -304,6 +340,51 @@ export const SEED_FIXTURES: readonly SeedFixture[] = [
     thumbnail: null,
     seller_nickname: "PHILIPS",
     query: "batidora",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/pava-electrica-atma-pe3825-1-7l/p/MLA34010005",
+    title: "Pava Eléctrica Atma PE-3825 1.7L",
+    price: 39999,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "ATMA",
+    query: "pava electrica",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/tostadora-liliana-t2a-doble-pinza/p/MLA34010006",
+    title: "Tostadora Liliana T2A Doble Pinza",
+    price: 24999,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "LILIANA",
+    query: "tostadora",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/freezer-vertical-inelro-iff200-200l/p/MLA34010007",
+    title: "Freezer Vertical Inelro IFF200 200L",
+    price: 599000,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "INELRO",
+    query: "freezer",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/secador-de-pelo-philips-bhd318-2200w/p/MLA34010008",
+    title: "Secador de Pelo Philips BHD318 2200W",
+    price: 34999,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "PHILIPS",
+    query: "secador de pelo",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/plancha-de-pelo-philips-bhs393-230c/p/MLA34010009",
+    title: "Plancha de Pelo Philips BHS393 230°C",
+    price: 49999,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "PHILIPS",
+    query: "plancha de pelo",
   },
   // Hogar / muebles
   {

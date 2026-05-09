@@ -26,6 +26,10 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "camara",
   "parlante bluetooth",
   "impresora",
+  "auriculares inalambricos",
+  "drone",
+  "ssd",
+  "memoria ram",
   // Línea blanca / electrodomésticos
   "heladera",
   "lavarropas",
@@ -41,6 +45,11 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "horno electrico",
   "licuadora",
   "batidora",
+  "pava electrica",
+  "tostadora",
+  "freezer",
+  "secador de pelo",
+  "plancha de pelo",
   // Hogar / muebles
   "colchon",
   "sillon",
