@@ -40,8 +40,8 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Precio Real — extensión que muestra el precio histórico real de cada producto">
-  <meta property="og:updated_time" content="2026-05-09T23:30:00-03:00">
-  <meta property="article:modified_time" content="2026-05-09T23:30:00-03:00">
+  <meta property="og:updated_time" content="2026-05-09T14:00:00-03:00">
+  <meta property="article:modified_time" content="2026-05-09T14:00:00-03:00">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
@@ -270,6 +270,44 @@
   }
   </script>
 
+  <!-- Structured data: SaleEvent — Black Friday Argentina 2026 -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SaleEvent",
+    "name": "Black Friday Argentina 2026",
+    "description": "Edicion 2026 del Black Friday en Argentina, con descuentos en Mercado Libre, Fravega, Carrefour, Coto y otros e-commerce argentinos. Precio Real ayuda a detectar aumentos disfrazados de descuentos durante el evento.",
+    "startDate": "2026-11-27",
+    "endDate": "2026-11-29",
+    "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
+    "eventStatus": "https://schema.org/EventScheduled",
+    "inLanguage": "es-AR",
+    "isAccessibleForFree": true,
+    "location": {
+      "@type": "VirtualLocation",
+      "url": "https://preciorreal.com/guia-black-friday.html"
+    },
+    "audience": {
+      "@type": "Audience",
+      "audienceType": "Consumidores argentinos",
+      "geographicArea": {
+        "@type": "Country",
+        "name": "Argentina"
+      }
+    },
+    "about": [
+      { "@type": "Thing", "name": "Descuentos en e-commerce argentinos" },
+      { "@type": "Thing", "name": "Aumentos disfrazados de descuentos" },
+      { "@type": "Thing", "name": "Historial real de precios" }
+    ],
+    "subjectOf": {
+      "@type": "Article",
+      "headline": "Guia Black Friday Argentina 2026 — Como detectar aumentos disfrazados de descuentos",
+      "url": "https://preciorreal.com/guia-black-friday.html"
+    }
+  }
+  </script>
+
   <!-- Structured data: WebPage with speakable — helps voice assistants & SERP feature snippets -->
   <script type="application/ld+json">
   {
@@ -323,9 +361,10 @@
       { "@type": "SiteNavigationElement", "position": 7, "name": "Guía Hot Sale 2026", "url": "https://preciorreal.com/guia-hot-sale.html" },
       { "@type": "SiteNavigationElement", "position": 8, "name": "Checklist Hot Sale 2026", "url": "https://preciorreal.com/checklist-hot-sale-2026.html" },
       { "@type": "SiteNavigationElement", "position": 9, "name": "Guía CyberMonday 2026", "url": "https://preciorreal.com/guia-cybermonday.html" },
-      { "@type": "SiteNavigationElement", "position": 10, "name": "Privacidad", "url": "https://preciorreal.com/privacidad.html" },
-      { "@type": "SiteNavigationElement", "position": 11, "name": "Privacy Policy", "url": "https://preciorreal.com/privacy-policy.html" },
-      { "@type": "SiteNavigationElement", "position": 12, "name": "Términos", "url": "https://preciorreal.com/terminos.html" }
+      { "@type": "SiteNavigationElement", "position": 10, "name": "Guía Black Friday 2026", "url": "https://preciorreal.com/guia-black-friday.html" },
+      { "@type": "SiteNavigationElement", "position": 11, "name": "Privacidad", "url": "https://preciorreal.com/privacidad.html" },
+      { "@type": "SiteNavigationElement", "position": 12, "name": "Privacy Policy", "url": "https://preciorreal.com/privacy-policy.html" },
+      { "@type": "SiteNavigationElement", "position": 13, "name": "Términos", "url": "https://preciorreal.com/terminos.html" }
     ]
   }
   </script>
@@ -779,22 +818,54 @@
 
     <div class="hero__inner">
       <h1 class="hero__title">Precio Real</h1>
-      <p class="hero__subtitle">
+      <p class="hero__subtitle" id="hero-subtitle">
         Hot Sale Argentina 2026 empieza el <strong>13 de mayo</strong> — quedan 4 días.
         Según <strong>EcoGo</strong>, los precios ya subieron entre <strong>4% y 6%</strong>
         en las semanas previas. <span class="hero__highlight">Precio Real</span> te muestra
         el precio histórico real de cada producto para que no comprés humo.
       </p>
-      <div class="hero__actions">
+      <div class="hero__actions" id="hero-actions">
         <a href="#instalar" class="btn btn--primary">Instalar Gratis</a>
         <a href="#como-funciona" class="btn btn--ghost">Ver cómo funciona</a>
         <a href="/guia-hot-sale.html" class="btn btn--ghost">Guía Hot Sale 2026</a>
         <a href="/checklist-hot-sale-2026.html" class="btn btn--ghost">Checklist Hot Sale</a>
         <a href="/guia-cybermonday.html" class="btn btn--ghost">Guía CyberMonday 2026</a>
+        <a href="/guia-black-friday.html" class="btn btn--ghost">Guía Black Friday 2026</a>
       </div>
       <p class="hero__meta">Gratis · Open source · Hecho en Argentina</p>
     </div>
   </header>
+  <script>
+  /* Hero subtitle dinámico — pre-HS / activo / post-HS → pre-CM / CyberMonday / Black Friday */
+  (function () {
+    var HS_START  = new Date('2026-05-13T00:00:00-03:00').getTime();
+    var HS_END    = new Date('2026-05-16T00:00:00-03:00').getTime();
+    var CM_START  = new Date('2026-10-05T00:00:00-03:00').getTime();
+    var CM_END    = new Date('2026-10-08T00:00:00-03:00').getTime();
+    var BF_START  = new Date('2026-11-27T00:00:00-03:00').getTime();
+    var BF_END    = new Date('2026-11-30T00:00:00-03:00').getTime();
+    var now = Date.now();
+    var el = document.getElementById('hero-subtitle');
+    if (!el) return;
+    function diffDays(target) { return Math.ceil((target - now) / 86400000); }
+    if (now < HS_START) {
+      var d = diffDays(HS_START);
+      el.innerHTML = 'Hot Sale Argentina 2026 empieza el <strong>13 de mayo</strong> — quedan <strong>' + d + ' ' + (d === 1 ? 'día' : 'días') + '</strong>. Según <strong>EcoGo</strong>, los precios ya subieron entre <strong>4% y 6%</strong> en las semanas previas. <span class="hero__highlight">Precio Real</span> te muestra el precio histórico real de cada producto para que no comprés humo.';
+    } else if (now < HS_END) {
+      el.innerHTML = '<strong>¡El Hot Sale Argentina 2026 está activo!</strong> Según <strong>EcoGo</strong>, muchos precios subieron 4–6% antes del evento. <span class="hero__highlight">Precio Real</span> te muestra el historial real de cada producto para que no comprés humo.';
+    } else if (now < CM_START) {
+      var dCM = diffDays(CM_START);
+      el.innerHTML = 'Hot Sale terminó — el próximo evento grande es el <strong>CyberMonday</strong> (octubre 2026). Instalá <span class="hero__highlight">Precio Real</span> ahora para acumular historial de precios antes del evento y detectar aumentos disfrazados cuando llegue.';
+    } else if (now < CM_END) {
+      el.innerHTML = '<strong>¡CyberMonday Argentina 2026 está activo!</strong> <span class="hero__highlight">Precio Real</span> te muestra el historial real de precios en 47 e-commerce argentinos para que no comprés descuentos truchos en tecnología.';
+    } else if (now < BF_START) {
+      el.innerHTML = 'El <strong>Black Friday Argentina</strong> llega en noviembre. Instalá <span class="hero__highlight">Precio Real</span> ahora para tener historial de precios acumulado y detectar los descuentos reales cuando llegue el evento.';
+    } else if (now < BF_END) {
+      el.innerHTML = '<strong>¡Black Friday Argentina 2026 está activo!</strong> <span class="hero__highlight">Precio Real</span> compara los precios con el historial real para que no comprés humo.';
+    }
+    /* else: after BF — show default (el stays unchanged) */
+  })();
+  </script>
 
   <main>
     <section id="como-funciona" class="section section--how" aria-labelledby="how-title">
@@ -1169,7 +1240,7 @@
           <details class="faq__item">
             <summary class="faq__question">¿Funciona también para CyberMonday y Black Friday Argentina?</summary>
             <div class="faq__answer">
-              <p>Sí. Precio Real funciona todo el año, no solo en Hot Sale. El historial de precios que guarda cubre los períodos anteriores a CyberMonday (octubre), Black Friday (noviembre) y cualquier otra campaña donde los retailers suelen inflar precios previamente. Cuanto antes lo instalás, más historial acumulamos para ayudarte. Si querés saber más sobre el CyberMonday, leé nuestra <a href="/guia-cybermonday.html">Guía CyberMonday Argentina 2026</a>.</p>
+              <p>Sí. Precio Real funciona todo el año, no solo en Hot Sale. El historial de precios que guarda cubre los períodos anteriores a CyberMonday (octubre), Black Friday (noviembre) y cualquier otra campaña donde los retailers suelen inflar precios previamente. Cuanto antes lo instalás, más historial acumulamos para ayudarte. Leé nuestra <a href="/guia-cybermonday.html">Guía CyberMonday Argentina 2026</a> y <a href="/guia-black-friday.html">Guía Black Friday Argentina 2026</a> para saber qué esperar en cada evento.</p>
             </div>
           </details>
 
@@ -1263,6 +1334,8 @@
         <a href="/checklist-hot-sale-2026.html">Checklist Hot Sale</a>
         <span class="footer__sep" aria-hidden="true">·</span>
         <a href="/guia-cybermonday.html">Guía CyberMonday</a>
+        <span class="footer__sep" aria-hidden="true">·</span>
+        <a href="/guia-black-friday.html">Guía Black Friday</a>
         <span class="footer__sep" aria-hidden="true">·</span>
         <a href="/privacidad.html">Privacidad</a>
         <span class="footer__sep" aria-hidden="true">·</span>

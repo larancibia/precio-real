@@ -45,4 +45,16 @@
       <news:keywords>cybermonday argentina, descuentos truchos, historial de precios, aumentos disfrazados, defensa del consumidor</news:keywords>
     </news:news>
   </url>
+  <url>
+    <loc>https://preciorreal.com/guia-black-friday.html</loc>
+    <news:news>
+      <news:publication>
+        <news:name>Precio Real</news:name>
+        <news:language>es</news:language>
+      </news:publication>
+      <news:publication_date>2026-05-09T14:00:00-03:00</news:publication_date>
+      <news:title>Guía Black Friday Argentina 2026 — Cómo detectar aumentos disfrazados de descuentos</news:title>
+      <news:keywords>black friday argentina, descuentos truchos, historial de precios, aumentos disfrazados, defensa del consumidor</news:keywords>
+    </news:news>
+  </url>
 </urlset>
