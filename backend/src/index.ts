@@ -414,8 +414,9 @@ async function handleSellers(request: Request, env: Env): Promise<Response> {
 // Bounded to keep D1 read cost predictable (each URL = 2 queries: product lookup + price fetch).
 const COMPARE_MAX_URLS = 5;
 // History rows fetched per product for compare (fewer than /api/price — we only need stats,
-// not the full chart). 30 days gives a reliable 7-day baseline without a large payload.
-const COMPARE_HISTORY_LIMIT = 30;
+// not the full chart). 60 rows covers ~30 days at 2 scrapes/day, giving a reliable 30-day
+// baseline for price_30d_ago (used to detect pre-event inflation during Hot Sale / CyberMonday).
+const COMPARE_HISTORY_LIMIT = 60;
 const CACHE_COMPARE = "public, max-age=300, stale-while-revalidate=900";
 
 interface CompareItem {
@@ -429,6 +430,7 @@ interface CompareItem {
   baseline_age_days?: number | null;
   price_min?: number | null;
   price_max?: number | null;
+  price_30d_ago?: number | null;
   last_scraped_at?: number | null;
 }
 
@@ -481,6 +483,7 @@ async function lookupOne(target: string, env: Env): Promise<CompareItem> {
     baseline_age_days: stats.baseline_age_days,
     price_min: stats.price_min,
     price_max: stats.price_max,
+    price_30d_ago: stats.price_30d_ago,
     last_scraped_at,
   };
 }

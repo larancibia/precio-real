@@ -36,6 +36,11 @@ export interface PriceStats {
   // alto en el período" copy without the client scanning the full history array.
   price_min: number | null;
   price_max: number | null;
+  // 30-day baseline — price closest to 30 days ago. Null when history doesn't
+  // span back that far. A second reference point that's harder to manipulate
+  // than the 7-day baseline during Hot Sale / CyberMonday when sellers inflate
+  // prices for weeks before the event.
+  price_30d_ago: number | null;
 }
 
 export interface WaybackSnapshot {

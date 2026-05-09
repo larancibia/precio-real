@@ -274,4 +274,39 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "chromecast",
   "strip led inteligente",
   "termostato inteligente",
+  // Categorías sin cobertura — alta rotación en Hot Sale / CyberMonday
+  // Música / instrumentos
+  "guitarra electrica",
+  "teclado piano",
+  "auriculares estudio",
+  // Jardín / exterior / piscina
+  "pileta inflable",
+  "silla de jardin",
+  "parrilla electrica",
+  "asador a gas",
+  // Material escolar / oficina
+  "mochila escolar",
+  "lapicera parker",
+  "calculadora cientifica",
+  // Repuestos y accesorios celular
+  "bateria celular repuesto",
+  "pantalla celular",
+  "auriculares tipo c",
+  // Salud / bienestar
+  "tensiómetro digital",
+  "oximetro",
+  "bascula digital",
+  "masajeador electrico",
+  // Cocina / vajilla
+  "olla a presion",
+  "set cuchillos",
+  "tabla de picar",
+  "juego de vasos",
+  // Bebés adicional
+  "monitor bebe wifi",
+  "silla booster bebe",
+  // Viaje / turismo
+  "maleta de viaje",
+  "candado tsa",
+  "almohada de viaje",
 ];

@@ -20,6 +20,7 @@ export function computeStats(history: PriceRow[], nowSec?: number): PriceStats {
       baseline_age_days: null,
       price_min: null,
       price_max: null,
+      price_30d_ago: null,
     };
   }
 
@@ -83,6 +84,30 @@ export function computeStats(history: PriceRow[], nowSec?: number): PriceStats {
     if (price_max === null || row.price > price_max) price_max = row.price;
   }
 
+  // 30-day baseline: price row closest to (now - 30 days). Only populated when
+  // history spans far enough back — a product with only 7 days of data returns
+  // null here. Used to detect pre-event manipulation (Hot Sale / CyberMonday
+  // sellers often inflate prices 2-4 weeks before the event).
+  let price_30d_ago: number | null = null;
+  if (history.length > 1) {
+    const target30 = now - 30 * DAY_SEC;
+    let closest30 = history[0];
+    let bestDelta30 = Math.abs(history[0].scraped_at - target30);
+    for (let i = 1; i < history.length; i++) {
+      const delta = Math.abs(history[i].scraped_at - target30);
+      if (delta < bestDelta30) {
+        bestDelta30 = delta;
+        closest30 = history[i];
+      }
+    }
+    // Only return the 30d baseline when the closest row is actually older than
+    // 20 days — otherwise we'd return the same data as price_7d_ago for products
+    // with sparse history and mislead callers into thinking the baseline is 30d.
+    if (now - closest30.scraped_at >= 20 * DAY_SEC) {
+      price_30d_ago = closest30.price;
+    }
+  }
+
   return {
     current_price,
     price_7d_ago,
@@ -92,5 +117,6 @@ export function computeStats(history: PriceRow[], nowSec?: number): PriceStats {
     baseline_age_days,
     price_min,
     price_max,
+    price_30d_ago,
   };
 }
