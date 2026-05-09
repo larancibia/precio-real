@@ -1366,4 +1366,52 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "sabanas flanela estampada",
   "almohadon decorativo invierno",
   "cortina blackout termica",
+  // Ciclo 1629 — salud y bienestar invierno AR
+  "humidificador ultrasonico",
+  "termometro digital infrarrojo",
+  "oximetro de pulso",
+  "nebulizador portatil",
+  "cama ortopedica electrica",
+  // Ciclo 1629 — calzado invierno AR
+  "botas lluvia mujer impermeables",
+  "botines cuero hombre invierno",
+  "zapatillas termicas invierno",
+  "pantuflas casa invierno",
+  "calcetines termicos merino",
+  // Ciclo 1629 — cocina gourmet invierno
+  "olla a presion electrica",
+  "fondue electrica queso",
+  "raclette electrica grill",
+  "maquina pasta fresca",
+  "crepera electrica antiadherente",
+  // Ciclo 1629 — energia y conectividad
+  "bateria portatil 20000mah",
+  "cargador solar panel plegable",
+  "ups respaldo energia hogar",
+  "extension electrica con usb",
+  "adaptador viaje universal",
+  // Ciclo 1629 — audio premium invierno
+  "auriculares noise cancelling inalambricos",
+  "amplificador de auriculares portatil",
+  "parlante portatil waterproof",
+  "tocadiscos vinilo bluetooth",
+  "microfono condenser usb",
+  // Ciclo 1629 — deportes indoor invierno
+  "esterilla yoga antideslizante",
+  "mancuernas ajustables juego",
+  "cuerda de saltar profesional",
+  "tabla de equilibrio balance board",
+  "rueda abdominal rodillo gym",
+  // Ciclo 1629 — smart home nuevos dispositivos
+  "termostato inteligente wifi",
+  "persiana electrica automatica",
+  "llave de paso smart agua",
+  "sensor humo inteligente wifi",
+  "camara interior bebe wifi",
+  // Ciclo 1629 — belleza y spa en casa
+  "masajeador cervical cuello hombros",
+  "pistola masaje percusion",
+  "sauna facial portatil",
+  "depiladora laser ipl",
+  "masajeador facial led",
 ];
