@@ -223,33 +223,39 @@
   //   → positivo: precio bajó respecto a hace 7 días (descuento real)
   //   → negativo: precio subió (inflado)
   //   inflated = current_price > price_7d_ago * 1.05
+  //
+  // Ciclo 1592: si price_7d_ago es null pero price_30d_ago está disponible,
+  // se usa como baseline secundario con umbrales levemente más amplios
+  // (±10% para "real"/"inflado") para compensar la mayor volatilidad en 30d.
   function classifyFromStats(current, stats) {
     const pct = stats.real_discount_pct;  // positivo = bajó, negativo = subió
     const inflated = stats.inflated;
-    const baseline = stats.price_7d_ago;
+    const baseline7d = stats.price_7d_ago;
+    const baseline30d = stats.price_30d_ago ?? null;
     const ageDays = stats.baseline_age_days;
     const ageSuffix = (ageDays != null && ageDays > 0) ? ` (hace ${ageDays}d)` : '';
 
-    if (inflated) {
-      // Subió >5% respecto al precio de hace 7 días.
-      const risePct = pct != null ? Math.abs(Math.round(pct)) : 5;
-      return {
-        kind: 'inflated',
-        pct: risePct,
-        label: 'Precio Real: ✗ INFLADO',
-        sub: `Subió ${risePct}% vs. 7 días atrás${ageSuffix}`,
-      };
-    }
-    if (pct != null && pct >= 5) {
-      // Bajó al menos 5% respecto a hace 7 días.
-      return {
-        kind: 'real',
-        pct: Math.round(pct),
-        label: 'Precio Real: ✓ DESCUENTO REAL',
-        sub: `-${Math.round(pct)}% vs. 7 días atrás${ageSuffix}`,
-      };
-    }
-    if (baseline != null) {
+    // ── Camino 7-day baseline (primario) ──────────────────────────────────────
+    if (baseline7d != null) {
+      if (inflated) {
+        // Subió >5% respecto al precio de hace 7 días.
+        const risePct = pct != null ? Math.abs(Math.round(pct)) : 5;
+        return {
+          kind: 'inflated',
+          pct: risePct,
+          label: 'Precio Real: ✗ INFLADO',
+          sub: `Subió ${risePct}% vs. 7 días atrás${ageSuffix}`,
+        };
+      }
+      if (pct != null && pct >= 5) {
+        // Bajó al menos 5% respecto a hace 7 días.
+        return {
+          kind: 'real',
+          pct: Math.round(pct),
+          label: 'Precio Real: ✓ DESCUENTO REAL',
+          sub: `-${Math.round(pct)}% vs. 7 días atrás${ageSuffix}`,
+        };
+      }
       // Tenemos baseline pero el movimiento es pequeño (|pct| < 5%).
       const absPct = pct != null ? Math.round(Math.abs(pct)) : 0;
       const direction = (pct != null && pct < 0) ? `+${absPct}%` : (pct != null && pct > 0) ? `-${absPct}%` : '≈';
@@ -260,6 +266,43 @@
         sub: `${direction} vs. 7 días atrás${ageSuffix}`,
       };
     }
+
+    // ── Camino 30-day baseline (fallback cuando price_7d_ago es null) ─────────
+    // Aplica cuando hay historial de más de 7 días pero no hay un punto de
+    // precio a ~7 días exactos. Usamos umbrales de ±10% para compensar la mayor
+    // variabilidad natural a 30 días vs. 7 días.
+    if (baseline30d != null && current != null) {
+      const pct30 = ((baseline30d - current) / baseline30d) * 100; // positivo = bajó
+      if (current > baseline30d * 1.10) {
+        // Subió >10% en el mes: precio inflado.
+        const risePct = Math.round(Math.abs(pct30));
+        return {
+          kind: 'inflated',
+          pct: risePct,
+          label: 'Precio Real: ✗ INFLADO',
+          sub: `Subió ${risePct}% vs. 30 días atrás`,
+        };
+      }
+      if (pct30 >= 10) {
+        // Bajó al menos 10% respecto al mes pasado.
+        return {
+          kind: 'real',
+          pct: Math.round(pct30),
+          label: 'Precio Real: ✓ DESCUENTO REAL',
+          sub: `-${Math.round(pct30)}% vs. 30 días atrás`,
+        };
+      }
+      // Movimiento pequeño en el mes.
+      const absPct30 = Math.round(Math.abs(pct30));
+      const direction30 = pct30 < 0 ? `+${absPct30}%` : pct30 > 0 ? `-${absPct30}%` : '≈';
+      return {
+        kind: 'neutral',
+        pct: 0,
+        label: 'Precio Real: sin descuento',
+        sub: `${direction30} vs. 30 días atrás`,
+      };
+    }
+
     return { kind: 'neutral', pct: 0, label: 'Precio Real: sin datos', sub: 'Histórico insuficiente' };
   }
 
@@ -341,12 +384,17 @@
           const history = Array.isArray(data && data.history) ? data.history : [];
           // Extraer stats pre-computados del backend (ciclo 1599+). Si no vienen
           // (backend viejo o sin datos), stats queda null y classify() usa fallback.
+          // Ciclo 1592: también capturamos price_30d_ago como baseline secundario:
+          // cuando el producto tiene menos de 7 días de historial pero sí tiene 30 días,
+          // classifyFromStats puede usarlo para mostrar "sin datos" con más contexto
+          // en lugar de mostrar nada.
           const stats = (data && typeof data.real_discount_pct !== 'undefined') ? {
             current_price: data.current_price ?? null,
             price_7d_ago: data.price_7d_ago ?? null,
             real_discount_pct: data.real_discount_pct ?? null,
             inflated: !!data.inflated,
             baseline_age_days: data.baseline_age_days ?? null,
+            price_30d_ago: data.price_30d_ago ?? null,
           } : null;
           circuitRecordSuccess();
           return { ok: true, history, stats };
@@ -678,5 +726,12 @@
     document.addEventListener('DOMContentLoaded', run);
   } else {
     run();
+  }
+
+  // Test-only export: expone classifyFromStats para el harness de tests.
+  // Solo activo cuando la página inyecta window.__precioRealTest = true antes
+  // de cargar content.js. En producción esta rama nunca se toca.
+  if (window.__precioRealTest && window.PrecioReal) {
+    window.PrecioReal._classifyFromStats = classifyFromStats;
   }
 })();

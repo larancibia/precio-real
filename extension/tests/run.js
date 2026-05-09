@@ -1056,6 +1056,184 @@ function makeContextWithLd(ldNodes) {
   assert(PR.detectSite('coto.com.ar') === 'coto', 'detectSite coto.com.ar (bare) → coto');
 }
 
+// classifyFromStats (ciclo 1592) — 7d baseline primario + 30d fallback.
+// Cargamos content.js con un shim mínimo del entorno browser que necesita para
+// ejecutar su IIFE sin errores (hookHistory, run, etc.) y luego accedemos a
+// _classifyFromStats que exportamos cuando __precioRealTest es true.
+{
+  function freshContentNs() {
+    const fakeStorage = () => {
+      const m = new Map();
+      return {
+        getItem: (k) => (m.has(k) ? m.get(k) : null),
+        setItem: (k, v) => m.set(k, String(v)),
+        removeItem: (k) => m.delete(k),
+        clear: () => m.clear(),
+      };
+    };
+    const noop = () => {};
+    const noopEl = { getAttribute: () => null, setAttribute: noop };
+    const fakeWindow = {
+      PrecioReal: undefined,
+      PrecioRealConfig: { API_BASE: 'http://localhost:8787' },
+      __precioRealTest: true,  // activa el export de test
+      addEventListener: noop,
+      dispatchEvent: noop,
+      __precioRealLoaded: undefined,
+    };
+    const fakeHistory = {
+      pushState: noop,
+      replaceState: noop,
+    };
+    const fakeDocument = {
+      querySelector: () => null,
+      querySelectorAll: () => [],
+      getElementById: () => null,
+      createElement: (tag) => ({
+        tagName: tag.toUpperCase(),
+        id: '',
+        className: '',
+        style: {},
+        textContent: '',
+        innerHTML: '',
+        dataset: {},
+        _children: [],
+        _attrs: {},
+        appendChild: noop,
+        remove: noop,
+        setAttribute(k, v) { this._attrs[k] = v; },
+        getAttribute(k) { return this._attrs[k] != null ? this._attrs[k] : null; },
+        addEventListener: noop,
+        replaceChildren: noop,
+        isConnected: true,
+      }),
+      createEvent: () => ({ initEvent: noop }),
+      body: { appendChild: noop, classList: { contains: () => false } },
+      documentElement: { appendChild: noop },
+      readyState: 'complete',
+      addEventListener: noop,
+      visibilityState: 'visible',
+    };
+    const ctx = {
+      window: fakeWindow,
+      document: fakeDocument,
+      location: {
+        hostname: 'www.fravega.com',
+        pathname: '/producto/tv-55/TV-123',
+        href: 'https://www.fravega.com/producto/tv-55/TV-123',
+        search: '',
+      },
+      history: fakeHistory,
+      sessionStorage: fakeStorage(),
+      localStorage: fakeStorage(),
+      MutationObserver: function () { return { observe: noop, disconnect: noop }; },
+      AbortController: function () { return { abort: noop, signal: {} }; },
+      fetch: () => Promise.resolve({ ok: false, status: 503 }),
+      URL,
+      URLSearchParams,
+      console,
+      Number,
+      Math,
+      Array,
+      Object,
+      JSON,
+      String,
+      Boolean,
+      Promise,
+      setTimeout: noop,
+      clearTimeout: noop,
+      Event: function (type) { return { type }; },
+      CustomEvent: function (type) { return { type }; },
+    };
+    vm.createContext(ctx);
+    loadInto(ctx, 'utils/retailers.js');
+    loadInto(ctx, 'utils/helpers.js');
+    loadInto(ctx, 'utils/affiliates.js');
+    loadInto(ctx, 'content/content.js');
+    return ctx.window.PrecioReal;
+  }
+
+  let PR;
+  try {
+    PR = freshContentNs();
+  } catch (e) {
+    failed++;
+    failures.push('classifyFromStats bootstrap failed: ' + (e && e.message));
+    PR = null;
+  }
+
+  if (PR && typeof PR._classifyFromStats === 'function') {
+    const fn = PR._classifyFromStats;
+
+    // ── 7d baseline (primario) ───────────────────────────────────────────────
+    // Descuento real (>=5% baja en 7d).
+    {
+      const v = fn(9000, { real_discount_pct: 10, inflated: false, price_7d_ago: 10000, price_30d_ago: 10500, baseline_age_days: 7 });
+      assertEq(v.kind, 'real', 'classifyFromStats 7d: descuento real');
+      assert(v.sub.includes('7 días atrás'), 'classifyFromStats 7d: sub mentions 7 días');
+    }
+    // Inflado (>5% sube en 7d).
+    {
+      const v = fn(11000, { real_discount_pct: -10, inflated: true, price_7d_ago: 10000, price_30d_ago: 9500, baseline_age_days: 7 });
+      assertEq(v.kind, 'inflated', 'classifyFromStats 7d: inflado');
+      assert(v.sub.includes('7 días atrás'), 'classifyFromStats 7d: inflado sub mentions 7d');
+    }
+    // Neutral (<5% movimiento).
+    {
+      const v = fn(9800, { real_discount_pct: 2, inflated: false, price_7d_ago: 10000, price_30d_ago: null, baseline_age_days: 7 });
+      assertEq(v.kind, 'neutral', 'classifyFromStats 7d: neutral');
+      assert(v.sub.includes('7 días atrás'), 'classifyFromStats 7d: neutral sub mentions 7d');
+    }
+
+    // ── 30d baseline (fallback cuando price_7d_ago es null) ──────────────────
+    // Descuento real (>=10% baja en 30d).
+    {
+      const v = fn(8000, { real_discount_pct: null, inflated: false, price_7d_ago: null, price_30d_ago: 10000, baseline_age_days: null });
+      assertEq(v.kind, 'real', 'classifyFromStats 30d fallback: descuento real');
+      assert(v.sub.includes('30 días atrás'), 'classifyFromStats 30d: sub mentions 30 días');
+    }
+    // Inflado en 30d (>10% sube).
+    {
+      const v = fn(11500, { real_discount_pct: null, inflated: false, price_7d_ago: null, price_30d_ago: 10000, baseline_age_days: null });
+      assertEq(v.kind, 'inflated', 'classifyFromStats 30d fallback: inflado');
+      assert(v.sub.includes('30 días atrás'), 'classifyFromStats 30d: inflado sub mentions 30d');
+    }
+    // Neutral en 30d (<10% movimiento).
+    {
+      const v = fn(9700, { real_discount_pct: null, inflated: false, price_7d_ago: null, price_30d_ago: 10000, baseline_age_days: null });
+      assertEq(v.kind, 'neutral', 'classifyFromStats 30d fallback: neutral');
+      assert(v.sub.includes('30 días atrás'), 'classifyFromStats 30d: neutral sub mentions 30d');
+    }
+    // Exactamente en el umbral 10%: debe ser real.
+    {
+      const v = fn(9000, { real_discount_pct: null, inflated: false, price_7d_ago: null, price_30d_ago: 10000, baseline_age_days: null });
+      assertEq(v.kind, 'real', 'classifyFromStats 30d: exactly 10% → real');
+    }
+    // Exactamente en el umbral inflado 10%: debe ser inflado.
+    {
+      const v = fn(11001, { real_discount_pct: null, inflated: false, price_7d_ago: null, price_30d_ago: 10000, baseline_age_days: null });
+      assertEq(v.kind, 'inflated', 'classifyFromStats 30d: >10% inflado threshold');
+    }
+
+    // ── Sin ningún baseline ──────────────────────────────────────────────────
+    {
+      const v = fn(10000, { real_discount_pct: null, inflated: false, price_7d_ago: null, price_30d_ago: null, baseline_age_days: null });
+      assertEq(v.kind, 'neutral', 'classifyFromStats no baseline: neutral/sin datos');
+      assert(v.label.includes('sin datos'), 'classifyFromStats no baseline: label says sin datos');
+    }
+    // 7d baseline tiene precedencia sobre 30d.
+    {
+      const v = fn(9000, { real_discount_pct: 10, inflated: false, price_7d_ago: 10000, price_30d_ago: 5000, baseline_age_days: 7 });
+      // Con 30d=5000, precio actual 9000 subiría vs 30d → inflado. Pero 7d tiene precedencia: descuento real.
+      assertEq(v.kind, 'real', 'classifyFromStats: 7d baseline has precedence over 30d');
+      assert(v.sub.includes('7 días atrás'), 'classifyFromStats: 7d wins sub label');
+    }
+  } else {
+    failed++;
+    failures.push('classifyFromStats not exported (_classifyFromStats missing on PrecioReal)');
+  }
+}
+
 // ── Resultado ───────────────────────────────────────────────────────────────
 console.log(`[precio-real tests] ${passed} passed, ${failed} failed`);
 if (failed > 0) {
