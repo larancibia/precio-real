@@ -3,7 +3,7 @@
 Material listo para pegar en el formulario de submission de la Chrome Web Store
 para Precio Real v0.1.0. Idioma principal: español (Argentina).
 
-> Última revisión: 2026-05-09 (v2 — sincronizado con manifest v0.1.0 de 16 retailers).
+> Última revisión: 2026-05-09 (v3 — sincronizado con manifest v0.1.0 de 31 retailers).
 > Mantener sincronizado con `extension/manifest.json`, `landing/index.html` y
 > `landing/privacidad.html`. Si se agregan retailers en el manifest, actualizar acá
 > y en privacidad.html antes de re-submit.
@@ -15,7 +15,7 @@ para Precio Real v0.1.0. Idioma principal: español (Argentina).
 | Campo | Valor |
 |-------|-------|
 | Name (max 75 chars) | `Precio Real — historial real de precios en Argentina` |
-| Short summary (max 132 chars) | `Detectá descuentos truchos en Hot Sale: Precio Real te muestra el historial real de precios en Mercado Libre, Frávega y más.` |
+| Short summary (max 132 chars) | `Detectá descuentos truchos en Hot Sale: historial real de precios en 31 e-commerce argentinos. Sin cuenta, sin tracking.` |
 | Category | Shopping |
 | Language | Spanish (Argentina) — `es-AR` |
 | Website / Homepage URL | `https://preciorreal.com` |
@@ -44,7 +44,7 @@ CÓMO FUNCIONA
 QUÉ INCLUYE
 - Historial de precios real por producto.
 - Alertas de aumentos disfrazados de descuento.
-- 16 sitios soportados v0.1.0: Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Argentina, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy y Hendel.
+- 31 sitios soportados v0.1.0: Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Argentina, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store, LG Argentina, Sony Store, Philips Argentina, BGH, Noblex, Whirlpool, Changomás, Electrolux Argentina, Drean, Motorola Store y Todomodo.
 - Datos de inflación de EcoGo para contextualizar los precios.
 
 PRIVACIDAD
@@ -80,7 +80,7 @@ Se usa para leer la pestaña activa cuando el usuario navega un sitio soportado,
 La extensión inyecta un content script en estos sitios de e-commerce argentinos para detectar la ficha de producto, leer el precio publicado y mostrar el historial real. No se accede a otros sitios fuera de esta lista.
 ```
 
-Dominios solicitados (16 retailers de e-commerce argentino):
+Dominios solicitados (31 retailers de e-commerce argentino):
 - `https://*.mercadolibre.com.ar/*`
 - `https://*.fravega.com/*`
 - `https://*.garbarino.com/*`
@@ -97,6 +97,21 @@ Dominios solicitados (16 retailers de e-commerce argentino):
 - `https://*.sodimac.com.ar/*`
 - `https://*.easy.com.ar/*`
 - `https://*.hendel.com.ar/*`
+- `https://*.rodo.com.ar/*`
+- `https://*.ribeiro.com.ar/*`
+- `https://*.compumundo.com.ar/*`
+- `https://*.samsung.com.ar/*`
+- `https://www.lg.com/ar/*`
+- `https://*.sony.com.ar/*`
+- `https://*.philips.com.ar/*`
+- `https://*.bgh.com.ar/*`
+- `https://*.noblex.com.ar/*`
+- `https://*.whirlpool.com.ar/*`
+- `https://*.changomas.com.ar/*`
+- `https://*.electrolux.com.ar/*`
+- `https://*.drean.com.ar/*`
+- `https://*.motorola.com.ar/*`
+- `https://*.todomodo.com.ar/*`
 
 ### Remote code use
 ```

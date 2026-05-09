@@ -81,6 +81,9 @@
     'drean',
     'motorola',
     'todomodo',
+    // Ciclo 1584: Amazon AR + HiperTehno.
+    'amazon',
+    'hipertehno',
   ];
 
   function detectSite(hostname) {
@@ -124,6 +127,10 @@
     if (h.endsWith('drean.com.ar')) return 'drean';
     if (h.endsWith('motorola.com.ar')) return 'motorola';
     if (h.endsWith('todomodo.com.ar')) return 'todomodo';
+    // Ciclo 1584: Amazon AR lanzó amazon.com.ar en 2022. HiperTehno es cadena
+    // de electrónica con presencia fuerte en Hot Sale.
+    if (h.endsWith('amazon.com.ar')) return 'amazon';
+    if (h.endsWith('hipertehno.com.ar')) return 'hipertehno';
     return null;
   }
 
@@ -794,7 +801,11 @@
   function urlLooksLikeListing(siteKey, pathname) {
     const p = (pathname || location.pathname || '').toLowerCase();
     // Patrones genéricos de listado/categoría/búsqueda.
-    if (/^\/(categor[ií]a|categorias|seccion|secciones|listado|listing|search|busqueda|buscar|ofertas|outlet|hot[-_]?sale|cyber|black[-_]?friday|marca|marcas|departamento|colecci[oó]n|colecciones)(\/|$)/i.test(p)) {
+    // NOTA: hot-sale/cyber/black-friday NO están aquí — son nombres de campaña
+    // que los retailers usan como prefijo de PATH incluso en PDPs individuales
+    // (ej. fravega.com/hot-sale/tv-samsung-55/p-ABC123/). Incluirlos bloqueaba
+    // el badge en las páginas de producto durante los eventos más relevantes.
+    if (/^\/(categor[ií]a|categorias|seccion|secciones|listado|listing|search|busqueda|buscar|ofertas|outlet|marca|marcas|departamento|colecci[oó]n|colecciones)(\/|$)/i.test(p)) {
       return true;
     }
     // ML: /listado, /listings, /jm/search
@@ -825,7 +836,14 @@
 
   function isProductPageStrict(siteKey) {
     try {
-      if (urlLooksLikeListing(siteKey)) return false;
+      if (urlLooksLikeListing(siteKey)) {
+        // Override: si la página tiene microdata de producto (JSON-LD Product,
+        // og:type=product, itemprop=price) confiamos en eso por sobre la URL.
+        // Cubre retailers que usan rutas de categoría como contenedor del PDP
+        // (ej. /buscar?q=... con un producto único pre-filtrado, o /ofertas/prod).
+        if (hasProductMicrodata()) return true;
+        return false;
+      }
       if (siteKey === 'mercadolibre') {
         if (location.hostname.startsWith('articulo.')) return true;
         if (/\/p\//.test(location.pathname)) return true;

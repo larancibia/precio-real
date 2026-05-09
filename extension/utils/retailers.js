@@ -32,6 +32,11 @@
         // desde aria-label, así que es seguro como ancestor selector.
         '.ui-pdp-price__second-line .andes-money-amount[role="img"]',
         '.ui-pdp-price__main-container .andes-money-amount[role="img"]',
+        // Ciclo 1583: Hot Sale 2025 — ML puede envolverlo en ui-pdp-price__offer-price
+        // (precio con descuento de campaña) o en ui-pdp-price__original-price (sin dcto).
+        // El __offer-price tiene precedencia cuando está presente.
+        '.ui-pdp-price__offer-price .andes-money-amount__fraction',
+        '.ui-pdp-price__offer-price .andes-money-amount[role="img"]',
         // Variante "buy box" del listado oficial (catálogo) cuando el comprador
         // ya seleccionó un seller específico — el precio activo aparece en
         // .ui-pdp-buybox.
@@ -60,6 +65,14 @@
         '[data-test-id="product-selling-price"]',
         '[data-testid="product-price"]',
         '[data-testid="product-current-price"]',
+        // Ciclo 1583: Frávega Hot Sale 2025 — el PDP tiene un componente de
+        // precio con [data-test-id="pdp-price-value"] y un badge de descuento
+        // separado. También detectado: [data-test-id="best-price"] cuando hay
+        // promo de pago con tarjeta Frávega (el "best" es el precio con banco,
+        // pero lo tratamos como precio final observado para el usuario logueado).
+        '[data-test-id="pdp-price-value"]',
+        '[data-test-id="best-price"]',
+        '[data-testid="pdp-price-value"]',
         // Styled-components con hash variable: matchear prefijos.
         'span[class*="sc-" i][class*="Price" i]',
         'span[class*="sale-price" i]',
@@ -92,12 +105,19 @@
         '[data-testid="product-best-price"]',
         '[data-test-id="product-selling-price"]',
         '[data-test-id="product-best-price"]',
+        // Ciclo 1583: Garbarino Hot Sale 2025 — nuevo stack Next 14 + VTEX IO
+        // expone precio en [data-testid="pdp-selling-price"] y en el componente
+        // <PriceBadge> con clase sc-* + "amount". La variante mobile del PDP
+        // tiene el mismo selector pero dentro de un drawer.
+        '[data-testid="pdp-selling-price"]',
+        '[data-testid="pdp-price"]',
         '.vtex-product-price-1-x-sellingPriceValue',
         '.vtex-product-price-1-x-currencyContainer',
         '[class*="sellingPrice" i]',
         // Styled-components Next.js (Garbarino tiene un stack mixto Next+VTEX).
         'span[class*="sc-" i][class*="Price" i]',
         'span[class*="ProductPrice" i]',
+        '[class*="PriceBadge" i]',
         '.price-label',
         '.product-price',
         'meta[itemprop="price"]',
