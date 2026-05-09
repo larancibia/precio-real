@@ -393,6 +393,83 @@ ol, ul { margin: 0; padding: 0; list-style: none; }
 .faq__answer p { margin: 0; }
 .faq__answer a { color: var(--accent); }
 
+/* ---------- Trending products ---------- */
+.section--trending { background: var(--bg-elev); }
+
+.trending-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0 auto;
+  display: grid;
+  gap: .875rem;
+  grid-template-columns: 1fr;
+  max-width: 900px;
+}
+
+.trending-card {
+  background: var(--bg);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-align: left;
+  transition: border-color .25s var(--ease), background .25s var(--ease);
+}
+
+.trending-card:hover {
+  border-color: var(--border);
+  background: var(--bg-elev-2);
+}
+
+.trending-card__rank {
+  font-size: .75rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  letter-spacing: .08em;
+  min-width: 1.5rem;
+  text-align: center;
+}
+
+.trending-card__info { flex: 1; min-width: 0; }
+
+.trending-card__title {
+  display: block;
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: .25rem;
+}
+
+.trending-card__meta {
+  font-size: .8rem;
+  color: var(--text-dim);
+}
+
+.trending-card__count {
+  font-size: .8rem;
+  color: var(--accent);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.trending-card--skeleton {
+  height: 4rem;
+  background: linear-gradient(90deg, var(--bg-elev) 25%, var(--bg-elev-2) 50%, var(--bg-elev) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-color: var(--border-soft);
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
 /* ---------- Email capture (alertas) ---------- */
 .section--alerts {
   background:
@@ -667,6 +744,10 @@ ol, ul { margin: 0; padding: 0; list-style: none; }
   .stats {
     grid-template-columns: repeat(3, 1fr);
     gap: 1.25rem;
+  }
+
+  .trending-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 
   .footer__inner {

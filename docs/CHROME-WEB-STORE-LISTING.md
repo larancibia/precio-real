@@ -3,7 +3,7 @@
 Material listo para pegar en el formulario de submission de la Chrome Web Store
 para Precio Real v0.1.0. Idioma principal: español (Argentina).
 
-> Última revisión: 2026-05-09 (v3 — sincronizado con manifest v0.1.0 de 31 retailers).
+> Última revisión: 2026-05-09 (v4 — sincronizado con manifest v0.1.0 de 33 retailers, ciclo 1602).
 > Mantener sincronizado con `extension/manifest.json`, `landing/index.html` y
 > `landing/privacidad.html`. Si se agregan retailers en el manifest, actualizar acá
 > y en privacidad.html antes de re-submit.
@@ -15,7 +15,7 @@ para Precio Real v0.1.0. Idioma principal: español (Argentina).
 | Campo | Valor |
 |-------|-------|
 | Name (max 75 chars) | `Precio Real — historial real de precios en Argentina` |
-| Short summary (max 132 chars) | `Detectá descuentos truchos en Hot Sale: historial real de precios en 31 e-commerce argentinos. Sin cuenta, sin tracking.` |
+| Short summary (max 132 chars) | `Detectá descuentos truchos en Hot Sale: historial real de precios en 33 e-commerce argentinos. Sin cuenta, sin tracking.` |
 | Category | Shopping |
 | Language | Spanish (Argentina) — `es-AR` |
 | Website / Homepage URL | `https://preciorreal.com` |
@@ -44,7 +44,7 @@ CÓMO FUNCIONA
 QUÉ INCLUYE
 - Historial de precios real por producto.
 - Alertas de aumentos disfrazados de descuento.
-- 31 sitios soportados v0.1.0: Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Argentina, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store, LG Argentina, Sony Store, Philips Argentina, BGH, Noblex, Whirlpool, Changomás, Electrolux Argentina, Drean, Motorola Store y Todomodo.
+- 33 sitios soportados v0.1.0: Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Argentina, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store, LG Argentina, Sony Store, Philips Argentina, BGH, Noblex, Whirlpool, Changomás, Electrolux Argentina, Drean, Motorola Store, Todomodo, Amazon Argentina e HiperTehno.
 - Datos de inflación de EcoGo para contextualizar los precios.
 
 PRIVACIDAD
@@ -56,6 +56,41 @@ PRIVACIDAD
 OPEN SOURCE
 Código auditable en GitHub: https://github.com/larancibia/precio-real
 Hecha en Argentina. Gratis. Soporte opcional vía Cafecito.
+```
+
+---
+
+## 2b. Descripción larga (EN) — versión inglés opcional
+
+> Útil si Chrome Web Store permite idioma secundario. Pegar en el campo "Detailed description" del locale EN.
+
+```
+Precio Real is a free, open-source Chrome extension that shows the real price history of products on Argentine e-commerce sites. Built for Hot Sale, Cyber Monday, and any sale event where discounts can be misleading.
+
+WHY?
+According to EcoGo, prices in Argentina rise 4%–6% in the weeks before Hot Sale. Retailers then "discount" back to the price they already had. Precio Real alerts you when that happens.
+
+HOW IT WORKS
+- Install in one click. No account, no personal data.
+- Browse Mercado Libre, Frávega, Garbarino, Falabella, Carrefour, Amazon Argentina, or any of the 33 supported sites.
+- When you open a product page, a badge shows the verdict: real price, inflated, or neutral.
+- If the "discount" hides a prior price hike, we tell you.
+
+WHAT'S INCLUDED
+- Real price history per product.
+- Alerts for fake discounts (price-hike-then-markdown tactics).
+- 33 supported Argentine e-commerce sites (v0.1.0): Mercado Libre, Frávega, Garbarino, Falabella, Carrefour, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store, LG Argentina, Sony Store, Philips Argentina, BGH, Noblex, Whirlpool, Changomás, Electrolux Argentina, Drean, Motorola Store, Todomodo, Amazon Argentina, and HiperTehno.
+- EcoGo inflation data to contextualize prices.
+
+PRIVACY
+- No account, no login, no personal data collected.
+- We only process the public product URL to query its history.
+- We don't sell data. We don't have any to sell.
+- Full policy: https://preciorreal.com/privacy-policy.html
+
+OPEN SOURCE
+Auditable code on GitHub: https://github.com/larancibia/precio-real
+Made in Argentina. Free. Optional support via Cafecito.
 ```
 
 ---
@@ -80,7 +115,7 @@ Se usa para leer la pestaña activa cuando el usuario navega un sitio soportado,
 La extensión inyecta un content script en estos sitios de e-commerce argentinos para detectar la ficha de producto, leer el precio publicado y mostrar el historial real. No se accede a otros sitios fuera de esta lista.
 ```
 
-Dominios solicitados (31 retailers de e-commerce argentino):
+Dominios solicitados (33 retailers de e-commerce argentino):
 - `https://*.mercadolibre.com.ar/*`
 - `https://*.fravega.com/*`
 - `https://*.garbarino.com/*`
@@ -112,6 +147,8 @@ Dominios solicitados (31 retailers de e-commerce argentino):
 - `https://*.drean.com.ar/*`
 - `https://*.motorola.com.ar/*`
 - `https://*.todomodo.com.ar/*`
+- `https://*.amazon.com.ar/*`
+- `https://*.hipertehno.com.ar/*`
 
 ### Remote code use
 ```

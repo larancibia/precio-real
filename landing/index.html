@@ -270,11 +270,12 @@
     "itemListElement": [
       { "@type": "SiteNavigationElement", "position": 1, "name": "Cómo funciona", "url": "https://preciorreal.com/#como-funciona" },
       { "@type": "SiteNavigationElement", "position": 2, "name": "Tiendas soportadas", "url": "https://preciorreal.com/#tiendas" },
-      { "@type": "SiteNavigationElement", "position": 3, "name": "Preguntas frecuentes", "url": "https://preciorreal.com/#faq" },
-      { "@type": "SiteNavigationElement", "position": 4, "name": "Instalar gratis", "url": "https://preciorreal.com/#instalar" },
-      { "@type": "SiteNavigationElement", "position": 5, "name": "Guía Hot Sale 2026", "url": "https://preciorreal.com/guia-hot-sale.html" },
-      { "@type": "SiteNavigationElement", "position": 6, "name": "Privacidad", "url": "https://preciorreal.com/privacidad.html" },
-      { "@type": "SiteNavigationElement", "position": 7, "name": "Términos", "url": "https://preciorreal.com/terminos.html" }
+      { "@type": "SiteNavigationElement", "position": 3, "name": "Más consultados", "url": "https://preciorreal.com/#trending" },
+      { "@type": "SiteNavigationElement", "position": 4, "name": "Preguntas frecuentes", "url": "https://preciorreal.com/#faq" },
+      { "@type": "SiteNavigationElement", "position": 5, "name": "Instalar gratis", "url": "https://preciorreal.com/#instalar" },
+      { "@type": "SiteNavigationElement", "position": 6, "name": "Guía Hot Sale 2026", "url": "https://preciorreal.com/guia-hot-sale.html" },
+      { "@type": "SiteNavigationElement", "position": 7, "name": "Privacidad", "url": "https://preciorreal.com/privacidad.html" },
+      { "@type": "SiteNavigationElement", "position": 8, "name": "Términos", "url": "https://preciorreal.com/terminos.html" }
     ]
   }
   </script>
@@ -757,6 +758,27 @@
       </div>
     </section>
 
+    <!-- Trending products — fetches /api/trending, shows social proof -->
+    <section id="trending" class="section section--trending" aria-labelledby="trending-title">
+      <div class="section__inner section__inner--center">
+        <h2 id="trending-title" class="section__title">Más consultados ahora</h2>
+        <p class="section__lead">Los productos que más usuarios están siguiendo con Precio Real.</p>
+
+        <ul class="trending-grid" id="trending-list" aria-live="polite">
+          <li class="trending-card trending-card--skeleton" aria-hidden="true"></li>
+          <li class="trending-card trending-card--skeleton" aria-hidden="true"></li>
+          <li class="trending-card trending-card--skeleton" aria-hidden="true"></li>
+          <li class="trending-card trending-card--skeleton" aria-hidden="true"></li>
+          <li class="trending-card trending-card--skeleton" aria-hidden="true"></li>
+          <li class="trending-card trending-card--skeleton" aria-hidden="true"></li>
+        </ul>
+
+        <noscript>
+          <p class="stats__note">Activá JavaScript para ver los productos en tendencia.</p>
+        </noscript>
+      </div>
+    </section>
+
     <section id="faq" class="section section--faq" aria-labelledby="faq-title">
       <div class="section__inner">
         <h2 id="faq-title" class="section__title">Preguntas frecuentes</h2>
@@ -909,6 +931,52 @@
         set('products', '—');
         set('prices', '—');
         set('last', 'sin conexión');
+      });
+  })();
+  </script>
+
+  <!-- Trending products — fetches /api/trending?limit=6 and renders cards -->
+  <script>
+  (function () {
+    var list = document.getElementById('trending-list');
+    if (!list) return;
+
+    function sellerLabel(seller) {
+      var map = {
+        'mercadolibre': 'Mercado Libre', 'fravega': 'Frávega', 'garbarino': 'Garbarino',
+        'falabella': 'Falabella', 'carrefour': 'Carrefour', 'coto': 'Coto', 'naldo': 'Naldo',
+        'musimundo': 'Musimundo', 'cetrogar': 'Cetrogar', 'megatone': 'Megatone',
+        'dia': 'Día Online', 'jumbo': 'Jumbo', 'disco': 'Disco', 'sodimac': 'Sodimac',
+        'easy': 'Easy', 'amazon': 'Amazon', 'hipertehno': 'HiperTehno',
+      };
+      if (!seller) return '';
+      var key = seller.toLowerCase();
+      for (var k in map) { if (key.indexOf(k) !== -1) return map[k]; }
+      return seller;
+    }
+
+    fetch('https://preciorreal.com/api/trending?limit=6', { headers: { 'accept': 'application/json' } })
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+      .then(function (data) {
+        var items = (data.results || []).slice(0, 6);
+        if (!items.length) { list.parentNode.parentNode.hidden = true; return; }
+        list.innerHTML = items.map(function (p, i) {
+          var title = p.title ? p.title.replace(/</g, '&lt;').replace(/>/g, '&gt;') : 'Producto sin nombre';
+          var seller = sellerLabel(p.seller) || 'Tienda';
+          var count = p.price_count || 0;
+          var plural = count === 1 ? 'consulta' : 'consultas';
+          return '<li class="trending-card">'
+            + '<span class="trending-card__rank">#' + (i + 1) + '</span>'
+            + '<span class="trending-card__info">'
+            + '<span class="trending-card__title" title="' + title + '">' + title + '</span>'
+            + '<span class="trending-card__meta">' + seller + '</span>'
+            + '</span>'
+            + '<span class="trending-card__count">' + count + ' ' + plural + '</span>'
+            + '</li>';
+        }).join('');
+      })
+      .catch(function () {
+        list.parentNode.parentNode.hidden = true;
       });
   })();
   </script>

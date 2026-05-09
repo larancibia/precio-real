@@ -2,7 +2,7 @@
 
 ## Resumen ejecutivo
 
-Precio Real es una extensión gratuita de Chrome que muestra el historial real de precios de cada producto en los principales e-commerce argentinos —Mercado Libre, Frávega, Carrefour, Coto, Falabella y Garbarino— para detectar aumentos disfrazados de descuentos durante el Hot Sale y otras promociones. Se apoya en datos de **EcoGo** para contextualizar los precios en una economía con inflación crónica. Es open source, hecha en Argentina y no pide registro ni datos personales.
+Precio Real es una extensión gratuita de Chrome que muestra el historial real de precios de cada producto en los principales e-commerce argentinos —Mercado Libre, Frávega, Amazon Argentina, Carrefour, Coto, Falabella, Garbarino y 26 tiendas más— para detectar aumentos disfrazados de descuentos durante el Hot Sale y otras promociones. Se apoya en datos de **EcoGo** para contextualizar los precios en una economía con inflación crónica. Es open source, hecha en Argentina y no pide registro ni datos personales.
 
 ## El problema
 
@@ -20,14 +20,9 @@ Precio Real corre como extensión de Chrome (Manifest V3) y trabaja en segundo p
 
 No requiere cuenta, login ni envía datos personales. Los permisos solicitados son los mínimos necesarios: `storage` y `activeTab`.
 
-**Sitios soportados (v0.1.0):**
+**Sitios soportados (v0.1.0) — 33 e-commerce argentinos:**
 
-- Mercado Libre Argentina
-- Frávega
-- Garbarino
-- Falabella Argentina
-- Carrefour Argentina
-- Coto Digital
+Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Argentina, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store Argentina, LG Argentina, Sony Store Argentina, Philips Argentina, BGH, Noblex, Whirlpool Argentina, Changomás, Electrolux Argentina, Drean, Motorola Store Argentina, Todomodo, Amazon Argentina e HiperTehno.
 
 ## Características principales
 
@@ -44,7 +39,7 @@ No requiere cuenta, login ni envía datos personales. Los permisos solicitados s
 
 - Chrome Web Store: `[LINK_CHROME_STORE_PLACEHOLDER]`
 - Repositorio: https://github.com/larancibia/precio-real
-- Sitio oficial: https://preciorreal.com `[VERIFICAR dominio definitivo — el HTML referencia preciorreal.com]`
+- Sitio oficial: https://preciorreal.com
 
 ## Sobre el creador
 
@@ -61,18 +56,17 @@ No requiere cuenta, login ni envía datos personales. Los permisos solicitados s
 
 ## Datos de contacto
 
-- Email: `[EMAIL_PLACEHOLDER — sugerido: prensa@preciorreal.com o contacto personal de Luis]`
-- Twitter / X: `[TWITTER_PLACEHOLDER]`
-- Sitio web: https://preciorreal.com `[VERIFICAR dominio real]`
+- Email: contacto@preciorreal.com
+- Twitter / X: @preciorreal_ar
+- Sitio web: https://preciorreal.com
 - GitHub: https://github.com/larancibia/precio-real
 
 ## Recursos descargables
 
-- Logo (PNG, fondo transparente): `[LOGO_PLACEHOLDER]`
-- Logo (SVG): `[LOGO_SVG_PLACEHOLDER]`
-- Imagen Open Graph (1200x630): `[OG_IMAGE_PLACEHOLDER — referenciada en el HTML como https://preciorreal.com/og-image.png]`
+- Logo (SVG): `extension/icons/icon.svg` (o usar favicon.svg del landing)
+- Imagen Open Graph (1200x630): https://preciorreal.com/og-image.png
 - Iconos de la extensión (16 / 48 / 128 px): disponibles en `extension/icons/`.
 
 ---
 
-Última actualización: 2026-05-08
+Última actualización: 2026-05-09 (ciclo 1602 — 33 retailers, contacto verificado)
