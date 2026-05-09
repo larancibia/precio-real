@@ -1059,4 +1059,55 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "rascador grande gatos",
   "correa ajustable perro",
   "arena sanitaria gatos",
+  // Ciclo 1624 — electrónica consumo / pagos digitales
+  "lector pos bluetooth",
+  "impresora de tickets termica",
+  "escaner de codigo de barras",
+  "balanza digital comercial",
+  // Ciclo 1624 — arte / decoración del hogar
+  "cuadro decorativo sala",
+  "marco de foto madera",
+  "espejo decorativo pared",
+  "lampara de sal himalaya",
+  "vela aromatica decoracion",
+  // Ciclo 1624 — moda tallas grandes / plus size
+  "campera talle grande mujer",
+  "remera talle especial hombre",
+  "pantalon cargo talle grande",
+  // Ciclo 1624 — alimentos saludables / dietéticos
+  "proteina vegana polvo",
+  "collageno hidrolizado",
+  "aceite de coco organico",
+  "semillas chia",
+  "granola sin azucar",
+  // Ciclo 1624 — vinos / bebidas (alta rotación MLA AR)
+  "vino tinto malbec",
+  "set copas de vino cristal",
+  "decantador de vino",
+  "enfriador de vino electrico",
+  // Ciclo 1624 — coleccionables / figuras
+  "figura funko pop",
+  "figura de accion marvel",
+  "coleccionable dragon ball",
+  "maqueta auto a escala",
+  // Ciclo 1624 — instrumentos de viento / cuerdas
+  "flauta traversa",
+  "trompeta de estudio",
+  "violin estudiante",
+  "armonica diatonica",
+  // Ciclo 1624 — repuestos y herramientas específicas
+  "disco de corte amoladora",
+  "broca para concreto set",
+  "llave torque",
+  "multimetro digital",
+  "destornillador de precision set",
+  // Ciclo 1624 — tecnología accesibilidad / adultos mayores
+  "celular tecla grande adulto mayor",
+  "amplificador de sonido personal",
+  "reloj gps adulto mayor",
+  // Ciclo 1624 — outdoor / survival / aventura
+  "navaja suiza victorinox",
+  "brujula de orientacion",
+  "filtro de agua purificador portatil",
+  "saco de dormir ultraligero",
 ];
