@@ -7,8 +7,8 @@
   if (window.__precioRealLoaded) return;
   window.__precioRealLoaded = true;
 
-  // Ciclo 1606: versión del content script para facilitar debugging en consola.
-  const CONTENT_VERSION = '1606';
+  // Ciclo 1607: versión del content script para facilitar debugging en consola.
+  const CONTENT_VERSION = '1607';
 
   const PR = window.PrecioReal;
   if (!PR) { console.warn('[Precio Real] helpers not loaded'); return; }
@@ -788,6 +788,10 @@
           // aparece en algunos temas Shopify custom (Coolbox AR, Full AR).
           // data-selected-variant es del Debut/Dawn theme de Shopify.
           'data-fs-variant-id', 'data-product-variant-id', 'data-selected-variant',
+          // Ciclo 1607: data-price-value (Shopify centavos, Dexter AR y otros themes
+          // Shopify custom); data-fs-price-value (VTEX Faststore v2+, precio en el
+          // contenedor de precio que cambia al seleccionar variante).
+          'data-price-value', 'data-fs-price-value',
         ],
       });
     } catch (_) { variantObserver = null; }
@@ -945,6 +949,10 @@
             // data-product-variant-id (Shopify custom: Coolbox AR, Full AR);
             // data-selected-variant (Shopify Dawn/Debut themes).
             'data-fs-variant-id', 'data-product-variant-id', 'data-selected-variant',
+            // Ciclo 1607: data-price-value (Shopify centavos: Dexter AR, otros themes Shopify
+            // custom que exponen el precio como integer en centavos en el elemento de variante);
+            // data-fs-price-value (VTEX Faststore v2+ precio en el contenedor de precio).
+            'data-price-value', 'data-fs-price-value',
           ],
         });
       } else {

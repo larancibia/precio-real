@@ -1057,7 +1057,8 @@
         } catch (_) {}
         // Shopify emite JSON-LD de Product en PDPs: caer al microdata check.
       }
-      // WooCommerce (Olimpo AR): single-product tiene body.single-product o /product/ en la ruta.
+      // WooCommerce (Olimpo AR, Drean, HiperTehno, EXO, Mac Center, Full, Exo):
+      // single-product tiene body.single-product o /product/ en la ruta.
       // Ciclo 1606: Olimpo AR usa WooCommerce, misma detección que Drean/HiperTehno/EXO.
       if (siteKey === 'olimpo') {
         try {
