@@ -1602,6 +1602,253 @@
         'meta[property="og:price:amount"]',
       ],
     },
+    // Ciclo 1614: Bit (Shopify gaming/hardware), Digital Haus (WooCommerce electrónica),
+    // InStore (Magento 2 audio/video hifi), Staples AR (WooCommerce oficina),
+    // Gotta (WooCommerce gaming/periféricos).
+    bit: {
+      label: 'Bit',
+      hostnameSuffix: 'bit.ar',
+      currency: 'ARS',
+      selectors: [
+        // Bit AR (gaming/hardware) usa Shopify con tema custom. El precio de venta
+        // activo en .price-item--sale cuando hay descuento; sin descuento en --regular.
+        // El precio de lista tachado (inside .price--on-sale) lo filtra isStrikethroughPrice.
+        '.price__sale .price-item--sale',
+        '.price-item--sale',
+        '.price__regular .price-item--regular',
+        '.price-item--regular',
+        '[data-testid="product-price"]',
+        '[data-testid="price"]',
+        'span[class*="price-item" i]',
+        '[data-price-value]',
+        '.product__price',
+        '.product-price',
+        '.price',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    digitalhaus: {
+      label: 'Digital Haus',
+      hostnameSuffix: 'digitalhaus.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Digital Haus AR (electrónica) usa WooCommerce con tema custom.
+        // El precio con descuento vive en .price ins .woocommerce-Price-amount;
+        // sin descuento en .woocommerce-Price-amount directamente.
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        'ins .woocommerce-Price-amount.amount bdi',
+        'ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount bdi',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        '.precio-actual',
+        '.precio-web',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    instore: {
+      label: 'InStore',
+      hostnameSuffix: 'instore.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // InStore AR (audio/video hifi) usa Magento 2 con tema custom. El precio
+        // final vive en .price-final_price [data-price-amount] (US-formatted).
+        // El precio tachado (.old-price) lo filtra isStrikethroughPrice.
+        '.product-info-price .price-final_price [data-price-amount]',
+        '.product-info-price .price-final_price .price',
+        '.special-price [data-price-amount]',
+        '.special-price .price',
+        '.price-box .price-final_price [data-price-amount]',
+        '.price-box .price',
+        '[data-price-amount]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        '.price-current',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    staples: {
+      label: 'Staples',
+      hostnameSuffix: 'staples.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Staples AR (oficina/tecnología) usa WooCommerce o plataforma custom.
+        // Patrones WooCommerce estándar con fallback a meta tags schema.org.
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        'ins .woocommerce-Price-amount.amount bdi',
+        'ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount bdi',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '[data-testid="selling-price"]',
+        '.product-price',
+        '.precio-actual',
+        '.precio-web',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    gotta: {
+      label: 'Gotta',
+      hostnameSuffix: 'gotta.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Gotta AR (gaming/periféricos) usa WooCommerce con tema custom gaming.
+        // Precio con descuento en .price ins .woocommerce-Price-amount;
+        // sin descuento en .woocommerce-Price-amount directamente.
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        'ins .woocommerce-Price-amount.amount bdi',
+        'ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount bdi',
+        '[data-testid="product-price"]',
+        '.product-price',
+        '.precio-actual',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    // Ciclo 1615: Powerplanet (WooCommerce gaming/periféricos), I-Gaming Store (Shopify
+    // gaming/hardware), Netizar (Magento 2 hardware/networking), Megastore AR
+    // (WooCommerce electrónica), Centurytech (Magento 2 hardware/PC).
+    powerplanet: {
+      label: 'Powerplanet',
+      hostnameSuffix: 'powerplanet.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Powerplanet AR (gaming/periféricos) usa WooCommerce con tema custom gaming.
+        // Precio con descuento en .price ins .woocommerce-Price-amount; sin descuento directo.
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        'ins .woocommerce-Price-amount.amount bdi',
+        'ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount bdi',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        '.precio-actual',
+        '.precio-web',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    igaming: {
+      label: 'I-Gaming Store',
+      hostnameSuffix: 'igamingstore.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // I-Gaming Store AR (gaming/hardware) usa Shopify con tema custom.
+        // El precio de venta activo en .price-item--sale cuando hay descuento;
+        // sin descuento en .price-item--regular. Tachado filtrado por isStrikethroughPrice.
+        '.price__sale .price-item--sale',
+        '.price-item--sale',
+        '.price__regular .price-item--regular',
+        '.price-item--regular',
+        '[data-testid="product-price"]',
+        '[data-testid="price"]',
+        'span[class*="price-item" i]',
+        '[data-price-value]',
+        '.product__price',
+        '.product-price',
+        '.price',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    netizar: {
+      label: 'Netizar',
+      hostnameSuffix: 'netizar.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Netizar AR (hardware/networking) usa Magento 2 con tema custom.
+        // Precio final en .price-final_price [data-price-amount] (US-formatted).
+        // El precio tachado (.old-price) lo filtra isStrikethroughPrice.
+        '.product-info-price .price-final_price [data-price-amount]',
+        '.product-info-price .price-final_price .price',
+        '.special-price [data-price-amount]',
+        '.special-price .price',
+        '.price-box .price-final_price [data-price-amount]',
+        '.price-box .price',
+        '[data-price-amount]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    megastore: {
+      label: 'Megastore',
+      hostnameSuffix: 'megastore.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Megastore AR (electrónica/electrodomésticos) usa WooCommerce con tema custom.
+        // El precio con descuento vive en .price ins .woocommerce-Price-amount;
+        // sin descuento en .woocommerce-Price-amount directamente.
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        'ins .woocommerce-Price-amount.amount bdi',
+        'ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount bdi',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        '.precio-actual',
+        '.precio-web',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    centurytech: {
+      label: 'Centurytech',
+      hostnameSuffix: 'centurytech.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Centurytech AR (hardware/PC building) usa Magento 2 con tema custom.
+        // Mismo patrón que Computodo, Nexstore, TGC, Netizar.
+        '.product-info-price .price-final_price [data-price-amount]',
+        '.product-info-price .price-final_price .price',
+        '.special-price [data-price-amount]',
+        '.special-price .price',
+        '.price-box .price-final_price [data-price-amount]',
+        '.price-box .price',
+        '[data-price-amount]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
     // Ciclo 1612: Arredondo (PrestaShop electrónica), iThink (Shopify Apple reseller),
     // Nexstore (Magento 2 gaming/PC), Cable Hogar (WooCommerce electrónica).
     arredondo: {
@@ -1692,6 +1939,83 @@
         '.product-price',
         '.precio-actual',
         '.precio-web',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    // ── Ciclo 1616 ──────────────────────────────────────────────────────────
+    klibr: {
+      label: 'Klibr',
+      hostnameSuffix: 'klibr.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Klibr AR (gaming periféricos: headsets, teclados, mouses) usa Shopify con
+        // tema custom. El precio de venta activo vive en .price__sale .price-item--sale;
+        // sin descuento en .price-item--regular. El tachado lo filtra isStrikethroughPrice.
+        '.price__sale .price-item--sale',
+        '.price-item--sale',
+        '.price__regular .price-item--regular',
+        '.price-item--regular',
+        '[data-sku-id]',
+        '[data-product-form-id]',
+        '[data-testid="product-price"]',
+        '[data-testid="price"]',
+        'span[class*="price-item" i]',
+        '[data-price-value]',
+        '.product__price',
+        '.product-price',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    lazer: {
+      label: 'Lazer',
+      hostnameSuffix: 'lazer.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Lazer AR (gaming sillas, periféricos, accesorios) usa Shopify con tema custom.
+        // Mismo patrón de precios que Klibr (Shopify Markets 2025): .price-item--sale
+        // es el precio con descuento; .price-item--regular sin descuento.
+        '.price__sale .price-item--sale',
+        '.price-item--sale',
+        '.price__regular .price-item--regular',
+        '.price-item--regular',
+        '[data-sku-id]',
+        '[data-bundle-id]',
+        '[data-testid="product-price"]',
+        '[data-testid="price"]',
+        'span[class*="price-item" i]',
+        '[data-price-value]',
+        '.product__price',
+        '.product-price',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    pcarg: {
+      label: 'PC Arg',
+      hostnameSuffix: 'pcarg.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // PcArg AR (componentes PC, hardware, gaming) usa WooCommerce con tema custom.
+        // El precio con descuento vive en .price ins .woocommerce-Price-amount;
+        // sin descuento directamente en .woocommerce-Price-amount.
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        'ins .woocommerce-Price-amount.amount bdi',
+        'ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount bdi',
+        '[data-selected-sku]',
+        '[data-testid="product-price"]',
+        '.product-price',
+        '.precio-actual',
         '[itemprop="price"]',
         'meta[itemprop="price"]',
         'meta[property="product:price:amount"]',

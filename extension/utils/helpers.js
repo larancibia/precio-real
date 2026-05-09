@@ -140,6 +140,27 @@
     'ithink',
     'nexstore',
     'cablehogar',
+    // Ciclo 1614: Bit (Shopify gaming/hardware), Digital Haus (WooCommerce electrónica),
+    // InStore (Magento 2 audio/video hifi), Staples AR (WooCommerce oficina),
+    // Gotta (WooCommerce gaming/periféricos).
+    'bit',
+    'digitalhaus',
+    'instore',
+    'staples',
+    'gotta',
+    // Ciclo 1615: Powerplanet (WooCommerce gaming/periféricos), I-Gaming Store (Shopify
+    // gaming/hardware), Netizar (Magento 2 hardware/networking), Megastore AR
+    // (WooCommerce electrónica), Centurytech (Magento 2 hardware/PC).
+    'powerplanet',
+    'igaming',
+    'netizar',
+    'megastore',
+    'centurytech',
+    // Ciclo 1616: Klibr (Shopify gaming/periféricos), Lazer (Shopify gaming sillas/periféricos),
+    // PcArg (WooCommerce componentes/hardware/gaming AR).
+    'klibr',
+    'lazer',
+    'pcarg',
   ];
 
   function detectSite(hostname) {
@@ -250,6 +271,27 @@
     if (h.endsWith('ithink.com.ar')) return 'ithink';
     if (h.endsWith('nexstore.com.ar')) return 'nexstore';
     if (h.endsWith('cablehogar.com.ar')) return 'cablehogar';
+    // Ciclo 1614: Bit (Shopify gaming/hardware), Digital Haus (WooCommerce electrónica),
+    // InStore (Magento 2 audio/video hifi), Staples AR (WooCommerce oficina),
+    // Gotta (WooCommerce gaming/periféricos).
+    if (h.endsWith('bit.ar')) return 'bit';
+    if (h.endsWith('digitalhaus.com.ar')) return 'digitalhaus';
+    if (h.endsWith('instore.com.ar')) return 'instore';
+    if (h.endsWith('staples.com.ar')) return 'staples';
+    if (h.endsWith('gotta.com.ar')) return 'gotta';
+    // Ciclo 1615: Powerplanet (WooCommerce gaming/periféricos), I-Gaming Store (Shopify
+    // gaming/hardware), Netizar (Magento 2 hardware/networking), Megastore AR
+    // (WooCommerce electrónica), Centurytech (Magento 2 hardware/PC).
+    if (h.endsWith('powerplanet.com.ar')) return 'powerplanet';
+    if (h.endsWith('igamingstore.com.ar')) return 'igaming';
+    if (h.endsWith('netizar.com.ar')) return 'netizar';
+    if (h.endsWith('megastore.com.ar')) return 'megastore';
+    if (h.endsWith('centurytech.com.ar')) return 'centurytech';
+    // Ciclo 1616: Klibr (Shopify gaming/periféricos), Lazer (Shopify gaming sillas/periféricos),
+    // PcArg (WooCommerce componentes/hardware/gaming AR).
+    if (h.endsWith('klibr.com.ar')) return 'klibr';
+    if (h.endsWith('lazer.com.ar')) return 'lazer';
+    if (h.endsWith('pcarg.com.ar')) return 'pcarg';
     return null;
   }
 
@@ -1099,7 +1141,7 @@
       if (siteKey === 'cetrogar' || siteKey === 'rodo' || siteKey === 'noblex' ||
           siteKey === 'venex' || siteKey === 'bgood' || siteKey === 'hptienda' || siteKey === 'pycca' ||
           siteKey === 'microcenter' || siteKey === 'acer' || siteKey === 'tgc' || siteKey === 'starttech' ||
-          siteKey === 'pcfactory' || siteKey === 'nexstore') {
+          siteKey === 'pcfactory' || siteKey === 'nexstore' || siteKey === 'netizar' || siteKey === 'centurytech') {
         try {
           if (document.body && document.body.classList.contains('catalog-product-view')) return true;
         } catch (_) {}
@@ -1111,9 +1153,11 @@
       // Ciclo 1607: Dexter AR también usa Shopify.
       // Ciclo 1608: FullH4rd AR también usa Shopify (gaming/periféricos).
       // Ciclo 1609: Golden Shop AR también usa Shopify (accesorios/electrónica).
+      // Ciclo 1615: I-Gaming Store AR también usa Shopify (gaming/hardware).
+      // Ciclo 1616: Klibr AR y Lazer AR también usan Shopify (gaming periféricos/sillas).
       if (siteKey === 'tcl' || siteKey === 'ipoint' || siteKey === 'musimundo' || siteKey === 'compumundo' ||
           siteKey === 'coolbox' || siteKey === 'dexter' || siteKey === 'fullh4rd' || siteKey === 'goldenshop' ||
-          siteKey === 'ithink') {
+          siteKey === 'ithink' || siteKey === 'igaming' || siteKey === 'klibr' || siteKey === 'lazer') {
         if (/\/products\//.test(location.pathname)) return true;
         try {
           if (document.body && document.body.classList.contains('template-product')) return true;
@@ -1125,8 +1169,10 @@
       // Ciclo 1608: PC House AR también usa WooCommerce (hardware).
       // Ciclo 1609: Soluciones AR también usa WooCommerce (informática/gaming).
       // Ciclo 1610: Zetta AR también usa WooCommerce (electrónica/computing).
+      // Ciclo 1615: Powerplanet AR y Megastore AR también usan WooCommerce.
+      // Ciclo 1616: PcArg AR también usa WooCommerce (componentes/hardware/gaming).
       if (siteKey === 'olimpo' || siteKey === 'pchouse' || siteKey === 'zetta' || siteKey === 'soluciones' ||
-          siteKey === 'cablehogar') {
+          siteKey === 'cablehogar' || siteKey === 'powerplanet' || siteKey === 'megastore' || siteKey === 'pcarg') {
         try {
           if (document.body && document.body.classList.contains('single-product')) return true;
         } catch (_) {}

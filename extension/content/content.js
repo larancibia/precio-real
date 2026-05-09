@@ -7,8 +7,8 @@
   if (window.__precioRealLoaded) return;
   window.__precioRealLoaded = true;
 
-  // Ciclo 1613: versión del content script para facilitar debugging en consola.
-  const CONTENT_VERSION = '1613';
+  // Ciclo 1616: versión del content script para facilitar debugging en consola.
+  const CONTENT_VERSION = '1616';
 
   const PR = window.PrecioReal;
   if (!PR) { console.warn('[Precio Real] helpers not loaded'); return; }
@@ -66,6 +66,22 @@
   // durante Hot Sale pasan >5 min en la misma PDP; el badge desaparecía en
   // SPAs con virtual-DOM sin que nadie lo note.
   const BADGE_HEALTH_MAX_CHECKS = 20;
+
+  // Ciclo 1616: CSS inlineado para Shadow DOM. Espeja badge.css pero sin las
+  // reglas de #precio-real-badge-root (esas se aplican en el DOM normal via
+  // content script CSS). El shadow root aísla completamente el badge de la CSS
+  // de la página: sin z-index fights, sin position:fixed hijacked por transform.
+  const BADGE_CSS_INLINE = `.precio-real-badge{pointer-events:auto;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:13px;line-height:1.3;color:#fff;padding:12px 32px 12px 14px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.18);min-width:220px;max-width:320px;position:relative;background:#333;animation:precio-real-fade-in 180ms ease-out}@keyframes precio-real-fade-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}.precio-real-badge--real{background:linear-gradient(135deg,#1f8a4c,#2bb673)}.precio-real-badge--fake{background:linear-gradient(135deg,#b91c1c,#ef4444)}.precio-real-badge--neutral{background:linear-gradient(135deg,#6b7280,#9ca3af);color:#fff}.precio-real-badge__title{font-weight:700;letter-spacing:.2px}.precio-real-badge__sub{font-weight:400;opacity:.9;margin-top:2px;font-size:11.5px}.precio-real-badge__close{position:absolute;top:4px;right:6px;background:transparent;border:none;color:#fff;font-size:18px;line-height:1;cursor:pointer;padding:4px 6px;border-radius:4px;opacity:.85}.precio-real-badge__close:hover{opacity:1;background:rgba(255,255,255,.15)}.precio-real-badge__cta{display:inline-block;margin-top:8px;padding:6px 10px;background:rgba(255,255,255,.18);color:#fff;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;letter-spacing:.2px;transition:background 120ms ease}.precio-real-badge__cta:hover,.precio-real-badge__cta:focus{background:rgba(255,255,255,.28);color:#fff;text-decoration:none;outline:none}`;
+
+  // Retorna true si el badge está montado (en shadow root o en light DOM).
+  // Reemplaza los checks root.hasChildNodes() que no funcionan cuando el badge
+  // vive dentro de un shadow root (los hijos del shadow no cuentan en la API
+  // de nodos del host element).
+  function badgeIsInDOM(root) {
+    if (!root || !root.isConnected) return false;
+    const target = (root.shadowRoot) || root;
+    return !!target.querySelector('.precio-real-badge');
+  }
 
   function isProductPage() {
     // Si helpers expone la versión strict (incluye filtro de URLs de listado),
@@ -218,14 +234,36 @@
     } else if (ctx && ctx.retailer && !root.getAttribute('data-site')) {
       root.setAttribute('data-site', ctx.retailer);
     }
-    // Limpiar badge anterior antes de montar el nuevo. Usar replaceChildren si
-    // está disponible (más eficiente y atómico que innerHTML = '').
+    // Ciclo 1616: montar el badge en un Shadow Root si el browser lo soporta.
+    // El shadow DOM aísla completamente el badge de la CSS de la página:
+    // position:fixed no se ve afectado por transform/filter de ancestros porque
+    // el shadow root crea su propio stacking context, y los selectores del sitio
+    // no pueden alcanzar nuestros elementos internos. Fallback a light DOM si el
+    // browser no soporta attachShadow (Edge Legacy, algunos entornos de kiosk).
+    let mountTarget = root;
     try {
-      if (typeof root.replaceChildren === 'function') {
-        root.replaceChildren(makeBadge(verdict, ctx));
+      if (!root.shadowRoot && typeof root.attachShadow === 'function') {
+        const shadow = root.attachShadow({ mode: 'open' });
+        const styleEl = document.createElement('style');
+        styleEl.textContent = BADGE_CSS_INLINE;
+        shadow.appendChild(styleEl);
+      }
+      if (root.shadowRoot) mountTarget = root.shadowRoot;
+    } catch (_) { mountTarget = root; }
+
+    // Limpiar badge anterior preservando el <style> en el shadow root.
+    try {
+      const badge = makeBadge(verdict, ctx);
+      if (mountTarget !== root) {
+        // Shadow root: reemplazar solo el badge, dejar el <style> intacto.
+        const old = mountTarget.querySelector('.precio-real-badge');
+        if (old) old.remove();
+        mountTarget.appendChild(badge);
+      } else if (typeof root.replaceChildren === 'function') {
+        root.replaceChildren(badge);
       } else {
         root.innerHTML = '';
-        root.appendChild(makeBadge(verdict, ctx));
+        root.appendChild(badge);
       }
     } catch (e) {
       log.warn('mountBadge DOM write failed', e && e.message);
@@ -578,9 +616,19 @@
                 // perspective distinto de none hace lo mismo (WebGL overlays, 3D carousels).
                 // mix-blend-mode distinto de normal también lo crea (efectos de overlay
                 // en temas premium de Garbarino, Frávega, y retailers Samsung/LG).
+                // Ciclo 1614: filter distinto de none también crea stacking context
+                // (drop-shadow en imágenes de producto, brightness en banners Hot Sale).
+                const filter = acs.filter || '';
                 const transform = acs.transform || '';
                 const perspective = acs.perspective || '';
                 const mixBlendMode = acs.mixBlendMode || '';
+                // Ciclo 1616: content-visibility:auto crea un nuevo stacking context
+                // en Chrome 85+ y se usa en PDPs con lazy rendering (Carrefour AR nueva
+                // arquitectura, algunos temas Next.js con @vercel/og). También capturamos
+                // view-transition-name que en Chrome 111+ crea stacking context al activar
+                // la View Transitions API (retailers que migraron a SPA con animaciones nativas).
+                const contentVisibility = acs.contentVisibility || '';
+                const viewTransitionName = acs.viewTransitionName || '';
                 // Ciclo 1606: overflow:hidden en un ancestro puede clipear position:fixed
                 // cuando ese ancestro también crea un stacking context (lo cual sucede
                 // frecuentemente junto con transform/will-change). En Shopify Debut/Dawn
@@ -596,9 +644,12 @@
                     isolation === 'isolate' ||
                     /transform|opacity|filter/.test(willChange) ||
                     (clipPath && clipPath !== 'none') ||
+                    (filter && filter !== 'none') ||
                     (transform && transform !== 'none') ||
                     (perspective && perspective !== 'none') ||
                     (mixBlendMode && mixBlendMode !== 'normal') ||
+                    (contentVisibility === 'auto' || contentVisibility === 'hidden') ||
+                    (viewTransitionName && viewTransitionName !== 'none') ||
                     // Solo hoist por overflow si también hay un stacking context implícito
                     // (position:sticky/fixed en el ancestor, o z-index distinto de auto):
                     (overflowHidden && (acs.position === 'sticky' || acs.position === 'fixed' ||
@@ -662,7 +713,7 @@
     // remover nuestro root silenciosamente entre renders sin cambiar la URL ni el precio.
     if (mounted && key === lastKey && current === lastPrice) {
       const root = document.getElementById('precio-real-badge-root');
-      if (root && root.isConnected && root.hasChildNodes()) return true;
+      if (root && badgeIsInDOM(root)) return true;
       // Badge fue removido del DOM → forzar re-mount.
       mounted = false;
     }
@@ -801,6 +852,25 @@
           // Shopify custom); data-fs-price-value (VTEX Faststore v2+, precio en el
           // contenedor de precio que cambia al seleccionar variante).
           'data-price-value', 'data-fs-price-value',
+          // Ciclo 1614: VTEX Faststore v3 — data-fs-selling-price y data-fs-offer-price
+          // reemplazan data-fs-price-variant en las PDPs nuevas de Carrefour AR,
+          // Changomás y Garbarino migrados al nuevo stack Faststore.
+          'data-fs-selling-price', 'data-fs-offer-price',
+          // Ciclo 1615: data-fs-delivery-price cubre el precio con envío incluido
+          // en VTEX Faststore v3+ (Jumbo AR, Disco AR con campañas de envío gratis).
+          // data-wc-variation-id es el identificador de variante en WooCommerce blocks
+          // (Gutenberg blocks en PHP 8.1+ con WooCommerce Blocks 11+, usado en
+          // Powerplanet AR, Megastore AR y otros WooCommerce modernos).
+          'data-fs-delivery-price', 'data-wc-variation-id',
+          // Ciclo 1616: data-sku-id (Shopify Markets: klibr, lazer, pcarg y otros que
+          // migraron a Shopify Markets 2025 donde el SKU se expone como data-sku-id en
+          // el picker de variantes). data-product-form-id es el ID del formulario de
+          // producto en temas Shopify custom con múltiples secciones de producto.
+          // data-selected-sku (CompraGamer custom engine: cambia al seleccionar
+          // un kit o configuración de PC). data-bundle-id (retailers de gaming que
+          // venden bundles — GearZone, Lazer, Klibr — donde el ID del bundle
+          // identifica la configuración elegida y determina el precio final).
+          'data-sku-id', 'data-product-form-id', 'data-selected-sku', 'data-bundle-id',
         ],
       });
     } catch (_) { variantObserver = null; }
@@ -816,7 +886,7 @@
       if (!mounted) return;
       if (++checks > BADGE_HEALTH_MAX_CHECKS) return;
       const root = document.getElementById('precio-real-badge-root');
-      if (!root || !root.isConnected || !root.hasChildNodes()) {
+      if (!root || !badgeIsInDOM(root)) {
         mounted = false;
         tryMount(siteKey, myToken).then((didMount) => {
           if (didMount) schedulePostMountCheck(siteKey);
@@ -843,7 +913,7 @@
           if (++bodySwapFires > BODY_SWAP_MAX_FIRES) { bodySwapObs.disconnect(); return; }
           if (!mounted) return;
           const root = document.getElementById('precio-real-badge-root');
-          if (!root || !root.isConnected || !root.hasChildNodes()) {
+          if (!root || !badgeIsInDOM(root)) {
             mounted = false;
             log.debug(siteKey, 'body swap detected, re-mounting badge');
             tryMount(siteKey, myToken).then((didMount) => {
@@ -962,6 +1032,18 @@
             // custom que exponen el precio como integer en centavos en el elemento de variante);
             // data-fs-price-value (VTEX Faststore v2+ precio en el contenedor de precio).
             'data-price-value', 'data-fs-price-value',
+            // Ciclo 1614: VTEX Faststore v3 selectors para Carrefour AR, Changomás y
+            // Garbarino migrados al nuevo stack. Cubren el caso de montaje inicial
+            // donde el precio no está en el DOM al cargar pero aparece al hidratarse.
+            'data-fs-selling-price', 'data-fs-offer-price',
+            // Ciclo 1615: data-fs-delivery-price (VTEX Faststore v3+ envío incluido),
+            // data-wc-variation-id (WooCommerce Blocks 11+ Gutenberg en WooCommerce
+            // modernos como Powerplanet AR, Megastore AR).
+            'data-fs-delivery-price', 'data-wc-variation-id',
+            // Ciclo 1616: data-sku-id (Shopify Markets 2025), data-product-form-id
+            // (Shopify custom multi-section), data-selected-sku (CompraGamer engine),
+            // data-bundle-id (gaming bundles: klibr, lazer, pcarg).
+            'data-sku-id', 'data-product-form-id', 'data-selected-sku', 'data-bundle-id',
           ],
         });
       } else {
