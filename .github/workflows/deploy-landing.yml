@@ -19,9 +19,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Inject Cloudflare Analytics token
-        if: ${{ secrets.CF_ANALYTICS_TOKEN != '' }}
+        env:
+          CF_ANALYTICS_TOKEN: ${{ secrets.CF_ANALYTICS_TOKEN }}
         run: |
-          find landing -name "*.html" -exec sed -i "s/TOKEN_PLACEHOLDER/${{ secrets.CF_ANALYTICS_TOKEN }}/g" {} \;
+          if [ -n "$CF_ANALYTICS_TOKEN" ]; then
+            find landing -name "*.html" -exec sed -i "s/TOKEN_PLACEHOLDER/${CF_ANALYTICS_TOKEN}/g" {} \;
+          fi
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
