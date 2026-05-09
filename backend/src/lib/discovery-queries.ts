@@ -542,4 +542,22 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "camiseta termica interior",
   "medias de lana",
   "bufanda polar",
+  // Ciclo 1613 — electrodomésticos cocina invierno (consumo hogar aumenta en frío)
+  "pava electrica acero inoxidable",
+  "tostadora 2 ranuras",
+  "horno electrico sobremesa",
+  "cafetera espresso",
+  "cafetera drip programable",
+  // Ciclo 1613 — indumentaria técnica invierno
+  "campera pluma hombre",
+  "piloto impermeable mujer",
+  "ropa interior termica set",
+  // Ciclo 1613 — calefacción ampliada
+  "estufa infrarroja 1500w",
+  "caloventor fensa",
+  "calefactor a gas tiro balanceado",
+  // Ciclo 1613 — deporte en casa / gimnasio domicilio
+  "bicicleta fija spinning",
+  "cinta de correr plegable",
+  "colchoneta yoga antideslizante",
 ];
