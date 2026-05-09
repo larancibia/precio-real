@@ -3,7 +3,7 @@
 Issue de tracking: #20 (P0, M5: Launch).
 Ventana sugerida de publicacion: **10-11 de mayo de 2026** (pre Hot Sale).
 
-> Borrador editable. Reemplazar los marcadores `[VERIFICAR ...]` y `[LINK ...]` antes de publicar. Las cifras de EcoGo y los retailers especificos deben venir de los datos relevados por el backend (`backend/src/scrapers/`) y/o del informe de EcoGo citado en `docs/PR-KIT.md`.
+> Borrador listo para publicar. No usar cifras no verificadas: el hook se apoya en el problema observable (comparar precio actual contra historial), la fecha oficial de CACE y el release público de la extensión.
 
 ---
 
@@ -13,7 +13,7 @@ Ventana sugerida de publicacion: **10-11 de mayo de 2026** (pre Hot Sale).
 
 En Argentina nos acostumbramos a una mentira: el descuento del Hot Sale.
 
-Muchos comercios suben los precios 4-6% en las semanas previas y despues "rebajan" al valor que ya tenian. La promo es humo.
+El problema no es el cartel rojo de "30% OFF": el problema es no saber cuánto valía el mismo producto la semana pasada.
 
 Hice una extension de Chrome gratis para detectarlo. Va hilo. ↓
 
@@ -25,11 +25,11 @@ Si el "descuento" oculta un aumento previo, te avisa.
 
 [SCREENSHOT_1 — popup mostrando historial de precios]
 
-### 3/8 — El dato
+### 3/8 — El contexto
 
-Segun **EcoGo**, en las semanas previas al Hot Sale 2025 los precios de electronica y electrodomesticos relevados subieron entre **4% y 6%** — antes de las "rebajas".
+El Hot Sale Argentina 2026 es del **11 al 13 de mayo** (CACE), con más de 800 marcas y miles de promociones.
 
-Con inflacion del **~66% interanual** (INDEC, dic-2025), distinguir un descuento real de uno inventado se volvio imposible a ojo.
+En un país donde 2025 cerró con inflación anual en torno al **31-32%** (INDEC), distinguir un descuento real de uno inventado se volvió imposible a ojo.
 
 ### 4/8 — Como funciona
 
@@ -80,7 +80,7 @@ Si te sirve, RT al primer tweet asi llega a mas gente antes del Hot Sale. Gracia
 
 Reemplazar el tweet 1 si el hook principal no engancha en las primeras horas:
 
-- **Variante "data"**: "EcoGo midio que los precios suben 4-6% antes del Hot Sale. Hice una extension de Chrome para que veas el historial real de cada producto y no te coman con lo de siempre. Va hilo."
+- **Variante "data"**: "El Hot Sale arranca el 11 de mayo y van a aparecer miles de carteles de OFF. Hice una extensión de Chrome para ver el historial real de cada producto antes de comprar. Va hilo."
 - **Variante "indignacion"**: "Te juro que estoy harto de los 'descuentos' del Hot Sale que en realidad son aumentos disfrazados. Hice algo al respecto: una extension gratis que te muestra el precio real de cada producto."
 - **Variante "humilde"**: "Pase varios fines de semana haciendo esto. Es una extension gratuita que muestra el historial real de precios en MercadoLibre, Fravega, Carrefour, Coto, Falabella y Garbarino. Sirve sobre todo para Hot Sale. Va hilo:"
 
@@ -103,7 +103,6 @@ Evitar saturar con hashtags genericos tipo #ofertas / #descuentos — no aportan
 
 ## Quien etiquetar / responder
 
-- @ecogo_ok — la fuente del dato 4-6%, agradecimiento honesto.
 - Periodistas tech ya identificados en `docs/PR-KIT.md` y issue #22 (Infobae, iProUP, La Nacion tech, Perfil tech) — no etiquetar en el thread, mejor DM en paralelo.
 - Cuentas de consumo / finanzas personales argentinas con buena reputacion: @infobae, @iProUP, @clarincom, @LaNacion — etiquetar con criterio, solo si aplica al tweet especifico.
 
@@ -112,8 +111,7 @@ Evitar saturar con hashtags genericos tipo #ofertas / #descuentos — no aportan
 - [x] Link de instalacion: usa https://precio-real.firemandeveloper.com/#instalar (GitHub releases). Actualizar a CWS URL cuando se apruebe.
 - [x] Dominio confirmado: `precio-real.firemandeveloper.com` (canonical en toda la landing y extension).
 - [ ] Adjuntar screenshots reales (no placeholders) generados desde la extension instalada en un MLA real durante la semana previa.
-- [x] Cifra EcoGo: 4-6% pre-Hot-Sale 2025 (electronica y electrodomesticos). Fuente: @ecogo_ok.
-- [x] Cifra inflacion: ~66% interanual (INDEC, dic-2025).
+- [x] Cifra inflación: 2025 cerró alrededor de 31-32% anual según IPC nacional INDEC.
 - [x] Fecha Hot Sale 2026 confirmada: 11-13 de mayo de 2026 (CACE).
 - [ ] Programar el thread en TweetDeck / Buffer para 09:00 ART de un dia laboral (martes/miercoles ideales).
 - [ ] Tener listas 2-3 respuestas pre-escritas para preguntas frecuentes ("funciona en Firefox?", "es de verdad gratis?", "como saben que es trucho?").

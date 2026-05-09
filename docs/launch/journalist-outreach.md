@@ -3,7 +3,7 @@
 Issue de tracking: #22 (P1, M5: Launch).
 Ventana sugerida de envio: **10-12 de mayo de 2026** (pre Hot Sale, en paralelo al thread de X #20 y al post de Reddit #21).
 
-> Borrador editable. Reemplazar los marcadores `[VERIFICAR ...]`, `[LINK ...]` y los datos personales de cada periodista antes de enviar. Cifras y citas tienen que coincidir con `docs/PR-KIT.md` y `docs/launch/twitter-thread-launch.md`.
+> Borrador listo para enviar después de personalizar destinatario. No usar cifras no verificadas: el pitch se apoya en el problema consumidor + inflación + herramienta open source.
 
 ---
 
@@ -24,7 +24,7 @@ Ventana sugerida de envio: **10-12 de mayo de 2026** (pre Hot Sale, en paralelo 
 
 | # | Medio | Seccion | Periodista candidato | Canal preferido | Angulo |
 |---|-------|---------|---------------------|-----------------|--------|
-| 1 | **Infobae** | Tecno / Economia | `[VERIFICAR — confirmar firma actual de seccion tecno y consumo]` | Email redaccion + DM en X | Consumidor + inflacion, dato de EcoGo |
+| 1 | **Infobae** | Tecno / Economia | `[VERIFICAR — confirmar firma actual de seccion tecno y consumo]` | Email redaccion + DM en X | Consumidor + inflacion |
 | 2 | **iProUP** | Innovacion / Apps | `[VERIFICAR — periodista que cubre apps argentinas]` | Email + LinkedIn | Producto argento, open source, Hot Sale |
 | 3 | **La Nacion** | Tecnologia / Economia personal | `[VERIFICAR — firma de seccion tecno o economia domestica]` | Email | Inflacion + herramienta para el consumidor |
 | 4 | **Perfil** | Tecnologia | `[VERIFICAR — firma de seccion tecno]` | Email | Hot Sale + transparencia de precios |
@@ -50,7 +50,7 @@ Lei tu nota sobre [TEMA RECIENTE — consumo / e-commerce / inflacion / Hot Sale
 Soy Luis Arancibia, desarrollador. Hice **Precio Real**, una extension de Chrome gratuita y open source que muestra el historial real de precios de los productos en Mercado Libre, Fravega, Carrefour, Coto, Falabella y Garbarino. La idea es que el consumidor pueda detectar los "descuentos" del Hot Sale que en realidad son aumentos disfrazados.
 
 El angulo es bastante argento:
-- Segun EcoGo, en las semanas previas al Hot Sale 2025 los precios de electronica y electrodomesticos subieron entre **4% y 6%** antes de las "rebajas".
+- Hot Sale 2026 arranca el 11 de mayo y el consumidor no tiene una forma simple de saber si el precio publicado es realmente menor que el de semanas anteriores.
 - La extension corre local, no pide registro ni datos personales, y el codigo esta auditable en GitHub.
 - Esta hecha por un solo desarrollador argentino. No hay empresa ni fondeo detras.
 
@@ -79,7 +79,7 @@ Hola [NOMBRE], como va.
 
 Te tiro corto: lance **Precio Real**, una extension de Chrome gratis y open source que muestra el historial real de precios en los principales e-commerce argentinos para detectar "descuentos" truchos del Hot Sale.
 
-El dato fuerte: EcoGo midio que los precios de electronica y electrodomesticos subieron **4-6%** las semanas previas al Hot Sale 2025. La extension cruza eso con el historial real y avisa cuando la rebaja es humo.
+El dato fuerte: Hot Sale 2026 arranca el 11 de mayo y la extensión permite comparar el precio actual contra el historial real del producto antes de comprar. Si la rebaja es humo, queda visible.
 
 Si te sirve para una nota, links y kit de prensa aca:
 - Landing: https://precio-real.firemandeveloper.com
@@ -97,7 +97,7 @@ Luis
 
 (maximo ~600 caracteres, sin links largos en el primer mensaje)
 
-> Hola [NOMBRE], te leo seguido en [MEDIO]. Lance Precio Real, una extension de Chrome gratis y open source que muestra el historial real de precios en MercadoLibre, Fravega, Carrefour, Coto, Falabella y Garbarino — pensada para detectar los "descuentos" truchos del Hot Sale (EcoGo midio que suben 4-6% antes de las rebajas). Si te sirve para una nota, te paso el kit de prensa por DM o mail. Gracias!
+> Hola [NOMBRE], te leo seguido en [MEDIO]. Lancé Precio Real, una extensión de Chrome gratis y open source que muestra el historial real de precios en MercadoLibre, Frávega, Carrefour, Coto, Falabella y Garbarino — pensada para detectar descuentos truchos del Hot Sale sin pedir registro ni datos personales. Si te sirve para una nota, te paso el kit de prensa por DM o mail. Gracias!
 
 Si responde con interes, mandar Plantilla A o B por el canal que el periodista prefiera.
 
@@ -111,7 +111,7 @@ Si responde con interes, mandar Plantilla A o B por el canal que el periodista p
 
 Hola [NOMBRE],
 
-Te escribia por las dudas del mail anterior sobre **Precio Real** (extension gratis para detectar descuentos truchos del Hot Sale, dato de EcoGo 4-6%). Si no es para vos no hay drama, lo dejo aca y no molesto mas.
+Te escribia por las dudas del mail anterior sobre **Precio Real** (extension gratis para detectar descuentos truchos del Hot Sale con historial real de precios). Si no es para vos no hay drama, lo dejo aca y no molesto mas.
 
 Si te interesa pero no es el momento, escribime cuando puedas y te armo lo que necesites.
 
@@ -126,7 +126,7 @@ Para tener a mano si el periodista pide "mandame los datos clave en bullets":
 
 - Que es: extension de Chrome gratuita y open source que muestra historial real de precios en e-commerce argentinos.
 - Sitios soportados (v0.2.2): 101 e-commerce argentinos (lista completa en https://precio-real.firemandeveloper.com).
-- Dato fuerte: EcoGo midio aumentos de 4-6% en electronica y electrodomesticos las semanas previas al Hot Sale 2025. La extension cruza eso con el historial real y alerta cuando la "rebaja" es trucha.
+- Dato fuerte: la extension compara el precio actual contra el historial real de las semanas previas y alerta cuando la "rebaja" no mejora el precio anterior.
 - Privacidad: corre local, no pide registro ni email, no envia datos personales. Permisos minimos (`storage`, `activeTab`).
 - Modelo: gratis, sin ads, sin tracking. Soporte opcional via Cafecito.
 - Codigo: open source, auditable en https://github.com/larancibia/precio-real.
@@ -149,11 +149,11 @@ Para tener a mano si el periodista pide "mandame los datos clave en bullets":
 - [ ] Confirmar firma actual de cada periodista del listado (no enviar a redacciones genericas si se pudo identificar firma).
 - [ ] Personalizar el primer parrafo con una nota reciente real del periodista (no inventar).
 - [x] Links de instalacion reemplazados (precio-real.firemandeveloper.com/#instalar). Actualizar a CWS URL cuando se apruebe.
-- [x] Datos EcoGo y cifras verificadas (4-6%, Hot Sale 2025, electronica/electrodomesticos).
+- [x] Fecha Hot Sale 2026 confirmada: 11-13 de mayo de 2026 (CACE).
 - [ ] Confirmar firma actual de periodistas por medio (requiere busqueda manual — Twitter/LinkedIn de cada medio).
 - [x] Dominio confirmado: `precio-real.firemandeveloper.com` (canonical en toda la landing y extension). Deploy listo en Cloudflare Pages (#29).
 - [ ] Confirmar que el link al Chrome Web Store funciona y muestra la extension publicada.
-- [ ] Confirmar la cifra exacta de EcoGo (ano, categoria, ventana). Si no se logra confirmar, remover el dato y dejar el angulo cualitativo.
+- [x] Claims numericos no respaldados removidos del pitch publico.
 - [ ] Tener 3 screenshots reales listos para mandar como adjuntos cuando el periodista los pida (no en el primer mail).
 - [ ] Tener disponibilidad para entrevista en las 48h siguientes al envio (idealmente video corto en zoom / google meet).
 
@@ -182,7 +182,7 @@ Actualizar el issue #22 con el resultado final (cuantos contactados, cuantos res
 - No adjuntar PDFs pesados ni decks. Todo en links publicos.
 - No pedir embargo (no tiene sentido para este lanzamiento).
 - No insistir mas de una vez si no hay respuesta.
-- No tirar datos sin verificar (la cifra de EcoGo va con `[VERIFICAR]` hasta confirmar).
+- No tirar datos sin verificar.
 - No prometer features que no existen aun (Firefox, mas retailers, app mobile).
 - No mentir sobre la escala: es un proyecto solo, sin empresa, sin fondeo. Eso suma — no resta.
 

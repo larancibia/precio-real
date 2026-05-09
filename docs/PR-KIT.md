@@ -2,20 +2,20 @@
 
 ## Resumen ejecutivo
 
-Precio Real es una extensión gratuita de Chrome que muestra el historial real de precios de cada producto en los principales e-commerce argentinos —Mercado Libre, Frávega, Amazon Argentina, Carrefour, Coto, Falabella, Garbarino y decenas de tiendas más (101 en total)— para detectar aumentos disfrazados de descuentos durante el Hot Sale y otras promociones. Se apoya en datos de **EcoGo** para contextualizar los precios en una economía con inflación crónica. Es open source, hecha en Argentina y no pide registro ni datos personales.
+Precio Real es una extensión gratuita de Chrome que muestra el historial real de precios de cada producto en los principales e-commerce argentinos —Mercado Libre, Frávega, Amazon Argentina, Carrefour, Coto, Falabella, Garbarino y decenas de tiendas más (101 en total)— para detectar aumentos disfrazados de descuentos durante el Hot Sale y otras promociones. Es open source, hecha en Argentina y no pide registro ni datos personales.
 
 ## El problema
 
-Argentina convive con inflación estructural: la suba interanual fue de **~66%** (INDEC, dic-2025), luego de períodos con inflación del ~100-200%. En ese contexto, los descuentos de eventos como el Hot Sale se vuelven tramposos: muchos comercios suben los precios en las semanas previas para después "rebajarlos" al valor que ya tenían.
+Argentina convive con inflación estructural: 2025 cerró con una inflación acumulada de **31,8%** según el IPC nacional de INDEC. En ese contexto, los descuentos de eventos como el Hot Sale se vuelven difíciles de evaluar a simple vista: muchos consumidores no tienen una referencia clara de cuánto valía el mismo producto días o semanas antes.
 
-Según el seguimiento de **EcoGo**, en las semanas previas al Hot Sale 2025 los precios de electrónica y electrodomésticos relevados subieron entre **4% y 6%** antes de las "rebajas". El consumidor argentino, que ya navega una distorsión de precios permanente, queda sin herramientas simples para responder una pregunta básica: *¿esto está realmente más barato que la semana pasada?*
+El consumidor argentino, que ya navega una distorsión de precios permanente, queda sin herramientas simples para responder una pregunta básica: *¿esto está realmente más barato que la semana pasada?*
 
 ## Cómo funciona
 
 Precio Real corre como extensión de Chrome (Manifest V3) y trabaja en segundo plano mientras navegás. Cuando entrás a una ficha de producto en un sitio soportado, la extensión:
 
 1. Detecta el producto y su precio actual mediante un *content script*.
-2. Cruza ese precio contra el historial almacenado y los datos de referencia de EcoGo.
+2. Cruza ese precio contra el historial almacenado.
 3. Muestra un badge en la página con el precio histórico real, alertas si el "descuento" oculta un aumento previo, y comparativos entre tiendas.
 
 No requiere cuenta, login ni envía datos personales. Los permisos solicitados son los mínimos necesarios: `storage` y `activeTab`.
@@ -29,7 +29,7 @@ Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Arg
 - Historial de precios real por producto en los principales e-commerce de Argentina.
 - Alertas automáticas de aumentos disfrazados de descuento (típicos de Hot Sale / Cyber Monday).
 - Comparador entre tiendas para un mismo producto.
-- Datos de inflación de EcoGo integrados para contextualizar los precios.
+- Contexto de inflación local para interpretar variaciones de precio sin confundirlas con descuentos reales.
 - Sin registro, sin login, sin datos personales: funciona apenas la instalás.
 - Open source, código auditable en GitHub.
 - Hecha en Argentina, pensada para el consumidor local.
@@ -69,6 +69,12 @@ Enviar por mail junto al pitch al periodista si lo solicita; no adjuntar en el p
 - Logo (SVG): `extension/icons/icon.svg` (o usar favicon.svg del landing)
 - Imagen Open Graph (1200x630): https://precio-real.firemandeveloper.com/og-image.png
 - Iconos de la extensión (16 / 48 / 128 px): disponibles en `extension/icons/`.
+
+## Fuentes verificadas
+
+- Hot Sale Argentina 2026: 11 al 13 de mayo, organizado por CACE.
+- Inflación 2025: IPC nacional INDEC, cierre anual 31,8%.
+- Datos propios del producto: 101 e-commerce soportados en `extension/manifest.json`, release público v0.2.2 en GitHub.
 
 ---
 

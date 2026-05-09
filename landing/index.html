@@ -625,7 +625,7 @@
         "name": "Hot Sale Argentina",
         "alternateName": ["Hot Sale AR", "Hot Sale"],
         "termCode": "hot-sale-argentina",
-        "description": "Evento anual de descuentos online organizado por la Camara Argentina de Comercio Electronico (CACE). Concentra la mayor cantidad de aumentos disfrazados del calendario argentino segun reportes de EcoGo y consumidores.",
+        "description": "Evento anual de descuentos online organizado por la Camara Argentina de Comercio Electronico (CACE). Es uno de los momentos de mayor actividad promocional del calendario argentino y exige comparar cada oferta contra su historial real.",
         "inDefinedTermSet": "https://precio-real.firemandeveloper.com/#glosario",
         "inLanguage": "es-AR"
       },
@@ -877,9 +877,9 @@
       <h1 class="hero__title">Precio Real</h1>
       <p class="hero__subtitle" id="hero-subtitle">
         Hot Sale Argentina 2026 empieza el <strong>11 de mayo</strong>.
-        Según <strong>EcoGo</strong>, los precios ya subieron entre <strong>4% y 6%</strong>
-        en las semanas previas. <span class="hero__highlight">Precio Real</span> te muestra
-        el precio histórico real de cada producto para que no comprés humo.
+        Antes de comprar, compará el precio actual contra su historial.
+        <span class="hero__highlight">Precio Real</span> te muestra el precio histórico
+        real de cada producto para que no comprés humo.
       </p>
       <div class="hero__actions" id="hero-actions">
         <a href="#instalar" class="btn btn--primary">Instalar Gratis</a>
@@ -908,9 +908,9 @@
     function diffDays(target) { return Math.ceil((target - now) / 86400000); }
     if (now < HS_START) {
       var d = diffDays(HS_START);
-      el.innerHTML = 'Hot Sale Argentina 2026 empieza el <strong>11 de mayo</strong> — quedan <strong>' + d + ' ' + (d === 1 ? 'día' : 'días') + '</strong>. Según <strong>EcoGo</strong>, los precios ya subieron entre <strong>4% y 6%</strong> en las semanas previas. <span class="hero__highlight">Precio Real</span> te muestra el precio histórico real de cada producto para que no comprés humo.';
+      el.innerHTML = 'Hot Sale Argentina 2026 empieza el <strong>11 de mayo</strong> — quedan <strong>' + d + ' ' + (d === 1 ? 'día' : 'días') + '</strong>. Antes de comprar, compará el precio actual contra su historial. <span class="hero__highlight">Precio Real</span> te muestra el precio histórico real de cada producto para que no comprés humo.';
     } else if (now < HS_END) {
-      el.innerHTML = '<strong>¡El Hot Sale Argentina 2026 está activo!</strong> Según <strong>EcoGo</strong>, muchos precios subieron 4–6% antes del evento. <span class="hero__highlight">Precio Real</span> te muestra el historial real de cada producto para que no comprés humo.';
+      el.innerHTML = '<strong>¡El Hot Sale Argentina 2026 está activo!</strong> Compará cada oferta contra el historial real antes de pagar. <span class="hero__highlight">Precio Real</span> te muestra el historial de cada producto para que no comprés humo.';
     } else if (now < CM_START) {
       var dCM = diffDays(CM_START);
       el.innerHTML = 'Hot Sale terminó — el próximo evento grande es el <strong>CyberMonday</strong> (octubre 2026). Instalá <span class="hero__highlight">Precio Real</span> ahora para acumular historial de precios antes del evento y detectar aumentos disfrazados cuando llegue.';
@@ -947,8 +947,8 @@
           <li class="pre-hs__tip">
             <span class="pre-hs__tip-icon" aria-hidden="true">⚠️</span>
             <div>
-              <strong>Los precios ya subieron 4–6% según EcoGo</strong>
-              <p>El patrón es siempre el mismo: inflan 2–3 semanas antes y "descuentan" sobre ese precio inflado. El historial de Precio Real lo deja al descubierto.</p>
+              <strong>El historial previo es lo que separa oferta real de marketing</strong>
+              <p>El patrón a revisar es simple: si el precio actual no mejora el precio de semanas anteriores, el cartel de "OFF" no alcanza. El historial de Precio Real lo deja al descubierto.</p>
             </div>
           </li>
           <li class="pre-hs__tip">

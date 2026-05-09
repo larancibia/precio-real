@@ -65,7 +65,7 @@ Para cada caso, incluir: producto, retailer, precio el 28-abr, precio el 11-may 
 - **Frecuencia de captura:** scraping diario via cron (`backend/src/scrapers/scheduled.ts`).
 - **Definicion de "descuento trucho":** producto cuyo precio subio ≥ 3 % entre 28-abr y 11-may, y cuyo precio durante 12-14 may quedo igual o por encima del 28-abr.
 - **Definicion de "suba pre-Hot Sale":** delta porcentual entre el precio del 28-abr y el precio mas alto observado entre 5-may y 11-may.
-- **Inflacion de referencia:** se descuenta la inflacion mensual de abril/mayo 2026 segun `[VERIFICAR fuente — IPC INDEC o EcoGo]` para no contar como suba lo que es solo arrastre inflacionario.
+- **Inflacion de referencia:** se descuenta la inflacion mensual de abril/mayo 2026 segun IPC INDEC publicado para no contar como suba lo que es solo arrastre inflacionario.
 - **Codigo de calculo:** abierto en el repo, ver `backend/scripts/` (agregar `report-hot-sale.ts` antes de publicar — pendiente).
 - **Limitaciones:** muestra acotada a productos con presencia en al menos un retailer soportado; no incluye supermercadismo puro de gondola; no incluye servicios.
 
@@ -138,7 +138,7 @@ Crosspost manual a `r/merval`, `r/AskArgentina`, `r/devsarg` solo si se justific
 ## Checklist de produccion (antes de publicar el 18-may)
 
 - [ ] Correr `report-hot-sale.ts` (pendiente de implementar en `backend/scripts/`) para volcar los `[DATO_BD ...]`.
-- [ ] Verificar inflacion mensual abril/mayo 2026 (INDEC o EcoGo) y citar fuente.
+- [ ] Verificar inflacion mensual abril/mayo 2026 (INDEC) y citar fuente.
 - [ ] Tener al menos 3 screenshots de badge de Precio Real con casos testigo reales.
 - [ ] Subir CSV crudo a `[LINK_DATASET]` (Gist o R2).
 - [ ] Publicar post en `landing/` (nuevo archivo `hot-sale-2026.html`) con OG image especifica.

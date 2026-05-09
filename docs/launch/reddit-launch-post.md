@@ -4,7 +4,7 @@ Issue de tracking: #21 (P0, M5: Launch).
 Subreddits objetivo: **r/argentina** y **r/argentinatecno**.
 Ventana sugerida de publicacion: **10-12 de mayo de 2026** (pre Hot Sale, alineado con thread de X).
 
-> Borrador editable. Reemplazar los marcadores `[VERIFICAR ...]` y `[LINK ...]` antes de publicar. Las cifras de EcoGo y los retailers especificos deben coincidir con lo que figura en `docs/PR-KIT.md` y `docs/launch/twitter-thread-launch.md`.
+> Borrador listo para publicar. Evita cifras no verificadas y vende el problema simple: sin historial no sabés si el descuento es real.
 
 ---
 
@@ -32,7 +32,7 @@ Hola gente,
 
 Me llamo Luis, soy desarrollador y vivo en Argentina como casi todos los que estan leyendo esto. Hace meses que me revienta una cosa: los "descuentos" del Hot Sale que en realidad son aumentos disfrazados.
 
-Segun **EcoGo**, en las semanas previas al Hot Sale 2025 los precios de electronica y electrodomesticos relevados subieron entre **4% y 6%**. Despues llega el evento, te ponen un cartel rojo de "30% OFF" y termina siendo el mismo precio que pagabas hace dos semanas. Con la inflacion que hay, distinguir un descuento real de uno trucho a ojo es imposible.
+El problema es que llega el evento, te ponen un cartel rojo de "30% OFF" y muchas veces no sabés si está realmente más barato o si volvió al precio que ya tenía. Con la inflación que hay, distinguir un descuento real de uno trucho a ojo es imposible.
 
 Asi que me puse a hacer algo al respecto. Se llama **Precio Real** y es una extension de Chrome:
 
@@ -104,7 +104,7 @@ Gracias.
 
 ## Variantes de hook (si no engancha el principal)
 
-- **Variante "data"**: "EcoGo midio que los precios suben 4-6% antes del Hot Sale. Hice una extension gratis para que veas el historial real y no te coman con lo de siempre."
+- **Variante "data"**: "El Hot Sale arranca el 11 de mayo y van a aparecer miles de carteles de OFF. Hice una extension gratis para ver el historial real y no comprar humo."
 - **Variante "indignacion"**: "Me canse de los descuentos truchos del Hot Sale. Hice una extension de Chrome gratis y open source para detectarlos."
 - **Variante "humilde"**: "Pase varios fines de semana en esto. Es una extension gratis que muestra el historial real de precios en los principales e-commerce de AR. Sirve sobre todo para Hot Sale."
 
@@ -129,7 +129,6 @@ Gracias.
 
 - [x] Link: https://precio-real.firemandeveloper.com/#instalar (GitHub releases). Actualizar a CWS URL cuando se apruebe.
 - [x] Dominio confirmado: `precio-real.firemandeveloper.com` (canonical en toda la landing y extension).
-- [x] Cifra EcoGo: 4-6% pre-Hot-Sale 2025 (electronica y electrodomesticos). Fuente: @ecogo_ok.
 - [x] Fecha Hot Sale 2026 confirmada: 11-13 de mayo de 2026 (CACE).
 - [ ] Tener cuenta de Reddit con karma minimo (si la cuenta es nueva, los mods de r/argentina suelen mandar al filtro automatico).
 - [ ] Postear en horario de alto trafico AR: **20:00-23:00 ART de un dia laboral** (martes/miercoles ideales para tech, jueves bien para r/argentina).
