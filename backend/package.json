@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
+    "test": "tsx tests/run.ts",
     "db:migrate": "wrangler d1 execute precio-real --file=src/db/schema.sql",
     "db:migrate:local": "wrangler d1 execute precio-real --local --file=src/db/schema.sql",
     "db:seed": "tsx scripts/seed.ts",

@@ -77,6 +77,11 @@ export function clampLimit(raw: unknown): number {
 }
 
 export function clampMinDrop(raw: unknown): number {
+  // Treat null/undefined/empty-string as "missing" (DEFAULT). Without this
+  // guard, Number(null) === 0 and Number("") === 0 would silently coerce a
+  // missing query param into "show me 0%-and-above movers" instead of the
+  // documented default of 10%, breaking the landing page's expected feed size.
+  if (raw == null || raw === "") return DEFAULT_MIN_DROP_PCT;
   const n = Number(raw);
   if (!Number.isFinite(n)) return DEFAULT_MIN_DROP_PCT;
   // Accept negatives too — a caller asking for min_drop=-100 effectively says
