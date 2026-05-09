@@ -118,6 +118,7 @@ console.log('[precio-real tests] starting…');
     ['www.falabella.com.ar', 'falabella'],
     ['www.carrefour.com.ar', 'carrefour'],
     ['www.cotodigital3.com.ar', 'coto'],
+    ['www.coto.com.ar', 'coto'],
     ['www.naldo.com.ar', 'naldo'],
     ['www.musimundo.com', 'musimundo'],
     ['www.cetrogar.com.ar', 'cetrogar'],
@@ -1021,6 +1022,38 @@ function makeContextWithLd(ldNodes) {
   ]);
   const infoNone = prNone.extractPriceInfo('mercadolibre');
   assert(infoNone && infoNone.price === 9999, 'extractPriceInfo: no currency → pass (fail-open)');
+}
+
+// affiliates coverage (ciclo 1591) — todos los retailers en RETAILERS deben
+// tener entrada en AFFILIATES para que el CTA "Ir al producto →" aparezca.
+{
+  function freshNsWithAffiliates(opts) {
+    const ctx = makeContext(opts);
+    loadInto(ctx, 'utils/retailers.js');
+    loadInto(ctx, 'utils/helpers.js');
+    loadInto(ctx, 'utils/affiliates.js');
+    return ctx.window.PrecioReal;
+  }
+  const PR = freshNsWithAffiliates();
+  const allRetailerKeys = Object.keys(PR.RETAILERS);
+  for (const k of allRetailerKeys) {
+    assert(
+      PR.AFFILIATES && PR.AFFILIATES[k],
+      `AFFILIATES["${k}"] should exist for retailer coverage`
+    );
+    assert(
+      PR.AFFILIATES && PR.AFFILIATES[k] && PR.AFFILIATES[k].enabled === true,
+      `AFFILIATES["${k}"].enabled should be true`
+    );
+    // affiliateWrap deve devolver una URL cuando se le pasa una URL válida.
+    if (PR.AFFILIATES && PR.AFFILIATES[k] && PR.AFFILIATES[k].enabled) {
+      const result = PR.affiliateWrap('https://example.com/product', k);
+      assert(result && result.url, `affiliateWrap("${k}") should return url`);
+    }
+  }
+  // coto.com.ar detectado como 'coto' (detectSite cubre ambos dominios).
+  assert(PR.detectSite('www.coto.com.ar') === 'coto', 'detectSite coto.com.ar → coto');
+  assert(PR.detectSite('coto.com.ar') === 'coto', 'detectSite coto.com.ar (bare) → coto');
 }
 
 // ── Resultado ───────────────────────────────────────────────────────────────

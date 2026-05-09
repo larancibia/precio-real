@@ -210,6 +210,49 @@
       enabled: true,
       utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
     },
+    // Ciclo 1582: nuevos retailers Hot Sale AR.
+    changomas: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    electrolux: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    drean: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    motorola: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    todomodo: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    // Ciclo 1584: Amazon AR + HiperTehno.
+    amazon: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    hipertehno: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    // Ciclo 1599: Xiaomi Store AR, Philco AR, Venex.
+    xiaomi: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    philco: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    venex: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
   };
 
   function applyUtm(rawUrl, utm) {

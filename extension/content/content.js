@@ -163,6 +163,9 @@
       root.id = 'precio-real-badge-root';
       // Propagar retailer como atributo para CSS/debug (ej. [data-site="fravega"]).
       if (ctx && ctx.retailer) root.setAttribute('data-site', ctx.retailer);
+      // aria-live para lectores de pantalla: el badge es una notificación no crítica.
+      root.setAttribute('aria-live', 'polite');
+      root.setAttribute('aria-atomic', 'true');
       try {
         body.appendChild(root);
       } catch (e) {
@@ -540,7 +543,12 @@
         root.id = 'precio-real-badge-root';
         document.body.appendChild(root);
       }
-      if (root) root.setAttribute('data-site', siteKey);
+      if (root) {
+        root.setAttribute('data-site', siteKey);
+        // aria-live para que lectores de pantalla anuncien el badge cuando aparece.
+        if (!root.getAttribute('aria-live')) root.setAttribute('aria-live', 'polite');
+        if (!root.getAttribute('aria-atomic')) root.setAttribute('aria-atomic', 'true');
+      }
     } catch (_) { /* ignore: mountBadge lo creará igual */ }
     log.debug(siteKey, 'run start', location.href);
 

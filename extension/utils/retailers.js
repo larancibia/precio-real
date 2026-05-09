@@ -174,6 +174,9 @@
     },
     coto: {
       label: 'Coto',
+      // Coto tiene dos dominios activos: el legacy cotodigital3.com.ar y
+      // el actual coto.com.ar. detectSite() en helpers.js los mapea ambos
+      // a este mismo key; el manifest y host_permissions cubren los dos.
       hostnameSuffix: 'cotodigital3.com.ar',
       currency: 'ARS',
       selectors: [

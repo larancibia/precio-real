@@ -99,6 +99,9 @@
     if (h.endsWith('falabella.com.ar')) return 'falabella';
     if (h.endsWith('carrefour.com.ar')) return 'carrefour';
     if (h.endsWith('cotodigital3.com.ar')) return 'coto';
+    // coto.com.ar es el dominio principal actual de Coto (antes cotodigital3).
+    // El manifest cubre ambos; helpers mapea ambos al mismo siteKey.
+    if (h.endsWith('coto.com.ar')) return 'coto';
     if (h.endsWith('naldo.com.ar')) return 'naldo';
     if (h.endsWith('musimundo.com')) return 'musimundo';
     if (h.endsWith('cetrogar.com.ar')) return 'cetrogar';
