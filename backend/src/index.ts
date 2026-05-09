@@ -7,6 +7,11 @@
  *                                    inflated, last_scraped_at, history_days, history }
  *   GET  /api/stats              → { products, prices, last_scraped_at, oldest_scraped_at,
  *                                    products_with_prices }
+ *   GET  /api/movers?limit=&min_drop=
+ *                                → { generated_at, count, min_drop_pct, movers: [...] }
+ *                                  Top real-discount products (current price below
+ *                                  ~7-day-ago baseline). Used by the landing page
+ *                                  for "ofertas reales hoy".
  *   POST /api/scrape/wayback?url=<url> → { inserted, scanned, failed }
  *   POST /api/scrape/run         → manual trigger of the scheduled scraper (debug/seed)
  *   *                             → 404
@@ -18,6 +23,7 @@
 import type { ProductRow, PriceRow } from "./types";
 import { computeStats } from "./lib/analytics";
 import { extractMLAId, normalizeMLUrl } from "./lib/ml-url";
+import { fetchMovers, clampLimit, clampMinDrop } from "./lib/movers";
 import { backfillWaybackHistory } from "./scrapers/wayback";
 import { runScheduledScrape } from "./scrapers/scheduled";
 
@@ -160,6 +166,23 @@ async function handleStats(env: Env): Promise<Response> {
   return json(out, 200);
 }
 
+async function handleMovers(request: Request, env: Env): Promise<Response> {
+  const url = new URL(request.url);
+  const limit = clampLimit(url.searchParams.get("limit"));
+  const minDropParam = url.searchParams.get("min_drop");
+  const minDropPct = minDropParam == null ? undefined : clampMinDrop(minDropParam);
+
+  const movers = await fetchMovers(env, { limit, minDropPct });
+
+  return json({
+    generated_at: Math.floor(Date.now() / 1000),
+    count: movers.length,
+    limit,
+    min_drop_pct: minDropPct ?? 10,
+    movers,
+  });
+}
+
 async function handleWaybackScrape(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
   const target = url.searchParams.get("url");
@@ -210,6 +233,15 @@ export default {
     if (request.method === "GET" && url.pathname === "/api/stats") {
       try {
         return await handleStats(env);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        return json({ error: "Internal error", detail: message }, 500);
+      }
+    }
+
+    if (request.method === "GET" && url.pathname === "/api/movers") {
+      try {
+        return await handleMovers(request, env);
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unknown error";
         return json({ error: "Internal error", detail: message }, 500);
