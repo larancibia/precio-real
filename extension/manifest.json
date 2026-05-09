@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Precio Real",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Detectá descuentos truchos en Hot Sale: historial real de precios en 101 e-commerce argentinos. Sin cuenta, sin tracking.",
   "permissions": ["storage", "activeTab"],
   "host_permissions": [

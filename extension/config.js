@@ -2,7 +2,7 @@
 // Loaded as the FIRST content script and via popup.html — exposes a single
 // API_BASE so we don't have to grep two files when the prod URL changes.
 (function () {
-  const API_BASE = "https://precio-real-api.arancibialuisalejandro.workers.dev";
+  const API_BASE = "https://precio-real.firemandeveloper.com";
   if (typeof window !== "undefined") {
     window.PrecioRealConfig = { API_BASE };
   }

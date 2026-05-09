@@ -216,7 +216,7 @@ Dominios solicitados (101 retailers de e-commerce argentino):
 
 ### Remote code use
 ```
-La extensión NO ejecuta código remoto. Todo el JavaScript está empaquetado dentro del .zip subido a la Chrome Web Store. La única comunicación de red es una llamada GET a https://precio-real-api.arancibialuisalejandro.workers.dev/api/price para obtener el historial de un producto.
+La extensión NO ejecuta código remoto. Todo el JavaScript está empaquetado dentro del .zip subido a la Chrome Web Store. La única comunicación de red es una llamada GET a https://precio-real.firemandeveloper.com/api/price para obtener el historial de un producto.
 ```
 
 ### Data usage disclosures (sección "Privacy practices")
@@ -297,7 +297,7 @@ Verificar que `icon128.png` se ve nítido en el preview de la store antes de sub
 ## 6. Checklist pre-submit
 
 - [x] `manifest.json` con `version: "0.2.2"`.
-- [ ] `manifest.json` apunta a producción (`config.js` con `API_BASE = "https://precio-real-api.arancibialuisalejandro.workers.dev"`, **no** localhost).
+- [ ] `manifest.json` apunta a producción (`config.js` con `API_BASE = "https://precio-real.firemandeveloper.com"`, **no** localhost).
 - [ ] Privacy policy publicada en `https://precio-real.firemandeveloper.com/privacidad.html` y accesible.
 - [ ] Footer del landing linkea a `/privacidad.html`.
 - [x] Build del .zip excluye `node_modules`, `.git`, `.DS_Store`, archivos de test.

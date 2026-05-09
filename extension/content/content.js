@@ -14,7 +14,7 @@
   if (!PR) { console.warn('[Precio Real] helpers not loaded'); return; }
 
   // Usar config compartido para que el switch dev↔prod sea un solo archivo.
-  const BACKEND = (window.PrecioRealConfig && window.PrecioRealConfig.API_BASE) || 'https://precio-real-api.arancibialuisalejandro.workers.dev';
+  const BACKEND = (window.PrecioRealConfig && window.PrecioRealConfig.API_BASE) || 'https://precio-real.firemandeveloper.com';
 
   // Logger condicional. Si falta (helpers viejo), fallback a console.
   const log = (PR && PR.log) || {
