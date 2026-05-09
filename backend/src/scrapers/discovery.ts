@@ -15,67 +15,14 @@
  * Source: https://api.mercadolibre.com/sites/MLA/search?q=<term>&limit=<n>
  */
 
+import { DISCOVERY_QUERIES } from "../lib/discovery-queries";
+
 const ML_USER_AGENT = "precio-real/0.1 (+https://precioreal.ar)";
 const ML_TIMEOUT_MS = 10_000;
 
-// Curated list of high-traffic Argentine retail categories. Each query asks ML
-// for LIMIT_PER_QUERY top results; INSERT OR IGNORE means duplicates across
-// queries don't count as new rows. The terms span the Hot Sale flagship
-// verticals: tech, electrodomésticos, hogar, deportes, moda, infantil.
-const DISCOVERY_QUERIES = [
-  // Tech / electronics
-  "celular",
-  "notebook",
-  "televisor",
-  "auriculares",
-  "smart tv",
-  "smartwatch",
-  "tablet",
-  "monitor",
-  "playstation",
-  "xbox",
-  "consola",
-  "nintendo switch",
-  "camara",
-  "parlante bluetooth",
-  "impresora",
-  // Línea blanca / electrodomésticos
-  "heladera",
-  "lavarropas",
-  "aire acondicionado",
-  "cafetera",
-  "microondas",
-  "freidora de aire",
-  "aspiradora",
-  "ventilador",
-  "anafe",
-  "secarropas",
-  "termotanque",
-  "horno electrico",
-  "licuadora",
-  "batidora",
-  // Hogar / muebles
-  "colchon",
-  "sillon",
-  "escritorio",
-  "silla gamer",
-  // Deportes / outdoor
-  "bicicleta",
-  "zapatillas",
-  "pelota",
-  "carpa",
-  "mochila",
-  // Moda / belleza
-  "perfume",
-  "reloj",
-  "campera",
-  // Infantil
-  "juguetes",
-  "auto a bateria",
-  // Herramientas / DIY
-  "taladro",
-  "amoladora",
-];
+// DISCOVERY_QUERIES is the shared list (see src/lib/discovery-queries.ts).
+// Each query asks ML for LIMIT_PER_QUERY top results; INSERT OR IGNORE means
+// duplicates across queries don't count as new rows.
 const LIMIT_PER_QUERY = 20;
 const DISCOVERY_CONCURRENCY = 5;
 

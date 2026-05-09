@@ -31,6 +31,8 @@ import { writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { DISCOVERY_QUERIES } from "../src/lib/discovery-queries";
+
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 interface MLSearchItem {
@@ -47,64 +49,11 @@ interface MLSearchResponse {
   results: MLSearchItem[];
 }
 
-// Aligned with src/scrapers/discovery.ts so local dev seed mirrors the
-// production cron's product surface. The seed uses LIMIT_PER_QUERY=10 (vs the
+// QUERIES is imported from src/lib/discovery-queries (single source of truth
+// shared with the production cron). The seed uses LIMIT_PER_QUERY=10 (vs the
 // cron's 20) to keep the local SQL file under D1's wrangler-execute timeouts
 // while still exercising the same Hot-Sale-flagship vertical mix.
-const QUERIES = [
-  // Tech / electronics
-  "celular",
-  "notebook",
-  "televisor",
-  "auriculares",
-  "smart tv",
-  "smartwatch",
-  "tablet",
-  "monitor",
-  "playstation",
-  "xbox",
-  "consola",
-  "nintendo switch",
-  "camara",
-  "parlante bluetooth",
-  "impresora",
-  // Línea blanca / electrodomésticos
-  "heladera",
-  "lavarropas",
-  "aire acondicionado",
-  "cafetera",
-  "microondas",
-  "freidora de aire",
-  "aspiradora",
-  "ventilador",
-  "anafe",
-  "secarropas",
-  "termotanque",
-  "horno electrico",
-  "licuadora",
-  "batidora",
-  // Hogar / muebles
-  "colchon",
-  "sillon",
-  "escritorio",
-  "silla gamer",
-  // Deportes / outdoor
-  "bicicleta",
-  "zapatillas",
-  "pelota",
-  "carpa",
-  "mochila",
-  // Moda / belleza
-  "perfume",
-  "reloj",
-  "campera",
-  // Infantil
-  "juguetes",
-  "auto a bateria",
-  // Herramientas / DIY
-  "taladro",
-  "amoladora",
-];
+const QUERIES = DISCOVERY_QUERIES;
 const LIMIT_PER_QUERY = 10;
 const HISTORY_DAYS = 30;
 // Mirror discovery.ts: parallel waves keep total wall time bounded even if a

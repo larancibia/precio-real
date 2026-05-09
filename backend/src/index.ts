@@ -3,7 +3,10 @@
  *
  * Routes:
  *   GET  /api/health             → { ok: true }
- *   GET  /api/price?url=<url>    → { product, current_price, price_7d_ago, real_discount_pct, inflated, history }
+ *   GET  /api/price?url=<url>    → { product, current_price, price_7d_ago, real_discount_pct,
+ *                                    inflated, last_scraped_at, history_days, history }
+ *   GET  /api/stats              → { products, prices, last_scraped_at, oldest_scraped_at,
+ *                                    products_with_prices }
  *   POST /api/scrape/wayback?url=<url> → { inserted, scanned, failed }
  *   POST /api/scrape/run         → manual trigger of the scheduled scraper (debug/seed)
  *   *                             → 404
@@ -103,11 +106,58 @@ async function handlePrice(
     );
   }
 
+  // Freshness metadata: rows is ordered DESC by scraped_at, so [0] is newest
+  // and [length-1] is oldest in the (capped) window. The extension/landing can
+  // use this to render "datos al X de Y" copy without re-deriving from history.
+  const last_scraped_at = rows.length > 0 ? rows[0].scraped_at : null;
+  const oldest_scraped_at = rows.length > 0 ? rows[rows.length - 1].scraped_at : null;
+  const history_days =
+    last_scraped_at != null && oldest_scraped_at != null
+      ? Math.max(0, Math.round((last_scraped_at - oldest_scraped_at) / 86400))
+      : 0;
+
   return json({
     product,
     ...stats,
+    last_scraped_at,
+    history_days,
     history: rows,
   });
+}
+
+interface StatsRow {
+  products: number;
+  prices: number;
+  last_scraped_at: number | null;
+  oldest_scraped_at: number | null;
+  products_with_prices: number;
+}
+
+async function handleStats(env: Env): Promise<Response> {
+  // Single-query aggregate snapshot. Cheap on D1 because each table has its
+  // own indexed scan and we only need MIN/MAX/COUNT — D1 short-circuits these.
+  // We expose this for the landing page transparency widget ("seguimos N
+  // productos / última actualización: hace X horas") without giving callers a
+  // way to enumerate the tables.
+  const products = await env.DB
+    .prepare("SELECT COUNT(*) AS n FROM products")
+    .first<{ n: number }>();
+  const priceAgg = await env.DB
+    .prepare(
+      "SELECT COUNT(*) AS n, MIN(scraped_at) AS oldest, MAX(scraped_at) AS newest, " +
+        "COUNT(DISTINCT product_id) AS unique_products FROM prices",
+    )
+    .first<{ n: number; oldest: number | null; newest: number | null; unique_products: number }>();
+
+  const out: StatsRow = {
+    products: products?.n ?? 0,
+    prices: priceAgg?.n ?? 0,
+    last_scraped_at: priceAgg?.newest ?? null,
+    oldest_scraped_at: priceAgg?.oldest ?? null,
+    products_with_prices: priceAgg?.unique_products ?? 0,
+  };
+
+  return json(out, 200);
 }
 
 async function handleWaybackScrape(request: Request, env: Env): Promise<Response> {
@@ -151,6 +201,15 @@ export default {
     if (request.method === "GET" && url.pathname === "/api/price") {
       try {
         return await handlePrice(request, env, ctx);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        return json({ error: "Internal error", detail: message }, 500);
+      }
+    }
+
+    if (request.method === "GET" && url.pathname === "/api/stats") {
+      try {
+        return await handleStats(env);
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unknown error";
         return json({ error: "Internal error", detail: message }, 500);
