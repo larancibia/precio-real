@@ -73,6 +73,62 @@
         campaign: 'descuento-real',
       },
     },
+    naldo: {
+      enabled: true,
+      utm: {
+        source: 'precio-real',
+        medium: 'extension',
+        campaign: 'descuento-real',
+      },
+    },
+    musimundo: {
+      enabled: true,
+      utm: {
+        source: 'precio-real',
+        medium: 'extension',
+        campaign: 'descuento-real',
+      },
+    },
+    cetrogar: {
+      enabled: true,
+      utm: {
+        source: 'precio-real',
+        medium: 'extension',
+        campaign: 'descuento-real',
+      },
+    },
+    megatone: {
+      enabled: true,
+      utm: {
+        source: 'precio-real',
+        medium: 'extension',
+        campaign: 'descuento-real',
+      },
+    },
+    dia: {
+      enabled: true,
+      utm: {
+        source: 'precio-real',
+        medium: 'extension',
+        campaign: 'descuento-real',
+      },
+    },
+    jumbo: {
+      enabled: true,
+      utm: {
+        source: 'precio-real',
+        medium: 'extension',
+        campaign: 'descuento-real',
+      },
+    },
+    disco: {
+      enabled: true,
+      utm: {
+        source: 'precio-real',
+        medium: 'extension',
+        campaign: 'descuento-real',
+      },
+    },
     sodimac: {
       enabled: true,
       utm: {
