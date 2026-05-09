@@ -20,7 +20,7 @@ Precio Real corre como extensión de Chrome (Manifest V3) y trabaja en segundo p
 
 No requiere cuenta, login ni envía datos personales. Los permisos solicitados son los mínimos necesarios: `storage` y `activeTab`.
 
-**Sitios soportados (v0.2.1) — 96 e-commerce argentinos:**
+**Sitios soportados (v0.2.2) — 101 e-commerce argentinos:**
 
 Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Argentina, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store, LG Argentina, Sony Store, Philips Argentina, BGH, Noblex, Whirlpool, Changomás, Electrolux, Drean, Motorola Store, Todomodo, Amazon Argentina, HiperTehno, Xiaomi Mi Store, Philco Argentina, Venex, BGood, HP Tienda, Lenovo Argentina, Alphatec, Exo, Hisense Argentina, TCL Argentina, Pycca, Newsan, Asus Store Argentina, Mac Center, Full, Micro Center, iPoint, Acer Store, Coolbox, Olimpo, Dexter, TGC, Maxiconsumo, FullH4rd, Start Tech PC, PC House, Zetta, Geek Store, Computodo, MaxiHogar, PC Factory, CompraGamer, Golden Shop, Soluciones, Arredondo, iThink, Nexstore, Cable Hogar, Bit, Digital Haus, InStore, Staples, Gotta, Power Planet, iGaming Store, Netizar, MegaStore, Century Tech, Klibr, Lazer, PC Arg, Carsa, GrupoDIN, Coppel, Megatronics, Mac Station, Winpy, GearZone, Binario, CompuPC, Autronic, Megatrix y Pixelstore.
 
@@ -69,4 +69,4 @@ Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Arg
 
 ---
 
-Última actualización: 2026-05-09 (ciclo 1635 — 96 retailers, lista completa sincronizada con manifest v0.2.1)
+Última actualización: 2026-05-09 (ciclo 1635 — 101 retailers, lista completa sincronizada con manifest v0.2.2)

@@ -38,7 +38,7 @@ Asi que me puse a hacer algo al respecto. Se llama **Precio Real** y es una exte
 
 - **Gratis**, sin registro, sin email, sin tarjeta.
 - **Open source**, codigo en GitHub.
-- Funciona en **96 e-commerce argentinos**: Mercado Libre, Fravega, Garbarino, Falabella, Carrefour, Coto, Naldo, Musimundo, Cetrogar, Megatone, Jumbo, Disco, Sodimac, Amazon Argentina, Samsung Store, HP Tienda, Lenovo, CompraGamer, FullH4rd, PC Factory y muchos mas (lista completa en precio-real.firemandeveloper.com).
+- Funciona en **101 e-commerce argentinos**: Mercado Libre, Fravega, Garbarino, Falabella, Carrefour, Coto, Naldo, Musimundo, Cetrogar, Megatone, Jumbo, Disco, Sodimac, Amazon Argentina, Samsung Store, HP Tienda, Lenovo, CompraGamer, FullH4rd, PC Factory y muchos mas (lista completa en precio-real.firemandeveloper.com).
 - Cuando entras a una ficha de producto, te muestra el **historial real de precios** de las ultimas semanas y te avisa si el "descuento" oculta un aumento previo.
 - Permisos minimos: `storage` y `activeTab`. Nada de tracking de terceros, nada de mandar datos a ningun lado.
 
@@ -80,7 +80,7 @@ Buenas, comparto un proyecto personal por si a alguien le sirve o quiere contrib
 **Stack rapido:**
 - Extension: Manifest V3, content scripts por retailer (`extension/content/`), retailer config en `extension/utils/retailers.js`.
 - Backend: cron que descubre los top 500 productos populares de MLA y refresca precios periodicamente (`backend/src/scrapers/`).
-- Sitios soportados v0.2.1: 96 e-commerce argentinos (lista completa en https://precio-real.firemandeveloper.com).
+- Sitios soportados v0.2.2: 101 e-commerce argentinos (lista completa en https://precio-real.firemandeveloper.com).
 - Sin telemetria de terceros, permisos minimos (`storage`, `activeTab`).
 
 **Por que lo abri:**

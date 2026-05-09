@@ -125,13 +125,13 @@ Luis
 Para tener a mano si el periodista pide "mandame los datos clave en bullets":
 
 - Que es: extension de Chrome gratuita y open source que muestra historial real de precios en e-commerce argentinos.
-- Sitios soportados (v0.2.1): 96 e-commerce argentinos (lista completa en https://precio-real.firemandeveloper.com).
+- Sitios soportados (v0.2.2): 101 e-commerce argentinos (lista completa en https://precio-real.firemandeveloper.com).
 - Dato fuerte: EcoGo midio aumentos de 4-6% las semanas previas al Hot Sale `[VERIFICAR ano/categorias]`. La extension cruza eso con el historial real y alerta cuando la "rebaja" es trucha.
 - Privacidad: corre local, no pide registro ni email, no envia datos personales. Permisos minimos (`storage`, `activeTab`).
 - Modelo: gratis, sin ads, sin tracking. Soporte opcional via Cafecito.
 - Codigo: open source, auditable en https://github.com/larancibia/precio-real.
 - Creador: Luis Arancibia, desarrollador argentino, proyecto solo. Sin empresa ni fondeo.
-- Disponibilidad: Chrome Web Store (pendiente de aprobación — ZIP v0.2.1 listo), Hot Sale 2026: 11 al 13 de mayo.
+- Disponibilidad: Chrome Web Store (pendiente de aprobación — ZIP v0.2.2 listo), Hot Sale 2026: 11 al 13 de mayo.
 
 ---
 

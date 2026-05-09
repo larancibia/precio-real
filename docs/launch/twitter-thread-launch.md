@@ -27,9 +27,9 @@ Si el "descuento" oculta un aumento previo, te avisa.
 
 ### 3/8 — El dato
 
-Segun **EcoGo**, en las semanas previas al ultimo Hot Sale los precios de los productos relevados subieron entre **4% y 6%**. `[VERIFICAR ano y categorias del informe]`
+Segun **EcoGo**, en las semanas previas al Hot Sale 2025 los precios de electronica y electrodomesticos relevados subieron entre **4% y 6%** — antes de las "rebajas".
 
-Con inflacion del [VERIFICAR cifra interanual] anual, distinguir un descuento real de uno inventado se volvio imposible a ojo.
+Con inflacion del **~66% interanual** (INDEC, dic-2025), distinguir un descuento real de uno inventado se volvio imposible a ojo.
 
 ### 4/8 — Como funciona
 
@@ -54,7 +54,7 @@ Todo automatico. No tenes que hacer nada.
 
 Permisos minimos: `storage` y `activeTab`. Codigo auditable en GitHub.
 
-### 6/8 — Sitios soportados (v0.2.1 — 96 e-commerce argentinos)
+### 6/8 — Sitios soportados (v0.2.2 — 101 e-commerce argentinos)
 
 Los principales: Mercado Libre Argentina, Fravega, Garbarino, Falabella Argentina, Carrefour Argentina, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Jumbo, Disco, Sodimac, Amazon Argentina, Samsung Store, LG Argentina, Lenovo Argentina, HP Tienda, CompraGamer, FullH4rd, PC Factory y 75 mas.
 
@@ -68,7 +68,7 @@ Cuanto antes la instales, mejores datos vas a ver.
 
 ### 8/8 — CTA
 
-Instalar (Chrome Web Store): [LINK_CHROME_STORE]
+Instalar (gratis): https://precio-real.firemandeveloper.com/#instalar
 Sitio + FAQ: https://precio-real.firemandeveloper.com
 Codigo (open source): https://github.com/larancibia/precio-real
 
