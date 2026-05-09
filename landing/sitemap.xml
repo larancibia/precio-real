@@ -24,6 +24,17 @@
     </image:image>
   </url>
   <url>
+    <loc>https://preciorreal.com/guia-cybermonday.html</loc>
+    <lastmod>2026-05-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://preciorreal.com/og-image.png</image:loc>
+      <image:title>Guía CyberMonday Argentina 2026 — descuentos truchos</image:title>
+      <image:caption>Cómo leer el historial real de precios y no comprar humo en el CyberMonday.</image:caption>
+    </image:image>
+  </url>
+  <url>
     <loc>https://preciorreal.com/privacidad.html</loc>
     <lastmod>2026-05-09</lastmod>
     <changefreq>monthly</changefreq>
