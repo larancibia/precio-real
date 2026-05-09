@@ -259,11 +259,14 @@
       // Tenemos baseline pero el movimiento es pequeño (|pct| < 5%).
       const absPct = pct != null ? Math.round(Math.abs(pct)) : 0;
       const direction = (pct != null && pct < 0) ? `+${absPct}%` : (pct != null && pct > 0) ? `-${absPct}%` : '≈';
+      // Mostrar cuántos días de historial tiene para que el usuario sepa si es
+      // un baseline sólido (7d exactos) o una aproximación (baseline_age_days > 8).
+      const ageNote = (ageDays != null && ageDays > 8) ? ` (ref. ${ageDays}d)` : ageSuffix;
       return {
         kind: 'neutral',
         pct: 0,
         label: 'Precio Real: sin descuento',
-        sub: `${direction} vs. 7 días atrás${ageSuffix}`,
+        sub: `${direction} vs. 7 días atrás${ageNote}`,
       };
     }
 
@@ -446,8 +449,15 @@
     }
     // Respetar cierre manual mientras estemos en el mismo producto+variante.
     if (userClosedForKey && userClosedForKey === key) return true;
-    // Si nada cambió, devolver true (badge ya válido).
-    if (mounted && key === lastKey && current === lastPrice) return true;
+    // Si nada cambió, verificar que el badge siga en el DOM antes de devolver true.
+    // Algunos SPAs con virtual DOM (VTEX IO, Next.js con reconciler agresivo) pueden
+    // remover nuestro root silenciosamente entre renders sin cambiar la URL ni el precio.
+    if (mounted && key === lastKey && current === lastPrice) {
+      const root = document.getElementById('precio-real-badge-root');
+      if (root && root.isConnected && root.hasChildNodes()) return true;
+      // Badge fue removido del DOM → forzar re-mount.
+      mounted = false;
+    }
 
     log.debug(siteKey, 'tryMount', { url, key, current });
     const { history, stats } = await fetchHistory(url);
@@ -560,8 +570,15 @@
           // WooCommerce (Drean, HiperTehno) — el formulario de variante actualiza
           // data-product_id y data-variation_id al elegir atributo.
           'data-product_id', 'data-variation_id',
-          // PrestaShop (Todomodo) — id de atributo de producto para variantes.
-          'data-id-product-attribute', 'data-id-product',
+          // PrestaShop (Todomodo y otros temas PS) — id de atributo y combination id.
+          'data-id-product-attribute', 'data-id-product', 'data-combination-id',
+          // VTEX IO (Garbarino, Jumbo, Disco, Easy, Carrefour): specification-value
+          // se actualiza cuando el usuario elige un swatch de color/talle. skuid
+          // es el selector legacy de VTEX classic.
+          'data-specification-value', 'data-skuid',
+          // Shopify / temas custom (Musimundo, Compumundo): option-value cambia
+          // al seleccionar una variante de color o talle.
+          'data-option-value', 'data-option',
         ],
       });
     } catch (_) { variantObserver = null; }
