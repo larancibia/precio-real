@@ -161,13 +161,41 @@
     if (!root) {
       root = document.createElement('div');
       root.id = 'precio-real-badge-root';
-      try { body.appendChild(root); } catch (e) { return false; }
+      // Propagar retailer como atributo para CSS/debug (ej. [data-site="fravega"]).
+      if (ctx && ctx.retailer) root.setAttribute('data-site', ctx.retailer);
+      try {
+        body.appendChild(root);
+      } catch (e) {
+        // Algunos retailers (SPAs con virtual DOM o CSP restrictiva) pueden
+        // bloquear appendChild en body. Intentar con documentElement como fallback.
+        try { (document.documentElement || document.body).appendChild(root); }
+        catch (_) { return false; }
+      }
     } else if (!root.isConnected) {
-      // Body fue reemplazado, root quedó huérfano.
-      try { body.appendChild(root); } catch (e) { return false; }
+      // Body fue reemplazado (SPA hard-swap), root quedó huérfano.
+      if (ctx && ctx.retailer) root.setAttribute('data-site', ctx.retailer);
+      try {
+        body.appendChild(root);
+      } catch (_) {
+        try { (document.documentElement || document.body).appendChild(root); }
+        catch (__) { return false; }
+      }
+    } else if (ctx && ctx.retailer && !root.getAttribute('data-site')) {
+      root.setAttribute('data-site', ctx.retailer);
     }
-    root.innerHTML = '';
-    root.appendChild(makeBadge(verdict, ctx));
+    // Limpiar badge anterior antes de montar el nuevo. Usar replaceChildren si
+    // está disponible (más eficiente y atómico que innerHTML = '').
+    try {
+      if (typeof root.replaceChildren === 'function') {
+        root.replaceChildren(makeBadge(verdict, ctx));
+      } else {
+        root.innerHTML = '';
+        root.appendChild(makeBadge(verdict, ctx));
+      }
+    } catch (e) {
+      log.warn('mountBadge DOM write failed', e && e.message);
+      return false;
+    }
     return true;
   }
 
@@ -349,7 +377,14 @@
       if (PR.detectSite(location.hostname) !== siteKey) return false;
       current = PR.extractPrice(siteKey);
       if (!current) {
-        log.debug(siteKey, 'extractPrice → null');
+        // Log extra info para debug: cuántos selectores del retailer hay definidos,
+        // por si el problema es que ninguno matchea en esta PDP.
+        if (typeof PR.RETAILERS === 'object' && PR.RETAILERS[siteKey]) {
+          const selCount = (PR.RETAILERS[siteKey].selectors || []).length;
+          log.debug(siteKey, 'extractPrice → null (' + selCount + ' selectors tried)');
+        } else {
+          log.debug(siteKey, 'extractPrice → null');
+        }
         return false;
       }
       url = PR.canonicalUrl(location.href);
@@ -495,11 +530,28 @@
     }
     const siteKey = PR.detectSite(location.hostname);
     if (!siteKey) { unmountBadge(); return; }
+    // Anotar el retailer en el root para CSS retailer-específico y debugging.
+    // Se hace aquí (antes de montar el badge) para que esté disponible en cuanto
+    // el root se crea en mountBadge.
+    try {
+      let root = document.getElementById('precio-real-badge-root');
+      if (!root && document.body) {
+        root = document.createElement('div');
+        root.id = 'precio-real-badge-root';
+        document.body.appendChild(root);
+      }
+      if (root) root.setAttribute('data-site', siteKey);
+    } catch (_) { /* ignore: mountBadge lo creará igual */ }
     log.debug(siteKey, 'run start', location.href);
 
     for (const d of INITIAL_DELAYS_MS) {
       if (myToken !== runToken) return;
       if (d) await new Promise((r) => setTimeout(r, d));
+      // Re-verificar que seguimos en el mismo sitio tras el delay (SPA edge-case).
+      if (PR.detectSite(location.hostname) !== siteKey) {
+        log.debug(siteKey, 'site changed mid-retry, abort');
+        return;
+      }
       try {
         if (await tryMount(siteKey, myToken)) {
           startVariantObserver(siteKey, myToken);
