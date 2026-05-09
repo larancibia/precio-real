@@ -808,6 +808,39 @@
       </div>
     </section>
 
+    <!-- Email capture — alertas de precio -->
+    <section id="alertas" class="section section--alerts" aria-labelledby="alerts-title">
+      <div class="section__inner section__inner--center">
+        <h2 id="alerts-title" class="section__title">Te avisamos cuando baje de verdad</h2>
+        <p class="section__lead">
+          Dejá tu email y te mandamos una alerta cuando el precio de un producto baje a su precio histórico real.
+          Sin spam. Solo alertas reales.
+        </p>
+
+        <form class="email-form" id="email-capture-form" action="https://formspree.io/f/preciorreal" method="POST" novalidate>
+          <div class="email-form__group">
+            <label for="alert-email" class="sr-only">Tu email</label>
+            <input
+              id="alert-email"
+              class="email-form__input"
+              type="email"
+              name="email"
+              placeholder="tu@email.com"
+              autocomplete="email"
+              required
+              aria-required="true"
+              aria-describedby="email-form-hint"
+            >
+            <button class="email-form__btn btn btn--primary" type="submit">Avisame</button>
+          </div>
+          <p id="email-form-hint" class="email-form__hint">
+            Sin spam. Desuscribite cuando quieras. Código abierto en <a href="https://github.com/larancibia/precio-real" target="_blank" rel="noopener noreferrer">GitHub</a>.
+          </p>
+          <p class="email-form__status" id="email-form-status" role="status" aria-live="polite" hidden></p>
+        </form>
+      </div>
+    </section>
+
     <section id="instalar" class="section section--install" aria-labelledby="install-title">
       <div class="section__inner section__inner--center">
         <h2 id="install-title" class="section__title">Sumate al precio real</h2>
@@ -877,6 +910,50 @@
         set('prices', '—');
         set('last', 'sin conexión');
       });
+  })();
+  </script>
+
+  <!-- Email capture — async Formspree submit with status feedback -->
+  <script>
+  (function () {
+    var form = document.getElementById('email-capture-form');
+    var status = document.getElementById('email-form-status');
+    if (!form || !status) return;
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var email = form.querySelector('input[name="email"]');
+      if (!email || !email.value.trim()) return;
+
+      var btn = form.querySelector('button[type="submit"]');
+      if (btn) btn.disabled = true;
+      status.hidden = false;
+      status.removeAttribute('data-state');
+      status.textContent = 'Enviando…';
+
+      fetch(form.action, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.value.trim() }),
+      })
+        .then(function (r) {
+          if (r.ok) {
+            status.textContent = '¡Listo! Te avisamos cuando baje de verdad.';
+            status.setAttribute('data-state', 'ok');
+            form.reset();
+          } else {
+            return r.json().then(function (d) {
+              throw new Error((d && d.error) || 'Error ' + r.status);
+            });
+          }
+        })
+        .catch(function (err) {
+          status.textContent = 'Algo salió mal. Intentá de nuevo.';
+          status.setAttribute('data-state', 'error');
+          console.error('[email-form]', err);
+          if (btn) btn.disabled = false;
+        });
+    });
   })();
   </script>
 

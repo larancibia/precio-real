@@ -393,6 +393,71 @@ ol, ul { margin: 0; padding: 0; list-style: none; }
 .faq__answer p { margin: 0; }
 .faq__answer a { color: var(--accent); }
 
+/* ---------- Email capture (alertas) ---------- */
+.section--alerts {
+  background:
+    radial-gradient(900px 400px at 50% 100%, rgba(74, 222, 128, 0.08), transparent 60%),
+    var(--bg-elev);
+  border-top: 1px solid var(--border-soft);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.email-form {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.email-form__group {
+  display: flex;
+  gap: .5rem;
+  flex-wrap: wrap;
+}
+
+.email-form__input {
+  flex: 1 1 220px;
+  padding: .75rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--ff);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color .2s var(--ease);
+}
+
+.email-form__input::placeholder { color: var(--text-dim); }
+
+.email-form__input:focus {
+  border-color: var(--accent-2);
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.15);
+}
+
+.email-form__btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.email-form__hint {
+  margin: .75rem 0 0;
+  font-size: .85rem;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.email-form__hint a { color: var(--text-muted); }
+.email-form__hint a:hover { color: var(--accent); }
+
+.email-form__status {
+  margin: .75rem 0 0;
+  font-size: .9rem;
+  text-align: center;
+}
+
+.email-form__status[data-state="ok"]    { color: var(--accent-2); }
+.email-form__status[data-state="error"] { color: var(--warn); }
+
 /* ---------- Install / cafecito ---------- */
 .section--install {
   background:
@@ -527,6 +592,56 @@ ol, ul { margin: 0; padding: 0; list-style: none; }
   font-size: .9rem;
   margin-top: 1.25rem;
 }
+
+/* ---------- Email capture / alertas ---------- */
+.section--alerts { background: var(--bg-elev); }
+
+.email-form {
+  width: 100%;
+  max-width: 480px;
+  margin: 2rem auto 0;
+}
+.email-form__group {
+  display: flex;
+  gap: .625rem;
+  flex-wrap: wrap;
+}
+.email-form__input {
+  flex: 1 1 220px;
+  padding: .75rem 1rem;
+  font-size: 1rem;
+  font-family: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  outline: none;
+  transition: border-color .2s var(--ease), box-shadow .2s var(--ease);
+}
+.email-form__input::placeholder { color: var(--text-muted); }
+.email-form__input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.15);
+}
+.email-form__btn {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.email-form__hint {
+  margin-top: .875rem;
+  font-size: .85rem;
+  color: var(--text-muted);
+  text-align: center;
+}
+.email-form__hint a { color: var(--accent); }
+.email-form__status {
+  margin-top: .75rem;
+  font-size: .9rem;
+  text-align: center;
+  color: var(--text-dim);
+}
+.email-form__status[data-state="ok"]    { color: var(--ok, #3ecf8e); }
+.email-form__status[data-state="error"] { color: var(--warn); }
 
 /* =========================================================
    Tablet — >= 768px

@@ -19,6 +19,9 @@
  *                                → { total, count, offset, results: [{ id, url, title, seller, image_url }] }
  *                                  Paginated catalog browse (all tracked products, optional seller filter).
  *                                  Results ordered by id DESC (newest-discovered first).
+ *   GET  /api/trending?limit=<n> → { generated_at, count, results: [{ id, url, title, seller, image_url, price_count, last_scraped_at }] }
+ *                                  Most-tracked products by price observation count (highest data density first).
+ *                                  Useful for surfacing products with the richest price history.
  *   POST /api/scrape/wayback?url=<url> → { inserted, scanned, failed }
  *   POST /api/scrape/run         → manual trigger of the scheduled scraper (debug/seed)
  *   *                             → 404
@@ -67,6 +70,7 @@ function json(body: unknown, status = 200, extraHeaders?: Record<string, string>
 const CACHE_PRICE = "public, max-age=900, stale-while-revalidate=3600";
 const CACHE_STATS = "public, max-age=300, stale-while-revalidate=900";
 const CACHE_MOVERS = "public, max-age=300, stale-while-revalidate=900";
+const CACHE_TRENDING = "public, max-age=600, stale-while-revalidate=1800";
 
 async function handlePrice(
   request: Request,
@@ -294,6 +298,52 @@ async function handleProducts(request: Request, env: Env): Promise<Response> {
   );
 }
 
+const TRENDING_MAX_LIMIT = 50;
+
+async function handleTrending(request: Request, env: Env): Promise<Response> {
+  const url = new URL(request.url);
+  const rawLimit = Number(url.searchParams.get("limit") ?? "20");
+  const limit = Number.isFinite(rawLimit) && rawLimit > 0
+    ? Math.min(TRENDING_MAX_LIMIT, Math.floor(rawLimit))
+    : 20;
+
+  // Join products with prices to count observations per product.
+  // Order by price_count DESC so the most-tracked products come first.
+  // We also surface last_scraped_at so callers can show data freshness.
+  const rows = await env.DB
+    .prepare(
+      `SELECT p.id, p.url, p.title, p.seller, p.image_url,
+              COUNT(po.id) AS price_count,
+              MAX(po.scraped_at) AS last_scraped_at
+       FROM products p
+       JOIN prices po ON po.product_id = p.id
+       GROUP BY p.id
+       ORDER BY price_count DESC
+       LIMIT ?1`,
+    )
+    .bind(limit)
+    .all<{
+      id: number;
+      url: string;
+      title: string | null;
+      seller: string | null;
+      image_url: string | null;
+      price_count: number;
+      last_scraped_at: number | null;
+    }>();
+
+  const results = rows.results ?? [];
+  return json(
+    {
+      generated_at: Math.floor(Date.now() / 1000),
+      count: results.length,
+      results,
+    },
+    200,
+    { "Cache-Control": CACHE_TRENDING },
+  );
+}
+
 async function handleMovers(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
   const limit = clampLimit(url.searchParams.get("limit"));
@@ -413,6 +463,15 @@ export default {
     if (request.method === "GET" && url.pathname === "/api/products") {
       try {
         return await handleProducts(request, env);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        return json({ error: "Internal error", detail: message }, 500);
+      }
+    }
+
+    if (request.method === "GET" && url.pathname === "/api/trending") {
+      try {
+        return await handleTrending(request, env);
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unknown error";
         return json({ error: "Internal error", detail: message }, 500);

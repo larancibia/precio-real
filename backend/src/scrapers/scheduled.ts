@@ -38,6 +38,11 @@ export interface ScheduledResult {
   discovery: { queries: number; candidates: number; inserted: number; failed: number };
 }
 
+interface ProductMetaRow {
+  title: string | null;
+  image_url: string | null;
+}
+
 async function fetchAndInsert(row: ProductRow, mlaId: string, env: ScheduledEnv): Promise<void> {
   const item = await fetchMLItem(mlaId);
   if (!item) {
@@ -55,6 +60,32 @@ async function fetchAndInsert(row: ProductRow, mlaId: string, env: ScheduledEnv)
     )
     .bind(row.id, item.price, currency)
     .run();
+
+  // Patch null title/image_url on the product row if the ML API now has them.
+  // Discovery INSERT OR IGNORE leaves these null when the search result was
+  // missing the field; the items API (/items/MLAXXX) is more authoritative.
+  // We only patch when the current stored values are NULL — never overwrite
+  // an existing human-verified title or thumbnail.
+  if (item.title || item.thumbnail) {
+    try {
+      const meta = await env.DB
+        .prepare("SELECT title, image_url FROM products WHERE id = ?1")
+        .bind(row.id)
+        .first<ProductMetaRow>();
+      if (meta && (!meta.title || !meta.image_url)) {
+        const newTitle = !meta.title && item.title ? item.title : meta.title;
+        const newImage = !meta.image_url && item.thumbnail ? item.thumbnail : meta.image_url;
+        await env.DB
+          .prepare("UPDATE products SET title = ?1, image_url = ?2 WHERE id = ?3")
+          .bind(newTitle, newImage, row.id)
+          .run();
+      }
+    } catch (err) {
+      // Non-fatal: price was already inserted. Log and continue.
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn(`[cron] meta patch failed for product_id=${row.id}: ${message}`);
+    }
+  }
 }
 
 export async function runScheduledScrape(env: ScheduledEnv): Promise<ScheduledResult> {
