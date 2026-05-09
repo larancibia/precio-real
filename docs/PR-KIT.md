@@ -6,7 +6,7 @@ Precio Real es una extensión gratuita de Chrome que muestra el historial real d
 
 ## El problema
 
-Argentina convive con inflación estructural: 2025 cerró con una inflación acumulada de **31,8%** según el IPC nacional de INDEC. En ese contexto, los descuentos de eventos como el Hot Sale se vuelven difíciles de evaluar a simple vista: muchos consumidores no tienen una referencia clara de cuánto valía el mismo producto días o semanas antes.
+Argentina convive con inflación estructural: 2025 cerró con una inflación acumulada de **31,5%** según el IPC nacional de INDEC. En ese contexto, los descuentos de eventos como el Hot Sale se vuelven difíciles de evaluar a simple vista: muchos consumidores no tienen una referencia clara de cuánto valía el mismo producto días o semanas antes.
 
 El consumidor argentino, que ya navega una distorsión de precios permanente, queda sin herramientas simples para responder una pregunta básica: *¿esto está realmente más barato que la semana pasada?*
 
@@ -73,7 +73,7 @@ Enviar por mail junto al pitch al periodista si lo solicita; no adjuntar en el p
 ## Fuentes verificadas
 
 - Hot Sale Argentina 2026: 11 al 13 de mayo, organizado por CACE.
-- Inflación 2025: IPC nacional INDEC, cierre anual 31,8%.
+- Inflación 2025: IPC nacional INDEC, cierre anual 31,5%.
 - Datos propios del producto: 101 e-commerce soportados en `extension/manifest.json`, release público v0.2.2 en GitHub.
 
 ---
