@@ -3,8 +3,10 @@
 Material listo para pegar en el formulario de submission de la Chrome Web Store
 para Precio Real v0.1.0. Idioma principal: español (Argentina).
 
-> Última revisión: 2026-05-09. Mantener sincronizado con
-> `extension/manifest.json`, `landing/index.html` y `landing/privacidad.html`.
+> Última revisión: 2026-05-09 (v2 — sincronizado con manifest v0.1.0 de 16 retailers).
+> Mantener sincronizado con `extension/manifest.json`, `landing/index.html` y
+> `landing/privacidad.html`. Si se agregan retailers en el manifest, actualizar acá
+> y en privacidad.html antes de re-submit.
 
 ---
 
@@ -42,7 +44,7 @@ CÓMO FUNCIONA
 QUÉ INCLUYE
 - Historial de precios real por producto.
 - Alertas de aumentos disfrazados de descuento.
-- Sitios soportados v0.1.0: Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Argentina, Coto Digital.
+- 16 sitios soportados v0.1.0: Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Argentina, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy y Hendel.
 - Datos de inflación de EcoGo para contextualizar los precios.
 
 PRIVACIDAD
@@ -78,13 +80,23 @@ Se usa para leer la pestaña activa cuando el usuario navega un sitio soportado,
 La extensión inyecta un content script en estos sitios de e-commerce argentinos para detectar la ficha de producto, leer el precio publicado y mostrar el historial real. No se accede a otros sitios fuera de esta lista.
 ```
 
-Dominios solicitados:
+Dominios solicitados (16 retailers de e-commerce argentino):
 - `https://*.mercadolibre.com.ar/*`
 - `https://*.fravega.com/*`
 - `https://*.garbarino.com/*`
 - `https://*.falabella.com.ar/*`
 - `https://*.carrefour.com.ar/*`
 - `https://*.cotodigital3.com.ar/*`
+- `https://*.naldo.com.ar/*`
+- `https://*.musimundo.com/*`
+- `https://*.cetrogar.com.ar/*`
+- `https://*.megatone.net/*`
+- `https://diaonline.supermercadosdia.com.ar/*`
+- `https://*.jumbo.com.ar/*`
+- `https://*.disco.com.ar/*`
+- `https://*.sodimac.com.ar/*`
+- `https://*.easy.com.ar/*`
+- `https://*.hendel.com.ar/*`
 
 ### Remote code use
 ```
