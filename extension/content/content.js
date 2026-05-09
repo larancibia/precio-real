@@ -7,8 +7,8 @@
   if (window.__precioRealLoaded) return;
   window.__precioRealLoaded = true;
 
-  // Ciclo 1616: versión del content script para facilitar debugging en consola.
-  const CONTENT_VERSION = '1616';
+  // Ciclo 1617: versión del content script para facilitar debugging en consola.
+  const CONTENT_VERSION = '1617';
 
   const PR = window.PrecioReal;
   if (!PR) { console.warn('[Precio Real] helpers not loaded'); return; }
@@ -121,6 +121,11 @@
       for (const s of ldNodes) {
         const txt = s.textContent || '';
         if (txt.includes('"Product"') || txt.includes('"@type":"Product"')) return true;
+        // Ciclo 1617: algunos retailers (CompuPC, Binario, tiendas WooCommerce genéricas)
+        // emiten Offer directamente sin envolverlo en un Product, o bien emiten
+        // ItemPage con un mainEntity Offer. Si el ld+json contiene "@type":"Offer"
+        // con un precio numérico, es prácticamente seguro que es una PDP.
+        if ((txt.includes('"Offer"') || txt.includes('"@type":"Offer"')) && txt.includes('"price"')) return true;
       }
       if (document.querySelector('.price, .product-price, [data-testid*="price" i]')) return true;
     } catch (e) {

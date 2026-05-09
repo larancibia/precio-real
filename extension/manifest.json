@@ -90,6 +90,15 @@
     "https://*.klibr.com.ar/*",
     "https://*.lazer.com.ar/*",
     "https://*.pcarg.com.ar/*",
+    "https://*.gearzone.com.ar/*",
+    "https://*.binario.com.ar/*",
+    "https://*.compupc.com.ar/*",
+    "https://*.carsa.com.ar/*",
+    "https://*.grupodin.com/*",
+    "https://*.coppel.com/*",
+    "https://*.megatronics.com.ar/*",
+    "https://*.macstation.com.ar/*",
+    "https://*.winpy.com.ar/*",
     "http://localhost:8787/*"
   ],
   "action": {
@@ -186,7 +195,16 @@
         "https://*.centurytech.com.ar/*",
         "https://*.klibr.com.ar/*",
         "https://*.lazer.com.ar/*",
-        "https://*.pcarg.com.ar/*"
+        "https://*.pcarg.com.ar/*",
+        "https://*.gearzone.com.ar/*",
+        "https://*.binario.com.ar/*",
+        "https://*.compupc.com.ar/*",
+        "https://*.carsa.com.ar/*",
+        "https://*.grupodin.com/*",
+        "https://*.coppel.com/*",
+        "https://*.megatronics.com.ar/*",
+        "https://*.macstation.com.ar/*",
+        "https://*.winpy.com.ar/*"
       ],
       "js": ["config.js", "utils/retailers.js", "utils/helpers.js", "utils/affiliates.js", "content/content.js"],
       "css": ["content/badge.css"],

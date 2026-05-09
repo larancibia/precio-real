@@ -161,6 +161,11 @@
     'klibr',
     'lazer',
     'pcarg',
+    // Ciclo 1617: GearZone AR (Shopify gaming bundles/periféricos), Binario AR (WooCommerce
+    // componentes/hardware gaming), CompuPC AR (WooCommerce hardware/PC armado).
+    'gearzone',
+    'binario',
+    'compupc',
   ];
 
   function detectSite(hostname) {
@@ -292,6 +297,11 @@
     if (h.endsWith('klibr.com.ar')) return 'klibr';
     if (h.endsWith('lazer.com.ar')) return 'lazer';
     if (h.endsWith('pcarg.com.ar')) return 'pcarg';
+    // Ciclo 1617: GearZone AR (Shopify gaming bundles/periféricos — referenciado en comentarios
+    // de data-bundle-id desde ciclo 1616), Binario AR (WooCommerce), CompuPC AR (WooCommerce).
+    if (h.endsWith('gearzone.com.ar')) return 'gearzone';
+    if (h.endsWith('binario.com.ar')) return 'binario';
+    if (h.endsWith('compupc.com.ar')) return 'compupc';
     return null;
   }
 

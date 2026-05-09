@@ -2022,6 +2022,241 @@
         'meta[property="og:price:amount"]',
       ],
     },
+    // ── Ciclo 1630 ──────────────────────────────────────────────────────────
+    // Nuevos retailers: Carsa (WooCommerce electrodomésticos AR regional),
+    // Falabella Travel (se detecta en falabella.com.ar — ya cubierto),
+    // GrupoDIN (Magento 2 electrónica AR), Antel AR (Shopify accesorios AR),
+    // Coppel AR (VTEX línea blanca/electrónica), Megatronics (Magento 2 gaming/IT).
+    carsa: {
+      label: 'Carsa',
+      hostnameSuffix: 'carsa.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Carsa AR (electrodomésticos/electrónica regional NOA/NEA) usa WooCommerce
+        // con tema custom. El precio con descuento vive en .price ins .woocommerce-Price-amount;
+        // sin descuento en .woocommerce-Price-amount directamente. También expone
+        // [itemprop="price"] en su schema.org Product y meta tags estándar.
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        'ins .woocommerce-Price-amount.amount bdi',
+        'ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount bdi',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        '.precio-actual',
+        '.precio-web',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    grupodin: {
+      label: 'GrupoDIN',
+      hostnameSuffix: 'grupodin.com',
+      currency: 'ARS',
+      selectors: [
+        // GrupoDIN AR (electrónica/electrodomésticos, presencia nacional) usa
+        // Magento 2 con tema custom. El precio de venta final vive en
+        // .price-final_price [data-price-amount] (US-formatted). El precio
+        // tachado (.old-price) lo filtra isStrikethroughPrice.
+        '.product-info-price .price-final_price [data-price-amount]',
+        '.product-info-price .price-final_price .price',
+        '.special-price [data-price-amount]',
+        '.special-price .price',
+        '.price-box .price-final_price [data-price-amount]',
+        '.price-box .price',
+        '[data-price-amount]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        '.price-current',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    coppel: {
+      label: 'Coppel',
+      hostnameSuffix: 'coppel.com',
+      currency: 'ARS',
+      selectors: [
+        // Coppel AR usa VTEX IO con tema custom. El precio de venta principal
+        // vive en sellingPriceValue. También expone meta itemprop="price" (formato US)
+        // y JSON-LD Product en todas las PDPs. El precio de contado (efectivo/débito)
+        // es el que se muestra primero en el PDP; el precio en cuotas está en
+        // otro bloque y lo filtra isStrikethroughPrice por context.
+        '.vtex-product-price-1-x-sellingPriceValue',
+        '.vtex-product-price-1-x-sellingPrice',
+        '.vtex-product-price-1-x-currencyContainer',
+        '[class*="sellingPriceValue" i]',
+        '[class*="sellingPrice" i]',
+        '[class*="currentPrice" i]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '[data-testid="pdp-price"]',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    megatronics: {
+      label: 'Megatronics',
+      hostnameSuffix: 'megatronics.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Megatronics AR (gaming/IT/componentes PC) usa Magento 2 con tema custom.
+        // Precio final en .price-final_price [data-price-amount] (US-formatted).
+        // El precio tachado (.old-price) lo filtra isStrikethroughPrice.
+        // También expone [data-testid="product-price"] en su SPA overlay
+        // de configuración (PCs armadas con specs variables).
+        '.product-info-price .price-final_price [data-price-amount]',
+        '.product-info-price .price-final_price .price',
+        '.special-price [data-price-amount]',
+        '.special-price .price',
+        '.price-box .price-final_price [data-price-amount]',
+        '.price-box .price',
+        '[data-price-amount]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    macstation: {
+      label: 'Mac Station',
+      hostnameSuffix: 'macstation.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Mac Station AR (Apple Premium Reseller) usa Shopify con tema custom
+        // similar a Mac Center e iPoint. El precio de venta activo vive en
+        // .price-item--sale cuando hay descuento; sin descuento en .price-item--regular.
+        // El precio de lista tachado (inside .price--on-sale) lo filtra
+        // isStrikethroughPrice. JSON-LD Product siempre presente.
+        '.price__sale .price-item--sale',
+        '.price-item--sale',
+        '.price__regular .price-item--regular',
+        '.price-item--regular',
+        '[data-testid="product-price"]',
+        '[data-testid="price"]',
+        'span[class*="price-item" i]',
+        '[data-price-value]',
+        '.product__price',
+        '.product-price',
+        '.precio-actual',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    winpy: {
+      label: 'Winpy',
+      hostnameSuffix: 'winpy.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Winpy AR (electrónica/gaming/periféricos) usa una plataforma propia
+        // basada en Next.js/React. El precio de venta activo vive en
+        // [data-testid="product-price"] o en el elemento con clase que contiene
+        // "Price". También expone meta itemprop="price" con formato US.
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '[data-testid="selling-price"]',
+        '[data-testid="final-price"]',
+        '.product-price__current',
+        '.product-price__sale',
+        '[class*="CurrentPrice" i]',
+        '[class*="SalePrice" i]',
+        '[class*="FinalPrice" i]',
+        '[class*="ProductPrice" i]',
+        '.product-price',
+        '.precio-actual',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    // Ciclo 1617: GearZone AR (Shopify gaming bundles/periféricos).
+    // Referenciado en data-bundle-id comentarios desde ciclo 1616 junto a Klibr/Lazer.
+    gearzone: {
+      label: 'GearZone',
+      hostnameSuffix: 'gearzone.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // GearZone usa Shopify con tema custom gaming. El precio de venta activo vive en
+        // .price__sale .price-item--sale; sin descuento en .price-item--regular.
+        // Los bundles tienen data-bundle-id en el picker; el precio del bundle
+        // se actualiza en el contenedor .price__sale al seleccionar una configuración.
+        '.price__sale .price-item--sale',
+        '.price-item--sale',
+        '.price__regular .price-item--regular',
+        '.price-item--regular',
+        '[data-bundle-id]',
+        '[data-sku-id]',
+        '[data-testid="product-price"]',
+        '[data-testid="price"]',
+        'span[class*="price-item" i]',
+        '[data-price-value]',
+        '.product__price',
+        '.product-price',
+        '.price--large',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    // Ciclo 1617: Binario AR (WooCommerce gaming/componentes PC).
+    binario: {
+      label: 'Binario',
+      hostnameSuffix: 'binario.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Binario usa WooCommerce con tema custom. El precio con descuento
+        // vive en .price ins .woocommerce-Price-amount (mismo patrón que PcArg).
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        'ins .woocommerce-Price-amount.amount bdi',
+        'ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount bdi',
+        '[data-testid="product-price"]',
+        '.product-price',
+        '.precio-actual',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    // Ciclo 1617: CompuPC AR (WooCommerce hardware/PC armado).
+    compupc: {
+      label: 'CompuPC',
+      hostnameSuffix: 'compupc.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // CompuPC usa WooCommerce con tema Storefront/Flatsome custom.
+        // El precio de oferta vive en .price ins; sin oferta directamente en .price.
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        'ins .woocommerce-Price-amount.amount bdi',
+        '.woocommerce-Price-amount.amount bdi',
+        '[data-testid="product-price"]',
+        '.product-price',
+        '.summary .price',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
   };
 
   const GENERIC_PRICE_SELECTORS = [

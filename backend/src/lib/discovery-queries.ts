@@ -1414,4 +1414,56 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "sauna facial portatil",
   "depiladora laser ipl",
   "masajeador facial led",
+  // Ciclo 1630 — nuevos retailers: Carsa, GrupoDIN, Coppel, Megatronics, Mac Station, Winpy
+  // + categorías de alta rotación sin cobertura previa
+  // Electrodomésticos regionales AR
+  "heladera nordik",
+  "lavarropas electrolux 8kg",
+  "cocina a gas gef",
+  "microondas samsung 32l",
+  "lavarropa candy inverter",
+  // Gaming / IT componentes (Megatronics / Winpy)
+  "placa de video nvidia rtx 4080",
+  "procesador ryzen 7 7700x",
+  "kit ram ddr5 64gb",
+  "gabinete rgb gamer full tower",
+  "fuente de poder modular 850w",
+  "refrigeracion liquida 360mm",
+  // Apple Resellers (Mac Station / Mac Center)
+  "macbook pro m4",
+  "mac mini m4",
+  "iphone 16 plus",
+  "apple watch ultra 2",
+  "airpods pro 2da generacion",
+  // Coppel AR (línea blanca + electrónica)
+  "televisor 4k 58 pulgadas",
+  "refrigerador no frost coppel",
+  "lavadora automatica 16kg",
+  "aire acondicionado 3000 frigorias",
+  // Calzado / moda invierno (Carsa / tiendas regionales)
+  "botas invierno mujer taco bajo",
+  "borcego hombre cuero",
+  "zapatillas winter boost",
+  // Tech consumo masivo sin cobertura previa
+  "grabador dvr hikvision",
+  "camara dome seguridad",
+  "kit cctv 8 camaras",
+  "switch red poe 24 puertos",
+  "access point ubiquiti",
+  // Outdoor / pesca / caza invierno AR
+  "wader de pesca impermeables",
+  "caña de pesca spinning",
+  "carrete de pesca electrico",
+  // Nutricion / suplementos nuevos
+  "multivitaminico diario hombre",
+  "omega 3 capsulas",
+  "magnesio glicinato 400mg",
+  // Juguetes educativos STEM invierno
+  "impresora 3d educativa ninos",
+  "kit electronica educativa",
+  "programador robot scratch",
+  // Hogar / textil premium invierno AR
+  "acolchado de plumas naturales",
+  "ropa de cama bamboo",
+  "toallas de baño premium",
 ];

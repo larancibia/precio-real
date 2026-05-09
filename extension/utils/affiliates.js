@@ -407,6 +407,80 @@
       enabled: true,
       utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
     },
+    // Ciclo 1614: Bit (Shopify gaming/hardware), Digital Haus (WooCommerce electrónica),
+    // InStore (Magento 2 audio/video hifi), Staples AR (WooCommerce oficina),
+    // Gotta (WooCommerce gaming/periféricos).
+    bit: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    digitalhaus: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    instore: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    staples: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    gotta: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    // Ciclo 1615: Powerplanet (WooCommerce gaming/periféricos), I-Gaming Store (Shopify
+    // gaming/hardware), Netizar (Magento 2 hardware/networking), Megastore AR
+    // (WooCommerce electrónica), Centurytech (Magento 2 hardware/PC).
+    powerplanet: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    igaming: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    netizar: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    megastore: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    centurytech: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    // Ciclo 1616: Klibr (Shopify gaming/periféricos), Lazer (Shopify gaming sillas/periféricos),
+    // PcArg (WooCommerce componentes/hardware/gaming AR).
+    klibr: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    lazer: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    pcarg: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    // Ciclo 1617: GearZone AR (Shopify gaming bundles/periféricos), Binario AR
+    // (WooCommerce componentes/hardware gaming), CompuPC AR (WooCommerce hardware/PC).
+    gearzone: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    binario: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    compupc: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
   };
 
   function applyUtm(rawUrl, utm) {
