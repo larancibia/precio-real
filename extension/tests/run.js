@@ -127,6 +127,15 @@ console.log('[precio-real tests] starting…');
     ['www.disco.com.ar', 'disco'],
     ['www.sodimac.com.ar', 'sodimac'],
     ['www.easy.com.ar', 'easy'],
+    // Ciclo 1582.
+    ['www.changomas.com.ar', 'changomas'],
+    ['www.electrolux.com.ar', 'electrolux'],
+    ['www.drean.com.ar', 'drean'],
+    ['www.motorola.com.ar', 'motorola'],
+    ['www.todomodo.com.ar', 'todomodo'],
+    // Ciclo 1584.
+    ['www.amazon.com.ar', 'amazon'],
+    ['www.hipertehno.com.ar', 'hipertehno'],
     ['www.hendel.com.ar', 'hendel'],
     ['www.rodo.com.ar', 'rodo'],
     ['www.ribeiro.com.ar', 'ribeiro'],
@@ -286,6 +295,10 @@ console.log('[precio-real tests] starting…');
     'ribeiro', 'compumundo', 'samsung',
     // Ciclo 14: marcas con tienda oficial AR.
     'lg', 'sony', 'philips', 'bgh', 'noblex', 'whirlpool',
+    // Ciclo 1582: nuevos retailers Hot Sale AR.
+    'changomas', 'electrolux', 'drean', 'motorola', 'todomodo',
+    // Ciclo 1584: Amazon AR + HiperTehno.
+    'amazon', 'hipertehno',
   ];
   for (const k of expected) {
     assert(PR.RETAILERS && PR.RETAILERS[k], `RETAILERS["${k}"] exists`);
@@ -294,12 +307,16 @@ console.log('[precio-real tests] starting…');
       `RETAILERS["${k}"].selectors not empty`
     );
   }
-  // SUPPORTED_SITES debe incluir los 3 nuevos del ciclo 12 + 6 del ciclo 14.
+  // SUPPORTED_SITES debe incluir los 3 nuevos del ciclo 12 + 6 del ciclo 14
+  // + 5 del ciclo 1582 + 2 del ciclo 1584.
   assert(PR.SUPPORTED_SITES.includes('ribeiro'), 'SUPPORTED_SITES includes ribeiro');
   assert(PR.SUPPORTED_SITES.includes('compumundo'), 'SUPPORTED_SITES includes compumundo');
   assert(PR.SUPPORTED_SITES.includes('samsung'), 'SUPPORTED_SITES includes samsung');
   for (const k of ['lg', 'sony', 'philips', 'bgh', 'noblex', 'whirlpool']) {
     assert(PR.SUPPORTED_SITES.includes(k), `SUPPORTED_SITES includes ${k}`);
+  }
+  for (const k of ['changomas', 'electrolux', 'drean', 'motorola', 'todomodo', 'amazon', 'hipertehno']) {
+    assert(PR.SUPPORTED_SITES.includes(k), `SUPPORTED_SITES includes ${k} (ciclo 1582/1584)`);
   }
 }
 

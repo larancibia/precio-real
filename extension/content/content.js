@@ -65,6 +65,13 @@
         if (/MLA-?\d+/i.test(location.pathname)) return true;
         return false;
       }
+      // Descarta listados/categorías antes de los DOM queries: evita falsos
+      // positivos en páginas que muestran precios pero no son una PDP.
+      if (typeof PR.urlLooksLikeListing === 'function') {
+        try {
+          if (PR.urlLooksLikeListing(site, location.pathname)) return false;
+        } catch (_) { /* ignorar */ }
+      }
       if (document.querySelector('[itemtype*="schema.org/Product"]')) return true;
       if (document.querySelector('[itemprop="price"]')) return true;
       if (document.querySelector('meta[property="og:type"][content="product"]')) return true;
@@ -392,6 +399,15 @@
           // un "cambio de variante" defensivo si todo lo otro falla).
           'data-pricetype', 'data-price-type', 'data-product-code',
           'aria-busy',
+          // Ciclo 1585: Amazon AR — ASIN cambia al seleccionar variante de color
+          // o tamaño. data-dp-url y data-selected-size-name son el selector de
+          // variante del carrusel de swatches. data-defaultasin es el fallback.
+          'data-asin', 'data-dp-url', 'data-selected-size-name', 'data-defaultasin',
+          // WooCommerce (Drean, HiperTehno) — el formulario de variante actualiza
+          // data-product_id y data-variation_id al elegir atributo.
+          'data-product_id', 'data-variation_id',
+          // PrestaShop (Todomodo) — id de atributo de producto para variantes.
+          'data-id-product-attribute', 'data-id-product',
         ],
       });
     } catch (_) { variantObserver = null; }
