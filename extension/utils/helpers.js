@@ -10,7 +10,11 @@
     'garbarino',
     'falabella',
     'carrefour',
-    'coto'
+    'coto',
+    'naldo',
+    'musimundo',
+    'cetrogar',
+    'megatone'
   ];
 
   function detectSite(hostname) {
@@ -22,6 +26,10 @@
     if (h.endsWith('falabella.com.ar')) return 'falabella';
     if (h.endsWith('carrefour.com.ar')) return 'carrefour';
     if (h.endsWith('cotodigital3.com.ar')) return 'coto';
+    if (h.endsWith('naldo.com.ar')) return 'naldo';
+    if (h.endsWith('musimundo.com')) return 'musimundo';
+    if (h.endsWith('cetrogar.com.ar')) return 'cetrogar';
+    if (h.endsWith('megatone.net')) return 'megatone';
     return null;
   }
 

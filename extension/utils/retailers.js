@@ -52,6 +52,46 @@
       currency: 'ARS',
       selectors: ['.atg_store_newPrice', '.product_price'],
     },
+    naldo: {
+      label: 'Naldo',
+      hostnameSuffix: 'naldo.com.ar',
+      currency: 'ARS',
+      selectors: [
+        '[data-testid="product-price"]',
+        '.product-price',
+        'span[class*="Price"]',
+      ],
+    },
+    musimundo: {
+      label: 'Musimundo',
+      hostnameSuffix: 'musimundo.com',
+      currency: 'ARS',
+      selectors: [
+        '[data-testid="price-value"]',
+        '.price-value',
+        'span[class*="price"]',
+      ],
+    },
+    cetrogar: {
+      label: 'Cetrogar',
+      hostnameSuffix: 'cetrogar.com.ar',
+      currency: 'ARS',
+      selectors: [
+        '.product-price-container .price',
+        '.price-best-price',
+        'span[class*="price"]',
+      ],
+    },
+    megatone: {
+      label: 'Megatone',
+      hostnameSuffix: 'megatone.net',
+      currency: 'ARS',
+      selectors: [
+        '#lblPrecioVenta',
+        '.precio',
+        'span[class*="precio"]',
+      ],
+    },
   };
 
   const GENERIC_PRICE_SELECTORS = [

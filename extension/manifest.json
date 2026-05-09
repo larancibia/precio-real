@@ -11,6 +11,10 @@
     "https://*.falabella.com.ar/*",
     "https://*.carrefour.com.ar/*",
     "https://*.cotodigital3.com.ar/*",
+    "https://*.naldo.com.ar/*",
+    "https://*.musimundo.com/*",
+    "https://*.cetrogar.com.ar/*",
+    "https://*.megatone.net/*",
     "http://localhost:8787/*"
   ],
   "action": {
@@ -28,7 +32,11 @@
         "https://*.garbarino.com/*",
         "https://*.falabella.com.ar/*",
         "https://*.carrefour.com.ar/*",
-        "https://*.cotodigital3.com.ar/*"
+        "https://*.cotodigital3.com.ar/*",
+        "https://*.naldo.com.ar/*",
+        "https://*.musimundo.com/*",
+        "https://*.cetrogar.com.ar/*",
+        "https://*.megatone.net/*"
       ],
       "js": ["config.js", "utils/retailers.js", "utils/helpers.js", "utils/affiliates.js", "content/content.js"],
       "css": ["content/badge.css"],
