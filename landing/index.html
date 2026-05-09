@@ -25,6 +25,7 @@
   <link rel="preconnect" href="https://static.cloudflareinsights.com" crossorigin>
   <link rel="dns-prefetch" href="https://static.cloudflareinsights.com">
 
+  <link rel="preload" href="styles.css" as="style">
   <link rel="stylesheet" href="styles.css">
 
   <!-- Open Graph -->
@@ -698,6 +699,22 @@
           "@type": "Answer",
           "text": "Seguís teniendo acceso al historial acumulado por otros usuarios. El backend registra precios de todos los productos consultados, así que aunque acabes de instalar ya vas a ver el historial de semanas o meses atrás en los productos más buscados. Para productos más nicho, cuanto antes instalés mejor: más datos previos hay disponibles cuando empezás a navegar."
         }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Qué significa el badge NEUTRAL en Precio Real?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "El badge NEUTRAL aparece cuando el precio actual está dentro del rango normal del historial reciente: no hubo aumento significativo antes del Hot Sale, pero tampoco hay un descuento real sobre el mínimo histórico. El precio simplemente no cambió lo suficiente para ser considerado inflado ni una oferta genuina. Conviene revisar el historial completo y comparar con otras tiendas para decidir si vale la pena comprar."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Cuántos días de historial guarda Precio Real?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "El backend guarda el historial completo desde que el producto fue consultado por primera vez. En los productos más populares (los de Mercado Libre, Frávega y Garbarino), el historial puede cubrir meses. Para productos nuevos o de tiendas menos frecuentadas, el historial crece a medida que más usuarios lo consultan. Cuanto antes instalés y navegues los productos que te interesan, más historia acumulamos para el Hot Sale y el CyberMonday."
+        }
       }
     ]
   }
@@ -1169,6 +1186,20 @@
               <p>Seguís teniendo acceso al historial acumulado por otros usuarios: el backend registra precios de todos los productos consultados, así que aunque acabes de instalar la extensión ya vas a ver el historial de semanas o meses atrás en los productos más buscados. Para los productos más nicho, cuanto antes instalés mejor — más datos previos hay disponibles cuando empezás a navegar.</p>
             </div>
           </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">¿Qué significa el badge "NEUTRAL"?</summary>
+            <div class="faq__answer">
+              <p>El badge <strong>NEUTRAL</strong> aparece cuando el precio actual está dentro del rango normal del historial reciente: no hubo aumento significativo antes del Hot Sale, pero tampoco hay un descuento real sobre el mínimo histórico. El precio simplemente no cambió lo suficiente para ser considerado inflado ni una oferta genuina. En ese caso, conviene revisar el historial completo y comparar con otras tiendas para decidir si vale la pena comprar ahora.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">¿Cuántos días de historial guarda Precio Real?</summary>
+            <div class="faq__answer">
+              <p>El backend guarda el historial completo desde que el producto fue consultado por primera vez. En los productos más populares (los de Mercado Libre, Frávega y Garbarino que más se consultan), el historial puede cubrir meses. Para productos nuevos o de tiendas menos frecuentadas, el historial crece a medida que más usuarios lo consultan. Cuanto antes instalés la extensión y navegues los productos que te interesan, más historia acumulamos para cuando lleguen el Hot Sale y el CyberMonday.</p>
+            </div>
+          </details>
         </div>
       </div>
     </section>
@@ -1303,10 +1334,17 @@
         'mercadolibre': 'Mercado Libre', 'fravega': 'Frávega', 'garbarino': 'Garbarino',
         'falabella': 'Falabella', 'carrefour': 'Carrefour', 'coto': 'Coto', 'naldo': 'Naldo',
         'musimundo': 'Musimundo', 'cetrogar': 'Cetrogar', 'megatone': 'Megatone',
-        'dia': 'Día Online', 'jumbo': 'Jumbo', 'disco': 'Disco', 'sodimac': 'Sodimac',
-        'easy': 'Easy', 'amazon': 'Amazon', 'hipertehno': 'HiperTehno',
-        'bgood': 'BGood', 'hptienda': 'HP Tienda', 'lenovo': 'Lenovo',
-        'alphatec': 'Alphatec', 'exo': 'Exo', 'hisense': 'Hisense', 'tcl': 'TCL', 'pycca': 'Pycca',
+        'diaonline': 'Día Online', 'dia': 'Día Online', 'jumbo': 'Jumbo', 'disco': 'Disco',
+        'sodimac': 'Sodimac', 'easy': 'Easy', 'hendel': 'Hendel', 'rodo': 'Rodo',
+        'ribeiro': 'Ribeiro', 'compumundo': 'Compumundo', 'amazon': 'Amazon',
+        'hipertehno': 'HiperTehno', 'samsung': 'Samsung Store', 'lg': 'LG Argentina',
+        'sony': 'Sony Store', 'philips': 'Philips', 'bgh': 'BGH', 'noblex': 'Noblex',
+        'whirlpool': 'Whirlpool', 'changomas': 'Changomás', 'electrolux': 'Electrolux',
+        'drean': 'Drean', 'motorola': 'Motorola Store', 'todomodo': 'Todomodo',
+        'mi.com': 'Xiaomi Mi Store', 'xiaomi': 'Xiaomi Mi Store', 'philco': 'Philco',
+        'venex': 'Venex', 'bgood': 'BGood', 'hptienda': 'HP Tienda', 'lenovo': 'Lenovo',
+        'alphatec': 'Alphatec', 'exo': 'Exo', 'hisense': 'Hisense', 'tcl': 'TCL',
+        'pycca': 'Pycca', 'newsan': 'Newsan', 'asus': 'Asus Store', 'maccenter': 'Mac Center',
       };
       if (!seller) return '';
       var key = seller.toLowerCase();
