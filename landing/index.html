@@ -77,6 +77,126 @@
     ]
   }
   </script>
+
+  <!-- Structured data: WebSite (helps Google show site name + sitelinks searchbox if added later) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Precio Real",
+    "alternateName": "Precio Real Argentina",
+    "url": "https://preciorreal.com/",
+    "inLanguage": "es-AR",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Precio Real",
+      "url": "https://preciorreal.com/"
+    }
+  }
+  </script>
+
+  <!-- Structured data: HowTo (mirrors the "Cómo funciona" section) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "Cómo ver el precio real de un producto en e-commerce argentinos",
+    "description": "Instalá la extensión Precio Real, navegá Mercado Libre, Frávega, Carrefour, Coto y otros e-commerce argentinos, y vé en tiempo real si el descuento del Hot Sale es real o un aumento disfrazado.",
+    "totalTime": "PT2M",
+    "estimatedCost": {
+      "@type": "MonetaryAmount",
+      "currency": "ARS",
+      "value": "0"
+    },
+    "supply": [
+      { "@type": "HowToSupply", "name": "Navegador Chrome, Edge o Brave (Manifest V3)" }
+    ],
+    "tool": [
+      { "@type": "HowToTool", "name": "Extensión Precio Real" }
+    ],
+    "step": [
+      {
+        "@type": "HowToStep",
+        "position": 1,
+        "name": "Instalá la extensión",
+        "text": "Instalá Precio Real desde la Chrome Web Store con un click. No pide datos personales ni cuenta.",
+        "url": "https://preciorreal.com/#instalar"
+      },
+      {
+        "@type": "HowToStep",
+        "position": 2,
+        "name": "Navegá normal",
+        "text": "Entrá a Mercado Libre, Frávega, Carrefour, Coto y otros sitios soportados. La extensión trabaja sola en segundo plano.",
+        "url": "https://preciorreal.com/#como-funciona"
+      },
+      {
+        "@type": "HowToStep",
+        "position": 3,
+        "name": "Vé el precio real",
+        "text": "Mirá el historial de precios y las alertas de aumentos disfrazados de descuentos directamente en la página del producto.",
+        "url": "https://preciorreal.com/#como-funciona"
+      }
+    ]
+  }
+  </script>
+
+  <!-- Structured data: FAQPage (mirrors the FAQ section) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "¿Precio Real es gratis?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sí. Precio Real es 100% gratis y open source. No hay versión paga, ni trial, ni features bloqueadas. Si te sirvió, podés bancar el proyecto con un cafecito en cafecito.app/precioreal — pero es totalmente opcional."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Qué tiendas argentinas soporta la extensión?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Hoy soporta 16 e-commerce argentinos: Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy y Hendel. Vamos sumando más a medida que la comunidad lo pide."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Recolecta datos personales o trackea mi navegación?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No. La extensión solo se activa en los sitios soportados y solo lee la URL pública del producto y su precio actual. No pide cuenta, no pide email, no usa cookies de tracking y no lee otras pestañas. Toda la política está en preciorreal.com/privacidad.html."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Cómo detecta los aumentos disfrazados de descuentos en el Hot Sale?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Precio Real guarda el historial real de precios de cada producto. Cuando entrás a una ficha durante el Hot Sale, compara el precio actual contra las semanas previas y te muestra un badge: precio real (descuento honesto), inflado (aumento disfrazado) o neutral (sin cambios significativos)."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Funciona en Chrome, Edge y Brave?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sí. La extensión usa Manifest V3 y funciona en cualquier navegador basado en Chromium: Chrome, Edge, Brave, Opera, Arc, Vivaldi y similares. Firefox todavía no está soportado, pero está en el roadmap."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿El código es auditable?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sí, todo el código (extensión + backend + landing) está publicado en GitHub: github.com/larancibia/precio-real. Podés revisar exactamente qué hace, abrir issues o mandar pull requests."
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
   <header class="hero">
@@ -161,6 +281,57 @@
       </div>
     </section>
 
+    <section id="faq" class="section section--faq" aria-labelledby="faq-title">
+      <div class="section__inner">
+        <h2 id="faq-title" class="section__title">Preguntas frecuentes</h2>
+        <p class="section__lead">Lo que más nos preguntan sobre Precio Real.</p>
+
+        <div class="faq">
+          <details class="faq__item">
+            <summary class="faq__question">¿Precio Real es gratis?</summary>
+            <div class="faq__answer">
+              <p>Sí. Precio Real es 100% gratis y open source. No hay versión paga, ni trial, ni features bloqueadas. Si te sirvió, podés bancar el proyecto con un cafecito en <a href="https://cafecito.app/precioreal" target="_blank" rel="noopener noreferrer">cafecito.app/precioreal</a> — pero es totalmente opcional.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">¿Qué tiendas argentinas soporta la extensión?</summary>
+            <div class="faq__answer">
+              <p>Hoy soporta <strong>16 e-commerce argentinos</strong>: Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy y Hendel. Vamos sumando más a medida que la comunidad lo pide.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">¿Recolecta datos personales o trackea mi navegación?</summary>
+            <div class="faq__answer">
+              <p>No. La extensión solo se activa en los sitios soportados y solo lee la URL pública del producto y su precio actual. No pide cuenta, no pide email, no usa cookies de tracking y no lee otras pestañas. Toda la política está en <a href="/privacidad.html">preciorreal.com/privacidad.html</a>.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">¿Cómo detecta los aumentos disfrazados de descuentos en el Hot Sale?</summary>
+            <div class="faq__answer">
+              <p>Precio Real guarda el historial real de precios de cada producto. Cuando entrás a una ficha durante el Hot Sale, compara el precio actual contra las semanas previas y te muestra un badge: <strong>precio real</strong> (descuento honesto), <strong>inflado</strong> (aumento disfrazado) o <strong>neutral</strong> (sin cambios significativos).</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">¿Funciona en Chrome, Edge y Brave?</summary>
+            <div class="faq__answer">
+              <p>Sí. La extensión usa Manifest V3 y funciona en cualquier navegador basado en Chromium: Chrome, Edge, Brave, Opera, Arc, Vivaldi y similares. Firefox todavía no está soportado, pero está en el roadmap.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">¿El código es auditable?</summary>
+            <div class="faq__answer">
+              <p>Sí, todo el código (extensión + backend + landing) está publicado en GitHub: <a href="https://github.com/larancibia/precio-real" target="_blank" rel="noopener noreferrer">github.com/larancibia/precio-real</a>. Podés revisar exactamente qué hace, abrir issues o mandar pull requests.</p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
     <section id="instalar" class="section section--install" aria-labelledby="install-title">
       <div class="section__inner section__inner--center">
         <h2 id="install-title" class="section__title">Sumate al precio real</h2>
@@ -178,6 +349,8 @@
     <div class="footer__inner">
       <p class="footer__copy">© 2026 Precio Real</p>
       <nav class="footer__links" aria-label="Enlaces del pie de página">
+        <a href="#faq">Preguntas frecuentes</a>
+        <span class="footer__sep" aria-hidden="true">·</span>
         <a href="/privacidad.html">Privacidad</a>
         <span class="footer__sep" aria-hidden="true">·</span>
         <a href="https://github.com/larancibia/precio-real" target="_blank" rel="noopener noreferrer">GitHub</a>

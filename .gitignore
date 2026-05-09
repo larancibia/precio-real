@@ -22,3 +22,6 @@ backend/scripts/seed.sql
 # IDE
 .vscode/
 .idea/
+
+# Claude Code local state
+.claude/
