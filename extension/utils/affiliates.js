@@ -153,6 +153,14 @@
         campaign: 'descuento-real',
       },
     },
+    rodo: {
+      enabled: true,
+      utm: {
+        source: 'precio-real',
+        medium: 'extension',
+        campaign: 'descuento-real',
+      },
+    },
   };
 
   function applyUtm(rawUrl, utm) {

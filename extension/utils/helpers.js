@@ -62,7 +62,8 @@
     'disco',
     'sodimac',
     'easy',
-    'hendel'
+    'hendel',
+    'rodo'
   ];
 
   function detectSite(hostname) {
@@ -84,6 +85,7 @@
     if (h.endsWith('sodimac.com.ar')) return 'sodimac';
     if (h.endsWith('easy.com.ar')) return 'easy';
     if (h.endsWith('hendel.com.ar')) return 'hendel';
+    if (h.endsWith('rodo.com.ar')) return 'rodo';
     return null;
   }
 
@@ -239,16 +241,24 @@
   }
 
   // Detecta precios "antes" tachados (line-through) para ignorarlos.
-  // Mira el elemento y hasta 3 ancestros: si el style computado o cualquier
-  // clase contiene line-through / "old"/"previous"/"antes"/"strike" lo skip.
+  // Mira el elemento y hasta 3 ancestros: si el style computado, inline style,
+  // o cualquier clase contiene line-through / "old"/"previous"/"antes"/"strike"
+  // lo skip. También detecta wrappers <s> y <del>.
   function isStrikethroughPrice(el) {
     if (!el || typeof el.closest !== 'function') return false;
     let node = el;
     for (let i = 0; i < 4 && node; i++) {
+      const tag = (node.tagName || '').toLowerCase();
+      if (tag === 's' || tag === 'del' || tag === 'strike') return true;
       const cls = ((node.className && node.className.baseVal) || node.className || '') + '';
-      if (/line-through|strike|crossed|old[-_]?price|previous[-_]?price|prev[-_]?price|antes|tachad/i.test(cls)) {
+      if (/line-through|strike|crossed|old[-_]?price|previous[-_]?price|prev[-_]?price|list[-_]?price|regular[-_]?price|was[-_]?price|antes|tachad/i.test(cls)) {
         return true;
       }
+      // Inline style (algunos retailers usan style="text-decoration: line-through")
+      try {
+        const inline = (node.getAttribute && node.getAttribute('style')) || '';
+        if (/line-through/i.test(inline)) return true;
+      } catch (_) { /* ignore */ }
       try {
         const cs = node.ownerDocument && node.ownerDocument.defaultView
           ? node.ownerDocument.defaultView.getComputedStyle(node) : null;
@@ -261,9 +271,90 @@
     return false;
   }
 
+  // Detecta precios que en realidad son cuotas/intereses ("12 cuotas de $1.234,56",
+  // "$1.234,56 x 12 cuotas", "Cuotas sin interés", "promo bancaria"). Mira el
+  // texto del elemento y hasta 4 ancestros buscando indicadores típicos AR.
+  // Si el texto del propio elemento es "12 cuotas de $1.234" lo descartamos sin
+  // mirar ancestros: extraer ese precio como total seria un bug grave (suele ser
+  // 1/12 del precio real).
+  function isInstallmentPrice(el) {
+    if (!el || typeof el.closest !== 'function') return false;
+    // 1) Inspección directa del texto del elemento (más rápido y certero).
+    let ownText = '';
+    try { ownText = (el.textContent || '').trim(); } catch (_) {}
+    if (/\bcuotas?\s+(de|sin|fijas|con)\b/i.test(ownText)) return true;
+    if (/\bx\s+\d{1,2}\s+cuotas?\b/i.test(ownText)) return true;
+    if (/\bpor\s+mes\b/i.test(ownText)) return true; // "$1.234 por mes"
+    // 2) Ancestros: buscar contenedores marcados como cuotas/promo/instalment.
+    let node = el;
+    for (let i = 0; i < 4 && node; i++) {
+      const cls = ((node.className && node.className.baseVal) || node.className || '') + '';
+      const id = (node.id || '') + '';
+      const dataTest = (node.getAttribute && (node.getAttribute('data-testid') || node.getAttribute('data-test-id'))) || '';
+      const blob = `${cls} ${id} ${dataTest}`;
+      if (/installment|cuota|finance|finan|monthly|per[-_]?month|promo[-_]?banc/i.test(blob)) return true;
+      node = node.parentElement;
+    }
+    return false;
+  }
+
   function extractPrice(siteKey) {
     const info = extractPriceInfo(siteKey);
     return info ? info.price : null;
+  }
+
+  // Sanity check: descartar precios obviamente espurios. Hot Sale AR rara vez
+  // tiene productos por menos de $100 (excepto centavos sueltos de error de
+  // parsing) ni más de $1.000.000.000 (son outliers de typos en JSON-LD).
+  // El piso bajo es 1 porque schema.org permite "0.00" para "ver precio en
+  // el carrito" — si quedó en 0 no es informativo. El techo alto evita que
+  // un parse de "12345678901" como cents (123.456.789,01) pase como real.
+  function isPriceSane(n) {
+    if (!Number.isFinite(n)) return false;
+    if (n < 1) return false;
+    if (n > 1e9) return false;
+    return true;
+  }
+
+  // Para Mercado Libre: el `.andes-money-amount__fraction` contiene solo la
+  // parte entera ("1.234"). Para precios con cents no triviales (raro en ARS
+  // pero ocurre), preferimos leer el ancestro `.andes-money-amount` que tiene
+  // el precio completo ("$ 1.234,56") en su textContent + un atributo
+  // `aria-label="Pesos 1234 con 56 centavos"`.
+  function readMlPrice(el) {
+    if (!el) return null;
+    // Si el elemento ya es .andes-money-amount, usar su aria-label como fuente
+    // confiable (siempre formato US-ish: "Pesos 1234 con 56 centavos").
+    const moneyAmount = (el.classList && el.classList.contains('andes-money-amount'))
+      ? el
+      : (typeof el.closest === 'function' ? el.closest('.andes-money-amount') : null);
+    if (moneyAmount) {
+      const aria = moneyAmount.getAttribute('aria-label') || '';
+      // "Pesos 1234 con 56 centavos" → 1234.56
+      const m = aria.match(/(\d[\d\.,]*)\s*(?:con\s+(\d{1,2})\s*centavos?)?/i);
+      if (m) {
+        const ent = m[1] ? m[1].replace(/[.,]/g, '') : '';
+        const cents = m[2] || '';
+        if (ent) {
+          const composed = cents ? `${ent}.${cents.padStart(2, '0')}` : ent;
+          const n = Number(composed);
+          if (Number.isFinite(n) && n > 0) return n;
+        }
+      }
+      // Sin aria-label: combinar fraction + cents si existen.
+      const frac = moneyAmount.querySelector('.andes-money-amount__fraction');
+      const cents = moneyAmount.querySelector('.andes-money-amount__cents');
+      if (frac) {
+        const ent = (frac.textContent || '').replace(/[^\d]/g, '');
+        const c = cents ? (cents.textContent || '').replace(/[^\d]/g, '') : '';
+        if (ent) {
+          const composed = c ? `${ent}.${c.padStart(2, '0')}` : ent;
+          const n = Number(composed);
+          if (Number.isFinite(n) && n > 0) return n;
+        }
+      }
+    }
+    return null;
   }
 
   // Issue #2: parser por retailer devuelve {price, currency, retailer}.
@@ -282,16 +373,29 @@
       for (const el of nodes) {
         // Saltar precios visiblemente tachados (precio anterior, "antes").
         if (isStrikethroughPrice(el)) continue;
+        // Saltar precios que en realidad son cuotas mensuales o promos
+        // bancarias (el ancestro o el propio texto lo declara).
+        if (isInstallmentPrice(el)) continue;
+
+        // Camino especializado para Mercado Libre: reconstruir desde el
+        // contenedor `.andes-money-amount` para no perder los cents.
+        if (retailer === 'mercadolibre') {
+          const ml = readMlPrice(el);
+          if (isPriceSane(ml)) {
+            return { price: ml, currency: 'ARS', retailer };
+          }
+        }
+
         const { raw, fromAttribute } = readPriceFromElement(el);
         const n = normalizePrice(raw, { forceUSDecimal: fromAttribute });
-        if (Number.isFinite(n) && n > 0) {
+        if (isPriceSane(n)) {
           return { price: n, currency: 'ARS', retailer };
         }
       }
     }
 
     const ld = tryLdJsonPrice();
-    if (ld != null && Number.isFinite(ld) && ld > 0) {
+    if (ld != null && isPriceSane(ld)) {
       return { price: ld, currency: 'ARS', retailer };
     }
 
@@ -337,6 +441,7 @@
       const selectedSwatch = document.querySelector(
         '[role="radio"][aria-checked="true"][data-value],' +
         '[aria-pressed="true"][data-value],' +
+        '[aria-selected="true"][data-value],' +
         '.is-selected[data-value],' +
         '.selected[data-value]'
       );
@@ -457,6 +562,9 @@
   ns.urlLooksLikeListing = urlLooksLikeListing;
   ns.hasProductMicrodata = hasProductMicrodata;
   ns.isProductPageStrict = isProductPageStrict;
+  ns.isStrikethroughPrice = isStrikethroughPrice;
+  ns.isInstallmentPrice = isInstallmentPrice;
+  ns.isPriceSane = isPriceSane;
   ns.log = log;
   ns.DEBUG = DEBUG;
 })();

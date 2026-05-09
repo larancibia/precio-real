@@ -21,6 +21,7 @@
     "https://*.sodimac.com.ar/*",
     "https://*.easy.com.ar/*",
     "https://*.hendel.com.ar/*",
+    "https://*.rodo.com.ar/*",
     "http://localhost:8787/*"
   ],
   "action": {
@@ -48,7 +49,8 @@
         "https://*.disco.com.ar/*",
         "https://*.sodimac.com.ar/*",
         "https://*.easy.com.ar/*",
-        "https://*.hendel.com.ar/*"
+        "https://*.hendel.com.ar/*",
+        "https://*.rodo.com.ar/*"
       ],
       "js": ["config.js", "utils/retailers.js", "utils/helpers.js", "utils/affiliates.js", "content/content.js"],
       "css": ["content/badge.css"],

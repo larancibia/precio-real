@@ -216,6 +216,21 @@
         'span[class*="price" i]',
       ],
     },
+    rodo: {
+      label: 'Rodo',
+      hostnameSuffix: 'rodo.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Rodo (Magento 2 + temas custom) expone el precio en data-price-amount
+        // ("amount" es US-formatted) y un span .price con AR-formatted.
+        '[data-price-amount]',
+        '.product-info-price .price-final_price [data-price-amount]',
+        '.product-info-price .price-final_price .price',
+        '.price-box .price',
+        'meta[itemprop="price"]',
+        'span[class*="price" i]',
+      ],
+    },
   };
 
   const GENERIC_PRICE_SELECTORS = [

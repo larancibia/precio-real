@@ -67,9 +67,12 @@
       }
       if (document.querySelector('.price, .product-price, [data-testid*="price" i]')) return true;
     } catch (e) {
-      // Si querySelector tira (muy raro), preferimos asumir que sí es producto
-      // y dejar que extractPrice resuelva (peor caso: no hay precio → no badge).
-      return true;
+      // Si querySelector tira (muy raro), no podemos asumir nada: devolver false
+      // y dejar que el observer reintente cuando el DOM esté en mejor estado.
+      // Si extractPrice eventualmente encuentra precio + history, mostrará el
+      // badge. Si no, mejor no mostrar nada que mostrar info incorrecta en una
+      // categoría/listado.
+      return false;
     }
     return false;
   }
@@ -315,8 +318,18 @@
     };
     try {
       variantObserver = new MutationObserver(schedule);
-      variantObserver.observe(document.body, { childList: true, subtree: true, attributes: true,
-        attributeFilter: ['data-sku', 'data-product-id', 'data-variant-id', 'data-value', 'aria-checked', 'aria-pressed', 'class'] });
+      // Watch for variant-relevant attribute changes only (no `class` — too
+      // noisy, casi todos los retailers togglan clases por hover/focus). Si una
+      // variante cambia también suele cambiar SKU o aria-checked.
+      variantObserver.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: [
+          'data-sku', 'data-product-id', 'data-variant-id', 'data-value',
+          'aria-checked', 'aria-pressed', 'aria-selected',
+        ],
+      });
     } catch (_) { variantObserver = null; }
   }
 
