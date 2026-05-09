@@ -30,9 +30,12 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "drone",
   "ssd",
   "memoria ram",
+  "router wifi",
+  "joystick",
   // Línea blanca / electrodomésticos
   "heladera",
   "lavarropas",
+  "lavavajillas",
   "aire acondicionado",
   "cafetera",
   "microondas",
@@ -45,18 +48,23 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "horno electrico",
   "licuadora",
   "batidora",
+  "procesadora",
+  "sandwichera",
   "pava electrica",
   "tostadora",
   "freezer",
   "secador de pelo",
   "plancha de pelo",
+  "purificador de aire",
   // Hogar / muebles
   "colchon",
   "sillon",
   "escritorio",
   "silla gamer",
+  "termo",
   // Deportes / outdoor
   "bicicleta",
+  "monopatin electrico",
   "zapatillas",
   "pelota",
   "carpa",
@@ -68,7 +76,30 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   // Infantil
   "juguetes",
   "auto a bateria",
+  "cuna",
+  "cochecito",
+  // Fitness / gym
+  "bicicleta fija",
+  "cinta de correr",
+  "pesas",
+  "colchoneta yoga",
+  // Mascotas
+  "alimento perro",
+  "alimento gato",
+  "comedero automatico",
+  // Auto / moto
+  "bateria auto",
+  "gps auto",
+  "casco moto",
+  "silla auto bebe",
   // Herramientas / DIY
   "taladro",
   "amoladora",
+  "sierra circular",
+  "compresor de aire",
+  // Hogar adicional
+  "sommier",
+  "silla de oficina",
+  "lampara led",
+  "alarma casa",
 ];

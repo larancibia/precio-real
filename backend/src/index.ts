@@ -7,6 +7,8 @@
  *                                    inflated, last_scraped_at, history_days, history }
  *   GET  /api/stats              → { products, prices, last_scraped_at, oldest_scraped_at,
  *                                    products_with_prices }
+ *   GET  /api/search?q=<keyword>&limit=<n>
+ *                                → { count, results: [{ id, url, title, seller, image_url }] }
  *   GET  /api/movers?limit=&min_drop=
  *                                → { generated_at, count, min_drop_pct, movers: [...] }
  *                                  Top real-discount products (current price below
@@ -166,6 +168,31 @@ async function handleStats(env: Env): Promise<Response> {
   return json(out, 200);
 }
 
+const SEARCH_MAX_LIMIT = 50;
+
+async function handleSearch(request: Request, env: Env): Promise<Response> {
+  const url = new URL(request.url);
+  const q = (url.searchParams.get("q") ?? "").trim();
+  if (!q) {
+    return json({ error: "Missing required query parameter: q" }, 400);
+  }
+  const rawLimit = Number(url.searchParams.get("limit") ?? "10");
+  const limit = Number.isFinite(rawLimit) && rawLimit > 0
+    ? Math.min(SEARCH_MAX_LIMIT, Math.floor(rawLimit))
+    : 10;
+
+  const pattern = `%${q.replace(/%/g, "\\%").replace(/_/g, "\\_")}%`;
+  const rows = await env.DB
+    .prepare(
+      "SELECT id, url, title, seller, image_url FROM products WHERE title LIKE ?1 ESCAPE '\\' ORDER BY id DESC LIMIT ?2",
+    )
+    .bind(pattern, limit)
+    .all<Pick<ProductRow, "id" | "url" | "title" | "seller" | "image_url">>();
+
+  const results = rows.results ?? [];
+  return json({ count: results.length, results });
+}
+
 async function handleMovers(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
   const limit = clampLimit(url.searchParams.get("limit"));
@@ -254,6 +281,15 @@ export default {
     if (request.method === "GET" && url.pathname === "/api/stats") {
       try {
         return await handleStats(env);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        return json({ error: "Internal error", detail: message }, 500);
+      }
+    }
+
+    if (request.method === "GET" && url.pathname === "/api/search") {
+      try {
+        return await handleSearch(request, env);
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unknown error";
         return json({ error: "Internal error", detail: message }, 500);
