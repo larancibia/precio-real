@@ -754,6 +754,14 @@
           "@type": "Answer",
           "text": "El backend guarda el historial completo desde que el producto fue consultado por primera vez. En los productos más populares (los de Mercado Libre, Frávega y Garbarino), el historial puede cubrir meses. Para productos nuevos o de tiendas menos frecuentadas, el historial crece a medida que más usuarios lo consultan. Cuanto antes instalés y navegues los productos que te interesan, más historia acumulamos para el Hot Sale y el CyberMonday."
         }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Qué conviene hacer en los días previos al Hot Sale?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Los días previos son el momento más importante para aprovechar Precio Real. Instalá la extensión si todavía no lo tenés y navegá los productos que pensás comprar: cada visita registra el precio actual, así que cuando llegue el Hot Sale ya vas a tener historial propio de esos productos. Revisá el checklist por categoría en preciorreal.com/checklist-hot-sale-2026.html — tiene umbrales específicos para TVs, celulares, heladeras y notebooks. También conviene guardar los productos en favoritos de cada tienda para poder compararlos rápido el día del evento."
+        }
       }
     ]
   }
@@ -868,6 +876,78 @@
   </script>
 
   <main>
+    <!-- Pre-Hot Sale urgency section — visible 7 days before the event, hidden otherwise -->
+    <section id="pre-hs" class="section section--pre-hs" aria-labelledby="pre-hs-title" hidden>
+      <div class="section__inner section__inner--center">
+        <p class="pre-hs__eyebrow">Faltan <strong id="pre-hs-days">—</strong> para el Hot Sale Argentina 2026</p>
+        <h2 id="pre-hs-title" class="pre-hs__title">Instalá Precio Real <em>antes</em> del evento</h2>
+        <p class="pre-hs__lead">
+          El historial de precios que acumulás ahora es el que te protege el 13 de mayo.
+          Los aumentos previos ya están en curso — instalá y empezá a ver los datos reales.
+        </p>
+
+        <ul class="pre-hs__tips">
+          <li class="pre-hs__tip">
+            <span class="pre-hs__tip-icon" aria-hidden="true">📊</span>
+            <div>
+              <strong>Revisá los productos que querés comprar ahora</strong>
+              <p>Cada vez que abrís una ficha, Precio Real registra el precio. Cuanto más historial previo al Hot Sale, más fácil detectar si el "descuento" es real.</p>
+            </div>
+          </li>
+          <li class="pre-hs__tip">
+            <span class="pre-hs__tip-icon" aria-hidden="true">⚠️</span>
+            <div>
+              <strong>Los precios ya subieron 4–6% según EcoGo</strong>
+              <p>El patrón es siempre el mismo: inflan 2–3 semanas antes y "descuentan" sobre ese precio inflado. El historial de Precio Real lo deja al descubierto.</p>
+            </div>
+          </li>
+          <li class="pre-hs__tip">
+            <span class="pre-hs__tip-icon" aria-hidden="true">✓</span>
+            <div>
+              <strong>El badge aparece automático, sin hacer nada</strong>
+              <p>Una vez instalado, Precio Real trabaja solo en segundo plano. Entrás a cualquier tienda soportada y ves el veredicto directamente en la ficha del producto.</p>
+            </div>
+          </li>
+        </ul>
+
+        <div class="pre-hs__actions">
+          <a href="#instalar" class="btn btn--primary btn--lg">Instalar Gratis antes del Hot Sale</a>
+          <a href="/checklist-hot-sale-2026.html" class="btn btn--ghost">Ver checklist por categoría</a>
+        </div>
+      </div>
+    </section>
+    <style>
+      .section--pre-hs { background: linear-gradient(135deg, rgba(0,212,255,.06) 0%, rgba(74,222,128,.04) 100%); border-top: 2px solid rgba(0,212,255,.25); border-bottom: 2px solid rgba(0,212,255,.15); }
+      .pre-hs__eyebrow { font-size: .85rem; text-transform: uppercase; letter-spacing: .07em; color: var(--accent); margin: 0 0 .5rem; font-weight: 600; }
+      .pre-hs__title { font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 800; margin: 0 0 .75rem; color: var(--text); }
+      .pre-hs__title em { font-style: normal; color: var(--accent); }
+      .pre-hs__lead { color: var(--text-muted); max-width: 600px; margin: 0 auto 2rem; font-size: 1rem; }
+      .pre-hs__tips { list-style: none; padding: 0; margin: 0 auto 2rem; max-width: 720px; display: grid; gap: 1.1rem; text-align: left; }
+      @media (min-width: 640px) { .pre-hs__tips { grid-template-columns: 1fr 1fr 1fr; } }
+      .pre-hs__tip { display: flex; gap: .85rem; align-items: flex-start; background: var(--bg-elev); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 1rem 1.1rem; }
+      .pre-hs__tip-icon { font-size: 1.4rem; flex-shrink: 0; margin-top: .1rem; }
+      .pre-hs__tip strong { display: block; color: var(--text); margin-bottom: .3rem; font-size: .92rem; }
+      .pre-hs__tip p { color: var(--text-muted); font-size: .85rem; margin: 0; line-height: 1.5; }
+      .pre-hs__actions { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; }
+    </style>
+    <script>
+    (function () {
+      var HS_START = new Date('2026-05-13T00:00:00-03:00').getTime();
+      var HS_END   = new Date('2026-05-16T00:00:00-03:00').getTime();
+      var SHOW_WINDOW = 7 * 24 * 60 * 60 * 1000; /* 7 days before */
+      var now = Date.now();
+      if (now >= (HS_START - SHOW_WINDOW) && now < HS_START) {
+        var sec = document.getElementById('pre-hs');
+        var daysEl = document.getElementById('pre-hs-days');
+        if (sec) sec.removeAttribute('hidden');
+        if (daysEl) {
+          var d = Math.ceil((HS_START - now) / 86400000);
+          daysEl.textContent = d + (d === 1 ? ' día' : ' días');
+        }
+      }
+    })();
+    </script>
+
     <section id="como-funciona" class="section section--how" aria-labelledby="how-title">
       <div class="section__inner">
         <h2 id="how-title" class="section__title">Cómo funciona</h2>
@@ -1332,6 +1412,13 @@
             <summary class="faq__question">¿Cuántos días de historial guarda Precio Real?</summary>
             <div class="faq__answer">
               <p>El backend guarda el historial completo desde que el producto fue consultado por primera vez. En los productos más populares (los de Mercado Libre, Frávega y Garbarino que más se consultan), el historial puede cubrir meses. Para productos nuevos o de tiendas menos frecuentadas, el historial crece a medida que más usuarios lo consultan. Cuanto antes instalés la extensión y navegues los productos que te interesan, más historia acumulamos para cuando lleguen el Hot Sale y el CyberMonday.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">¿Qué conviene hacer en los días previos al Hot Sale?</summary>
+            <div class="faq__answer">
+              <p>Los días previos son el momento más importante: instalá Precio Real si todavía no lo tenés y navegá los productos que pensás comprar. Cada visita registra el precio actual, así que cuando llegue el 13 de mayo ya vas a tener historial propio de esos productos. También conviene revisar el <a href="/checklist-hot-sale-2026.html">checklist por categoría</a> — tiene umbrales específicos para TVs, celulares, heladeras y notebooks. Guardá los productos en favoritos de cada tienda para poder compararlos rápido el día del evento sin perder tiempo buscándolos.</p>
             </div>
           </details>
         </div>
