@@ -326,6 +326,87 @@
       enabled: true,
       utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
     },
+    // Ciclo 1607: Dexter AR (Shopify deportes), TGC AR (Magento 2 gaming),
+    // Maxiconsumo AR (VTEX supermercado mayorista).
+    dexter: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    tgc: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    maxiconsumo: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    // Ciclo 1608: FullH4rd AR (Shopify gaming), StartTech AR (Magento 2), PC House AR (WooCommerce).
+    fullh4rd: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    starttech: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    pchouse: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    // Ciclo 1609: MaxiHogar (VTEX), PC Factory (Magento 2), CompraGamer (custom),
+    // Golden Shop (Shopify), Soluciones (WooCommerce).
+    maxihogar: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    pcfactory: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    compragamer: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    goldenshop: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    soluciones: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    // Ciclo 1610: Zetta AR (WooCommerce), Geek Store AR (Shopify gaming),
+    // Computodo AR (Magento 2 hardware/PC).
+    zetta: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    geekstore: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    computodo: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    // Ciclo 1612: Arredondo (PrestaShop electrónica), iThink (Shopify Apple reseller),
+    // Nexstore (Magento 2 gaming/PC), Cable Hogar (WooCommerce electrónica).
+    arredondo: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    ithink: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    nexstore: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    cablehogar: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
   };
 
   function applyUtm(rawUrl, utm) {

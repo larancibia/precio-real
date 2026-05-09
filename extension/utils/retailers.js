@@ -1410,6 +1410,81 @@
         'meta[property="og:price:amount"]',
       ],
     },
+    // Ciclo 1610: Zetta AR (WooCommerce electrónica/computing), Geek Store AR
+    // (Shopify gaming/periféricos), Computodo AR (Magento 2 hardware/PC).
+    zetta: {
+      label: 'Zetta',
+      hostnameSuffix: 'zetta.net.ar',
+      currency: 'ARS',
+      selectors: [
+        // Zetta AR usa WooCommerce con tema custom. Precio con descuento en
+        // .price ins .woocommerce-Price-amount; sin descuento directamente.
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        'ins .woocommerce-Price-amount.amount bdi',
+        'ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount bdi',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        '.precio-actual',
+        '.precio-web',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    geekstore: {
+      label: 'Geek Store',
+      hostnameSuffix: 'geekstore.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Geek Store AR (gaming/periféricos) usa Shopify con tema custom.
+        // El precio de venta activo vive en .price-item--sale cuando hay descuento;
+        // sin descuento, en .price-item--regular. El precio tachado (inside
+        // .price--on-sale) lo filtra isStrikethroughPrice.
+        '.price__sale .price-item--sale',
+        '.price-item--sale',
+        '.price__regular .price-item--regular',
+        '.price-item--regular',
+        '[data-testid="product-price"]',
+        '[data-testid="price"]',
+        'span[class*="price-item" i]',
+        '[data-price-value]',
+        '.product__price',
+        '.product-price',
+        '.price',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    computodo: {
+      label: 'Computodo',
+      hostnameSuffix: 'computodo.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Computodo AR (hardware/PC building) usa Magento 2 con tema custom.
+        // Precio final en .price-final_price [data-price-amount] (US-formatted).
+        // El precio tachado (.old-price) lo filtra isStrikethroughPrice.
+        '.product-info-price .price-final_price [data-price-amount]',
+        '.product-info-price .price-final_price .price',
+        '.special-price [data-price-amount]',
+        '.special-price .price',
+        '.price-box .price-final_price [data-price-amount]',
+        '.price-box .price',
+        '[data-price-amount]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
     // Ciclo 1609: nuevos retailers gaming/PC y electrónica AR.
     // Plataformas: MaxiHogar (VTEX), DigitalTech (Magento 2), Goldenshop (Shopify),
     // Red UNO (WooCommerce), Cetrogar Córdoba (Magento 2, filial regional).
@@ -1521,6 +1596,102 @@
         '[data-testid="product-price"]',
         '.product-price',
         '.precio-actual',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    // Ciclo 1612: Arredondo (PrestaShop electrónica), iThink (Shopify Apple reseller),
+    // Nexstore (Magento 2 gaming/PC), Cable Hogar (WooCommerce electrónica).
+    arredondo: {
+      label: 'Arredondo',
+      hostnameSuffix: 'arredondo.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Arredondo usa PrestaShop con tema custom. El precio de venta activo vive en
+        // .current-price-value; el precio tachado está en .regular-price
+        // (filtrado por isStrikethroughPrice). Fallback genérico para rediseños.
+        '.current-price-value',
+        '.current-price .product-price',
+        '[itemprop="price"]',
+        '[data-testid="product-price"]',
+        'span[class*="current-price" i]',
+        '.product-price',
+        '.precio-actual',
+        '.precio-final',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    ithink: {
+      label: 'iThink',
+      hostnameSuffix: 'ithink.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // iThink AR (Apple Premium Reseller) usa Shopify con tema custom.
+        // El precio de venta activo vive en .price-item--sale cuando hay descuento;
+        // sin descuento, en .price-item--regular. El precio de lista tachado
+        // (dentro de .price--on-sale) lo filtra isStrikethroughPrice.
+        '.price__sale .price-item--sale',
+        '.price-item--sale',
+        '.price__regular .price-item--regular',
+        '.price-item--regular',
+        '[data-testid="product-price"]',
+        '[data-testid="price"]',
+        'span[class*="price-item" i]',
+        '[data-price-value]',
+        '.product__price',
+        '.product-price',
+        '.precio-actual',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    nexstore: {
+      label: 'Nexstore',
+      hostnameSuffix: 'nexstore.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Nexstore AR (gaming/PC hardware) usa Magento 2 con tema custom.
+        // Precio final en .price-final_price [data-price-amount] (US-formatted).
+        // El precio tachado (.old-price) lo filtra isStrikethroughPrice.
+        '.product-info-price .price-final_price [data-price-amount]',
+        '.product-info-price .price-final_price .price',
+        '.special-price [data-price-amount]',
+        '.special-price .price',
+        '.price-box .price-final_price [data-price-amount]',
+        '.price-box .price',
+        '[data-price-amount]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    cablehogar: {
+      label: 'Cable Hogar',
+      hostnameSuffix: 'cablehogar.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Cable Hogar AR (electrónica/electrodomésticos) usa WooCommerce con tema custom.
+        // El precio con descuento vive en .price ins .woocommerce-Price-amount;
+        // sin descuento en .woocommerce-Price-amount directamente.
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        'ins .woocommerce-Price-amount.amount bdi',
+        'ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount bdi',
+        '[data-testid="product-price"]',
+        '.product-price',
+        '.precio-actual',
+        '.precio-web',
         '[itemprop="price"]',
         'meta[itemprop="price"]',
         'meta[property="product:price:amount"]',

@@ -122,6 +122,24 @@
     'fullh4rd',
     'starttech',
     'pchouse',
+    // Ciclo 1609: MaxiHogar (VTEX), PC Factory (Magento 2), CompraGamer (custom),
+    // Golden Shop (Shopify), Soluciones (WooCommerce).
+    'maxihogar',
+    'pcfactory',
+    'compragamer',
+    'goldenshop',
+    'soluciones',
+    // Ciclo 1610: Zetta AR (WooCommerce electrónica), Geek Store AR (Shopify gaming),
+    // Computodo AR (Magento 2 hardware/PC).
+    'zetta',
+    'geekstore',
+    'computodo',
+    // Ciclo 1612: Arredondo (PrestaShop electrónica), iThink (Shopify Apple reseller),
+    // Nexstore (Magento 2 gaming/PC), Cable Hogar (WooCommerce electrónica).
+    'arredondo',
+    'ithink',
+    'nexstore',
+    'cablehogar',
   ];
 
   function detectSite(hostname) {
@@ -215,6 +233,23 @@
     if (h.endsWith('fullh4rd.com.ar')) return 'fullh4rd';
     if (h.endsWith('startechpc.com.ar')) return 'starttech';
     if (h.endsWith('phouse.com.ar')) return 'pchouse';
+    // Ciclo 1609: MaxiHogar (VTEX), PC Factory (Magento 2), CompraGamer (custom),
+    // Golden Shop (Shopify), Soluciones (WooCommerce).
+    if (h.endsWith('maxihogar.com.ar')) return 'maxihogar';
+    if (h.endsWith('pcfactory.com.ar')) return 'pcfactory';
+    if (h.endsWith('compragamer.com')) return 'compragamer';
+    if (h.endsWith('goldenshop.com.ar')) return 'goldenshop';
+    if (h.endsWith('soluciones.com.ar')) return 'soluciones';
+    // Ciclo 1610: Zetta AR (WooCommerce), Geek Store AR (Shopify), Computodo AR (Magento 2).
+    if (h.endsWith('zetta.net.ar')) return 'zetta';
+    if (h.endsWith('geekstore.com.ar')) return 'geekstore';
+    if (h.endsWith('computodo.com.ar')) return 'computodo';
+    // Ciclo 1612: Arredondo (PrestaShop electrónica), iThink (Shopify Apple reseller),
+    // Nexstore (Magento 2 gaming/PC), Cable Hogar (WooCommerce electrónica).
+    if (h.endsWith('arredondo.com.ar')) return 'arredondo';
+    if (h.endsWith('ithink.com.ar')) return 'ithink';
+    if (h.endsWith('nexstore.com.ar')) return 'nexstore';
+    if (h.endsWith('cablehogar.com.ar')) return 'cablehogar';
     return null;
   }
 
@@ -336,6 +371,18 @@
           const asInt = parseInt(dp, 10);
           if (!isNaN(asInt) && asInt > 0 && String(asInt) === dp.trim()) {
             // Valor entero en centavos: devolver como string dividido por 100.
+            return { raw: String(asInt / 100), fromAttribute: true };
+          }
+        }
+        // Ciclo 1610: data-price en Shopify también puede ser centavos enteros
+        // (integer sin separador decimal, ej. "1234500" = $12.345,00). Algunos
+        // temas Shopify (Geek Store AR, Coolbox AR, temas custom gaming) usan
+        // data-price en lugar de data-price-value para el mismo patrón. Si el
+        // valor es un integer puro > 100 y proviene de dataset.price, dividimos por 100.
+        if (el.dataset.price && dp === el.dataset.price) {
+          const raw = dp.trim();
+          const asInt = parseInt(raw, 10);
+          if (!isNaN(asInt) && asInt > 100 && String(asInt) === raw && !raw.includes('.') && !raw.includes(',')) {
             return { raw: String(asInt / 100), fromAttribute: true };
           }
         }
@@ -1042,50 +1089,85 @@
         if (/\/(ProductDetail|product|item)\//.test(location.pathname)) return true;
         // Caer al microdata check: Asus emite JSON-LD de Product en sus PDPs.
       }
-      // Magento 2 (Cetrogar, Rodo, Noblex, Venex, BGood, HP Tienda, Pycca, Acer, TGC, StartTech):
+      // Magento 2 (Cetrogar, Rodo, Noblex, Venex, BGood, HP Tienda, Pycca, Acer, TGC, StartTech, PC Factory):
       // body tiene la clase catalog-product-view en todas las PDPs de Magento 2.
       // Es el identificador más confiable: Magento lo agrega server-side antes de
       // que JS hidrate, por lo que está disponible en document_idle.
       // Ciclo 1607: TGC AR también usa Magento 2.
       // Ciclo 1608: StartTech AR también usa Magento 2.
+      // Ciclo 1609: PC Factory AR también usa Magento 2.
       if (siteKey === 'cetrogar' || siteKey === 'rodo' || siteKey === 'noblex' ||
           siteKey === 'venex' || siteKey === 'bgood' || siteKey === 'hptienda' || siteKey === 'pycca' ||
-          siteKey === 'microcenter' || siteKey === 'acer' || siteKey === 'tgc' || siteKey === 'starttech') {
+          siteKey === 'microcenter' || siteKey === 'acer' || siteKey === 'tgc' || siteKey === 'starttech' ||
+          siteKey === 'pcfactory' || siteKey === 'nexstore') {
         try {
           if (document.body && document.body.classList.contains('catalog-product-view')) return true;
         } catch (_) {}
         // Magento 2 emite JSON-LD de Product: caer al microdata check.
       }
-      // Shopify (TCL AR, iPoint AR, Musimundo, Compumundo, Coolbox AR, Dexter AR, FullH4rd AR):
+      // Shopify (TCL AR, iPoint AR, Musimundo, Compumundo, Coolbox AR, Dexter AR, FullH4rd AR, Golden Shop AR):
       // PDPs tienen /products/ en la ruta y/o body.template-product.
       // Ciclo 1606: Coolbox AR también usa Shopify.
       // Ciclo 1607: Dexter AR también usa Shopify.
       // Ciclo 1608: FullH4rd AR también usa Shopify (gaming/periféricos).
+      // Ciclo 1609: Golden Shop AR también usa Shopify (accesorios/electrónica).
       if (siteKey === 'tcl' || siteKey === 'ipoint' || siteKey === 'musimundo' || siteKey === 'compumundo' ||
-          siteKey === 'coolbox' || siteKey === 'dexter' || siteKey === 'fullh4rd') {
+          siteKey === 'coolbox' || siteKey === 'dexter' || siteKey === 'fullh4rd' || siteKey === 'goldenshop' ||
+          siteKey === 'ithink') {
         if (/\/products\//.test(location.pathname)) return true;
         try {
           if (document.body && document.body.classList.contains('template-product')) return true;
         } catch (_) {}
         // Shopify emite JSON-LD de Product en PDPs: caer al microdata check.
       }
-      // WooCommerce (Olimpo AR, PC House AR): single-product tiene body.single-product o /product/ en la ruta.
+      // WooCommerce (Olimpo AR, PC House AR, Zetta AR, Soluciones AR): single-product tiene body.single-product o /product/ en la ruta.
       // Ciclo 1606: Olimpo AR usa WooCommerce.
       // Ciclo 1608: PC House AR también usa WooCommerce (hardware).
-      if (siteKey === 'olimpo' || siteKey === 'pchouse') {
+      // Ciclo 1609: Soluciones AR también usa WooCommerce (informática/gaming).
+      // Ciclo 1610: Zetta AR también usa WooCommerce (electrónica/computing).
+      if (siteKey === 'olimpo' || siteKey === 'pchouse' || siteKey === 'zetta' || siteKey === 'soluciones' ||
+          siteKey === 'cablehogar') {
         try {
           if (document.body && document.body.classList.contains('single-product')) return true;
         } catch (_) {}
         if (/\/product\//.test(location.pathname)) return true;
         // WooCommerce emite JSON-LD de Product: caer al microdata check.
       }
+      // Shopify (Geek Store AR): PDPs tienen /products/ en la ruta y/o body.template-product.
+      // Ciclo 1610: Geek Store AR usa Shopify (gaming/periféricos).
+      if (siteKey === 'geekstore') {
+        if (/\/products\//.test(location.pathname)) return true;
+        try {
+          if (document.body && document.body.classList.contains('template-product')) return true;
+        } catch (_) {}
+        // Shopify emite JSON-LD de Product en PDPs: caer al microdata check.
+      }
+      // Magento 2 (Computodo AR): body tiene clase catalog-product-view en todas las PDPs.
+      // Ciclo 1610: Computodo AR usa Magento 2 (hardware/PC building).
+      if (siteKey === 'computodo') {
+        try {
+          if (document.body && document.body.classList.contains('catalog-product-view')) return true;
+        } catch (_) {}
+        // Magento 2 emite JSON-LD de Product: caer al microdata check.
+      }
+      // PrestaShop (Arredondo AR): PDPs tienen body.product-type-simple o /producto/ en la ruta.
+      // Ciclo 1612: Arredondo AR usa PrestaShop (electrónica/electrodomésticos).
+      if (siteKey === 'arredondo') {
+        try {
+          if (document.body && document.body.classList.contains('product-type-simple')) return true;
+          if (document.body && document.body.classList.contains('woocommerce-page')) return true;
+        } catch (_) {}
+        if (/\/producto\//.test(location.pathname) || /\/product\//.test(location.pathname)) return true;
+        // PrestaShop emite JSON-LD de Product: caer al microdata check.
+      }
       // Ciclo 1604: VTEX IO — PDPs siempre tienen pathname terminando en /p (antes del
       // query string). También: skuId en query = variante de un PDP (siempre producto).
       // Cubre: garbarino, jumbo, disco, easy, carrefour, changomas, hisense, philco, newsan.
       // No incluimos fravega aquí porque usa VTEX Classic con URLs distintas.
       // Ciclo 1607: maxiconsumo también usa VTEX IO.
+      // Ciclo 1609: maxihogar también usa VTEX IO (electrodomésticos).
       const VTEX_IO_SITES = ['garbarino', 'jumbo', 'disco', 'easy', 'carrefour', 'changomas',
-                             'hisense', 'philco', 'newsan', 'maxiconsumo'];
+                             'hisense', 'philco', 'newsan', 'maxiconsumo', 'maxihogar'];
       if (VTEX_IO_SITES.indexOf(siteKey) !== -1) {
         if (/\/p$/.test(location.pathname)) return true;
         try {
