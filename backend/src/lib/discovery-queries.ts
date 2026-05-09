@@ -609,4 +609,56 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "bicicleta ruta carbono",
   "bicicleta urbana aluminio",
   "bicicleta plegable",
+  // Ciclo 1615 — Hot Sale mayo 2026: categorías de alta conversión semana HS
+  // Wearables y accesorios salud
+  "glucosa continua cgm",
+  "smartwatch deportivo",
+  "banda de actividad xiaomi",
+  "anillo inteligente",
+  // PC builder / upgrade temporada
+  "gabinete pc gamer",
+  "placa madre gaming",
+  "disipador cpu liquido",
+  "case atx vidrio templado",
+  // Smart home hub / ecosistema
+  "hub hogar inteligente",
+  "hub zigbee home assistant",
+  "sensor temperatura wifi",
+  "camara doorbell video",
+  // TV streaming / media players
+  "android tv box 4k",
+  "tv stick uhd",
+  "google tv hdmi",
+  // Impresión / papel / oficina
+  "impresora multifuncion tinta",
+  "impresora laser monocromo",
+  "cartucho tinta hp",
+  // Audio hogar / multiroom
+  "parlante multiroom wifi",
+  "receiver amplificador hifi",
+  "barra de sonido 5.1",
+  // Deportes acuáticos / verano tardío
+  "tabla de surf",
+  "kayak inflable",
+  "chaleco salvavidas",
+  // Electro portátil viaje
+  "hervidor viaje 220v",
+  "adaptador viaje universal",
+  "plancha de viaje",
+  // Moda masculina otoño
+  "camisa de vestir hombre",
+  "traje hombre slim fit",
+  "cinturon de cuero hombre",
+  // Moda femenina otoño
+  "vestido casual mujer",
+  "cartera cuero mujer",
+  "bufanda de seda mujer",
+  // Relojería / joyería
+  "reloj automatico hombre",
+  "reloj mujer acero",
+  "pulsera plata mujer",
+  // Bebidas / soda
+  "sifon soda stream",
+  "cafetera de capsulas",
+  "maquina de espresso manual",
 ];
