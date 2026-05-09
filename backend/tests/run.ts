@@ -118,7 +118,14 @@ function assertEq<T>(actual: T, expected: T, msg: string): void {
   // Empty → null fields
   assertEq(
     computeStats([], NOW),
-    { current_price: null, price_7d_ago: null, real_discount_pct: null, inflated: false },
+    {
+      current_price: null,
+      price_7d_ago: null,
+      real_discount_pct: null,
+      inflated: false,
+      baseline_at: null,
+      baseline_age_days: null,
+    },
     "computeStats empty history",
   );
 
@@ -131,6 +138,26 @@ function assertEq<T>(actual: T, expected: T, msg: string): void {
   assertEq(single.price_7d_ago, null, "computeStats single recent row → no baseline");
   assertEq(single.real_discount_pct, null, "computeStats single recent row → no pct");
   assertEq(single.inflated, false, "computeStats single recent row → not inflated");
+  assertEq(single.baseline_at, null, "computeStats single recent row → baseline_at null");
+  assertEq(single.baseline_age_days, null, "computeStats single recent row → baseline_age_days null");
+
+  // Single STALE row (>24h old): treated as own baseline.
+  const staleSingle = computeStats(
+    [{ price: 200, currency: "ARS", scraped_at: NOW - 5 * DAY }],
+    NOW,
+  );
+  assertEq(staleSingle.price_7d_ago, 200, "computeStats stale single → baseline = own price");
+  assertEq(
+    staleSingle.baseline_at,
+    NOW - 5 * DAY,
+    "computeStats stale single → baseline_at = own scraped_at",
+  );
+  // current_at == baseline_at when only one row exists, so age relative to current=0.
+  assertEq(
+    staleSingle.baseline_age_days,
+    0,
+    "computeStats stale single → baseline_age_days = 0 (same row used for current+baseline)",
+  );
 
   // Real discount: baseline 1000, current 800 → 20% off, not inflated
   const discount = computeStats(
@@ -144,6 +171,8 @@ function assertEq<T>(actual: T, expected: T, msg: string): void {
   assertEq(discount.price_7d_ago, 1000, "discount: baseline=1000");
   assertEq(discount.real_discount_pct, 20.0, "discount: 20% real_discount_pct");
   assertEq(discount.inflated, false, "discount: not inflated");
+  assertEq(discount.baseline_at, NOW - 7 * DAY, "discount: baseline_at points at picked row");
+  assertEq(discount.baseline_age_days, 7, "discount: baseline_age_days = 7");
 
   // Inflated: baseline 1000, current 1200 → -20% pct, inflated=true
   const inflated = computeStats(
@@ -155,6 +184,7 @@ function assertEq<T>(actual: T, expected: T, msg: string): void {
   );
   assertEq(inflated.real_discount_pct, -20.0, "inflated: -20% pct");
   assertEq(inflated.inflated, true, "inflated: inflated=true");
+  assertEq(inflated.baseline_age_days, 7, "inflated: baseline_age_days = 7");
 
   // Picks closest-to-7-days-ago row when several historical rows exist
   const multi = computeStats(
@@ -168,6 +198,25 @@ function assertEq<T>(actual: T, expected: T, msg: string): void {
   );
   assertEq(multi.price_7d_ago, 1000, "multi: picks 7d-ago row by min |delta|");
   assertEq(multi.real_discount_pct, 20.0, "multi: 20% real_discount_pct");
+  assertEq(multi.baseline_at, NOW - 7 * DAY, "multi: baseline_at = picked row's scraped_at");
+  assertEq(multi.baseline_age_days, 7, "multi: baseline_age_days = 7 (closest pick)");
+
+  // Sparse history: closest baseline is 5 days ago (cron rotation case).
+  // Baseline age should reflect the actual pick, not a hardcoded 7.
+  const sparse = computeStats(
+    [
+      { price: 800, currency: "ARS", scraped_at: NOW },
+      { price: 1000, currency: "ARS", scraped_at: NOW - 5 * DAY },
+      { price: 1100, currency: "ARS", scraped_at: NOW - 30 * DAY },
+    ],
+    NOW,
+  );
+  assertEq(sparse.price_7d_ago, 1000, "sparse: picks 5d-ago over 30d-ago");
+  assertEq(
+    sparse.baseline_age_days,
+    5,
+    "sparse: baseline_age_days = 5 (actual pick, not hardcoded 7)",
+  );
 }
 
 // ── movers: clamp helpers ───────────────────────────────────────────────────

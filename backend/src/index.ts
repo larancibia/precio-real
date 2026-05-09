@@ -191,10 +191,31 @@ async function handleWaybackScrape(request: Request, env: Env): Promise<Response
     return json({ error: "Missing required query parameter: url" }, 400);
   }
 
-  const product = await env.DB
+  // Mirror handlePrice's tolerant lookup: try the exact URL first, then a
+  // normalized fallback. Without this, callers that hit /api/scrape/wayback
+  // with a trailing-slashed or mixed-case URL would 404 even though the
+  // product exists in `products` under its canonical form.
+  let product = await env.DB
     .prepare("SELECT id, url, title, seller, image_url, created_at FROM products WHERE url = ?1")
     .bind(target)
     .first<ProductRow>();
+
+  if (!product) {
+    let normalized: string | null = null;
+    try {
+      normalized = normalizeMLUrl(target);
+    } catch {
+      normalized = null;
+    }
+    if (normalized && normalized !== target) {
+      product = await env.DB
+        .prepare(
+          "SELECT id, url, title, seller, image_url, created_at FROM products WHERE url = ?1",
+        )
+        .bind(normalized)
+        .first<ProductRow>();
+    }
+  }
 
   if (!product) {
     return json({ error: "Product not found", url: target }, 404);

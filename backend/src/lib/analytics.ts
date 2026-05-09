@@ -16,19 +16,24 @@ export function computeStats(history: PriceRow[], nowSec?: number): PriceStats {
       price_7d_ago: null,
       real_discount_pct: null,
       inflated: false,
+      baseline_at: null,
+      baseline_age_days: null,
     };
   }
 
   const current_price = history[0]?.price ?? null;
+  const current_at = history[0]?.scraped_at ?? null;
 
   // If only one row exists and it's within the last 24h, we have no historical baseline.
   let price_7d_ago: number | null;
+  let baseline_at: number | null = null;
   if (history.length === 1) {
     const onlyRow = history[0];
     if (Math.abs(now - onlyRow.scraped_at) <= DAY_SEC) {
       price_7d_ago = null;
     } else {
       price_7d_ago = onlyRow.price;
+      baseline_at = onlyRow.scraped_at;
     }
   } else {
     const target = now - 7 * DAY_SEC;
@@ -42,6 +47,7 @@ export function computeStats(history: PriceRow[], nowSec?: number): PriceStats {
       }
     }
     price_7d_ago = closest.price;
+    baseline_at = closest.scraped_at;
   }
 
   let real_discount_pct: number | null = null;
@@ -55,10 +61,22 @@ export function computeStats(history: PriceRow[], nowSec?: number): PriceStats {
     current_price != null &&
     current_price > price_7d_ago * 1.05;
 
+  // Baseline age: prefer delta against current price's scraped_at (matches what
+  // movers.ts exposes, makes "hace N días" copy stable across requests within
+  // the same scrape window). Falls back to `now` when there is no current row.
+  // Floored at 0 so single-row-stale-baseline doesn't surface negative ages.
+  let baseline_age_days: number | null = null;
+  if (baseline_at != null) {
+    const ref = current_at ?? now;
+    baseline_age_days = Math.max(0, Math.round((ref - baseline_at) / DAY_SEC));
+  }
+
   return {
     current_price,
     price_7d_ago,
     real_discount_pct,
     inflated,
+    baseline_at,
+    baseline_age_days,
   };
 }
