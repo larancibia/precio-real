@@ -1306,4 +1306,64 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "figura funko pop exclusiva",
   "manga coleccion one piece",
   "poster acrilico anime",
+  // Ciclo 1628 — seguridad del hogar / alarmas (alta demanda invierno AR)
+  "alarma inalambrica hogar",
+  "cerradura electronica puerta",
+  "camara seguridad exterior 4k",
+  "sensor apertura ventana",
+  "sirena alarma exterior",
+  // Ciclo 1628 — electrodomésticos cocina marcas AR
+  "anafe a gas orbis",
+  "horno microondas whirlpool",
+  "lavarropa automatico longvie",
+  "heladera con freezer patrick",
+  "cocina a gas aurora",
+  // Ciclo 1628 — celulares mid-range nuevos modelos AR
+  "tecno camon 30",
+  "infinix hot 40",
+  "itel vision 3 plus",
+  "motorola moto g35",
+  "xiaomi redmi 13c",
+  // Ciclo 1628 — tecnología educativa vuelta al cole julio
+  "tablet educativa samsung kids",
+  "laptop chromebook educacion",
+  "teclado infantil programable",
+  "auriculares niños volumen limitado",
+  "reloj inteligente niños gps",
+  // Ciclo 1628 — mascotas: accesorios nuevas categorías
+  "camara mascota con dispenser",
+  "cortauñas electrico mascotas",
+  "cepillo quitapelo mascotas",
+  "rastreador gps mascotas",
+  // Ciclo 1628 — deportes invierno: ski y nieve
+  "tabla de snowboard",
+  "botas de ski hombre",
+  "casco de ski snowboard",
+  "gafas de ski antivaho",
+  "bastones de ski aluminio",
+  // Ciclo 1628 — videojuegos: lanzamientos 2026
+  "juego gta 6",
+  "assassin creed shadows",
+  "juego pc steam gift card",
+  "mando retro usb pc",
+  // Ciclo 1628 — auto accesorios invierno
+  "escobillas limpiaparabrisas invierno",
+  "antigel liquido refrigerante",
+  "cable de arranque bateria",
+  "calentador electrico auto 12v",
+  // Ciclo 1628 — herramientas especializadas
+  "pistola de pintura compresor",
+  "esmeril de banco electrico",
+  "prensa de banco metal",
+  "cinta metrica laser digital",
+  // Ciclo 1628 — libros y cultura invierno AR
+  "libro ciencia ficcion bestseller",
+  "novela historica argentina",
+  "atlas de anatomia humana",
+  "libro de programacion python",
+  // Ciclo 1628 — textil hogar invierno premium
+  "acolchado plumas sinteticas queen",
+  "sabanas flanela estampada",
+  "almohadon decorativo invierno",
+  "cortina blackout termica",
 ];
