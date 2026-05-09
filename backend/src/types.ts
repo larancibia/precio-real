@@ -41,6 +41,10 @@ export interface PriceStats {
   // than the 7-day baseline during Hot Sale / CyberMonday when sellers inflate
   // prices for weeks before the event.
   price_30d_ago: number | null;
+  // Discount pct vs the 30-day baseline: (price_30d_ago - current) / price_30d_ago * 100.
+  // Negative means price rose vs 30d ago (pre-event inflation signal).
+  // Null when price_30d_ago is null. Companion to real_discount_pct (7d window).
+  price_30d_pct: number | null;
 }
 
 export interface WaybackSnapshot {

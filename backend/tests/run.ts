@@ -128,6 +128,7 @@ function assertEq<T>(actual: T, expected: T, msg: string): void {
       price_min: null,
       price_max: null,
       price_30d_ago: null,
+      price_30d_pct: null,
     },
     "computeStats empty history",
   );
@@ -258,6 +259,43 @@ function assertEq<T>(actual: T, expected: T, msg: string): void {
     recent.price_30d_ago,
     null,
     "computeStats price_30d_ago: null when no row older than 20d",
+  );
+
+  // price_30d_pct: range has current=800, price_30d_ago=600 → price rose 33.3%
+  // formula: (600-800)/600 * 100 = -33.3 (negative = price went up vs 30d ago)
+  assertEq(
+    range.price_30d_pct,
+    -33.3,
+    "computeStats price_30d_pct: negative when current > 30d baseline (price rose)",
+  );
+
+  // price_30d_pct negative when current > 30d baseline (pre-event inflation)
+  const inflated30 = computeStats(
+    [
+      { price: 1200, currency: "ARS", scraped_at: NOW },
+      { price: 1000, currency: "ARS", scraped_at: NOW - 7 * DAY },
+      { price: 900, currency: "ARS", scraped_at: NOW - 31 * DAY },
+    ],
+    NOW,
+  );
+  assertEq(
+    inflated30.price_30d_pct,
+    -33.3,
+    "computeStats price_30d_pct: negative when price rose vs 30d ago",
+  );
+
+  // price_30d_pct null when price_30d_ago is null (sparse history < 20d)
+  assertEq(
+    recent.price_30d_pct,
+    null,
+    "computeStats price_30d_pct: null when price_30d_ago is null",
+  );
+
+  // price_30d_pct null for single row
+  assertEq(
+    singleRange.price_30d_pct,
+    null,
+    "computeStats price_30d_pct: null for single row",
   );
 }
 

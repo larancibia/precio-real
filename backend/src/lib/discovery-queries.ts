@@ -385,4 +385,34 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   // Accesorios hogar tech
   "medidor consumo electrico",
   "enchufe inteligente wifi",
+  // Ciclo 1610 — electrónica portátil / gaming de alta conversión
+  "auriculares true wireless",
+  "joystick bluetooth",
+  "cargador rapido usb c",
+  "notebook core i5",
+  "notebook core i7",
+  "ssd nvme 1tb",
+  // Ciclo 1610 — línea blanca marcas premium (alta rotación HS/CM)
+  "heladera samsung",
+  "lavarropas samsung",
+  "lavarropas whirlpool",
+  "aire acondicionado inverter",
+  "aire acondicionado samsung",
+  // Ciclo 1610 — TV marcas adicionales y formatos
+  "smart tv 50 pulgadas",
+  "smart tv 75 pulgadas",
+  "smart tv oled",
+  "smart tv qled",
+  // Ciclo 1610 — celulares específicos 2026
+  "motorola razr",
+  "samsung galaxy z flip",
+  "iphone 16 pro",
+  "xiaomi poco",
+  // Ciclo 1610 — hogar / muebles de oficina
+  "silla de escritorio",
+  "escritorio de madera",
+  // Ciclo 1610 — outdoor / verano
+  "sombrilla playa",
+  "reposera de playa",
+  "ventilador de pie",
 ];

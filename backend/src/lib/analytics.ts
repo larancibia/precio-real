@@ -21,6 +21,7 @@ export function computeStats(history: PriceRow[], nowSec?: number): PriceStats {
       price_min: null,
       price_max: null,
       price_30d_ago: null,
+      price_30d_pct: null,
     };
   }
 
@@ -108,6 +109,16 @@ export function computeStats(history: PriceRow[], nowSec?: number): PriceStats {
     }
   }
 
+  // 30-day discount pct: (price_30d_ago - current) / price_30d_ago * 100.
+  // Mirrors real_discount_pct but against the longer baseline. Negative value
+  // means price rose since 30d ago — a pre-event inflation signal the extension
+  // can surface as "precio subió X% en el último mes".
+  let price_30d_pct: number | null = null;
+  if (current_price != null && price_30d_ago != null && price_30d_ago > 0) {
+    const pct = ((price_30d_ago - current_price) / price_30d_ago) * 100;
+    price_30d_pct = Math.round(pct * 10) / 10;
+  }
+
   return {
     current_price,
     price_7d_ago,
@@ -118,5 +129,6 @@ export function computeStats(history: PriceRow[], nowSec?: number): PriceStats {
     price_min,
     price_max,
     price_30d_ago,
+    price_30d_pct,
   };
 }
