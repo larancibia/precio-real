@@ -146,7 +146,10 @@
   }
   </script>
 
-  <!-- Structured data: WebSite (helps Google show site name + sitelinks searchbox if added later) -->
+  <!-- Structured data: WebSite — name + alternate name + Sitelinks Searchbox potentialAction
+       Google docs: https://developers.google.com/search/docs/appearance/structured-data/sitelinks-searchbox
+       El target apunta a una busqueda interna client-side; si todavia no hay search page,
+       Google igual indexa el name/alternateName y muestra sitelinks bajo el resultado principal. -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -159,6 +162,59 @@
       "@type": "Organization",
       "name": "Precio Real",
       "url": "https://preciorreal.com/"
+    },
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://preciorreal.com/?q={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  }
+  </script>
+
+  <!-- Structured data: Event — Hot Sale Argentina 2026
+       Marca relevancia topica para queries "hot sale argentina 2026" y deja a Google
+       asociar la extension (SoftwareApplication) con el evento de compra anual. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SaleEvent",
+    "name": "Hot Sale Argentina 2026",
+    "description": "Edicion 2026 del Hot Sale Argentina, con descuentos en Mercado Libre, Fravega, Carrefour, Coto y otros e-commerce argentinos. Precio Real ayuda a detectar aumentos disfrazados de descuentos durante el evento.",
+    "startDate": "2026-05-13",
+    "endDate": "2026-05-15",
+    "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
+    "eventStatus": "https://schema.org/EventScheduled",
+    "inLanguage": "es-AR",
+    "isAccessibleForFree": true,
+    "location": {
+      "@type": "VirtualLocation",
+      "url": "https://www.hotsale.com.ar/"
+    },
+    "organizer": {
+      "@type": "Organization",
+      "name": "Camara Argentina de Comercio Electronico (CACE)",
+      "url": "https://www.cace.org.ar/"
+    },
+    "audience": {
+      "@type": "Audience",
+      "audienceType": "Consumidores argentinos",
+      "geographicArea": {
+        "@type": "Country",
+        "name": "Argentina"
+      }
+    },
+    "about": [
+      { "@type": "Thing", "name": "Descuentos en e-commerce argentinos" },
+      { "@type": "Thing", "name": "Aumentos disfrazados de descuentos" },
+      { "@type": "Thing", "name": "Historial real de precios" }
+    ],
+    "subjectOf": {
+      "@type": "Article",
+      "headline": "Guia Hot Sale Argentina 2026 — Como detectar aumentos disfrazados de descuentos",
+      "url": "https://preciorreal.com/guia-hot-sale.html"
     }
   }
   </script>
