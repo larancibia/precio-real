@@ -171,10 +171,65 @@
     return true;
   }
 
-  function classify(current, history) {
+  // classify() acepta opcionalmente stats pre-computados del backend. Si vienen,
+  // los usa directamente (más preciso que el cómputo local). Si no, usa
+  // fallbackClassify() que opera sobre el array history completo.
+  function classify(current, history, stats) {
+    // Camino feliz: stats del backend disponibles (ciclo 1599+).
+    if (stats && typeof stats.real_discount_pct === 'number' && stats.price_7d_ago != null) {
+      return classifyFromStats(current, stats);
+    }
     if (typeof PR.classifyPrice === 'function') return PR.classifyPrice(current, history);
     if (typeof PR.fallbackClassify === 'function') return PR.fallbackClassify(current, history);
     return { kind: 'neutral', pct: 0, label: 'Precio Real', sub: '' };
+  }
+
+  // Convierte los stats pre-computados del backend a un verdict de badge.
+  // Usa la misma lógica que computeStats() del worker (7-day point comparison).
+  //
+  // Convención del backend (analytics.ts):
+  //   real_discount_pct = (price_7d_ago - current_price) / price_7d_ago * 100
+  //   → positivo: precio bajó respecto a hace 7 días (descuento real)
+  //   → negativo: precio subió (inflado)
+  //   inflated = current_price > price_7d_ago * 1.05
+  function classifyFromStats(current, stats) {
+    const pct = stats.real_discount_pct;  // positivo = bajó, negativo = subió
+    const inflated = stats.inflated;
+    const baseline = stats.price_7d_ago;
+    const ageDays = stats.baseline_age_days;
+    const ageSuffix = (ageDays != null && ageDays > 0) ? ` (hace ${ageDays}d)` : '';
+
+    if (inflated) {
+      // Subió >5% respecto al precio de hace 7 días.
+      const risePct = pct != null ? Math.abs(Math.round(pct)) : 5;
+      return {
+        kind: 'inflated',
+        pct: risePct,
+        label: 'Precio Real: ✗ INFLADO',
+        sub: `Subió ${risePct}% vs. 7 días atrás${ageSuffix}`,
+      };
+    }
+    if (pct != null && pct >= 5) {
+      // Bajó al menos 5% respecto a hace 7 días.
+      return {
+        kind: 'real',
+        pct: Math.round(pct),
+        label: 'Precio Real: ✓ DESCUENTO REAL',
+        sub: `-${Math.round(pct)}% vs. 7 días atrás${ageSuffix}`,
+      };
+    }
+    if (baseline != null) {
+      // Tenemos baseline pero el movimiento es pequeño (|pct| < 5%).
+      const absPct = pct != null ? Math.round(Math.abs(pct)) : 0;
+      const direction = (pct != null && pct < 0) ? `+${absPct}%` : (pct != null && pct > 0) ? `-${absPct}%` : '≈';
+      return {
+        kind: 'neutral',
+        pct: 0,
+        label: 'Precio Real: sin descuento',
+        sub: `${direction} vs. 7 días atrás${ageSuffix}`,
+      };
+    }
+    return { kind: 'neutral', pct: 0, label: 'Precio Real: sin datos', sub: 'Histórico insuficiente' };
   }
 
   let lastUrl = null;        // canonicalUrl
@@ -227,12 +282,16 @@
     circuitOpenUntil = 0;
   }
 
-  // fetch con timeout + retry + circuit breaker. Devuelve {ok:true, history} o {ok:false}.
+  // fetch con timeout + retry + circuit breaker.
+  // Devuelve {ok:true, history, stats} o {ok:false, history:[], stats:null}.
+  // stats es el objeto pre-computado del backend: { current_price, price_7d_ago,
+  // real_discount_pct, inflated, baseline_age_days } — si está presente se usa
+  // directamente en classify() para evitar doble cómputo con otra ventana temporal.
   async function fetchHistory(url) {
     if (circuitIsOpen()) {
       // Backend está marcado caído: no insistir hasta que pase cooldown.
       log.debug(null, 'circuit open, skipping fetch', url);
-      return { ok: false, history: [] };
+      return { ok: false, history: [], stats: null };
     }
     let lastErr = null;
     for (let attempt = 0; attempt <= FETCH_RETRIES; attempt++) {
@@ -249,14 +308,23 @@
         if (res.ok) {
           const data = await res.json().catch(() => ({}));
           const history = Array.isArray(data && data.history) ? data.history : [];
+          // Extraer stats pre-computados del backend (ciclo 1599+). Si no vienen
+          // (backend viejo o sin datos), stats queda null y classify() usa fallback.
+          const stats = (data && typeof data.real_discount_pct !== 'undefined') ? {
+            current_price: data.current_price ?? null,
+            price_7d_ago: data.price_7d_ago ?? null,
+            real_discount_pct: data.real_discount_pct ?? null,
+            inflated: !!data.inflated,
+            baseline_age_days: data.baseline_age_days ?? null,
+          } : null;
           circuitRecordSuccess();
-          return { ok: true, history };
+          return { ok: true, history, stats };
         }
         if (res.status === 404) {
           // No existe historial para esta URL: respuesta válida, sin retry.
           // Cuenta como éxito a fines del breaker (el backend respondió).
           circuitRecordSuccess();
-          return { ok: true, history: [] };
+          return { ok: true, history: [], stats: null };
         }
         // 5xx u otros: reintentar con backoff.
         lastErr = new Error('backend ' + res.status);
@@ -271,7 +339,7 @@
     }
     if (lastErr) log.warn('fetch failed', lastErr.message || lastErr);
     circuitRecordFail();
-    return { ok: false, history: [] };
+    return { ok: false, history: [], stats: null };
   }
 
   async function tryMount(siteKey, myToken) {
@@ -296,12 +364,12 @@
     if (mounted && key === lastKey && current === lastPrice) return true;
 
     log.debug(siteKey, 'tryMount', { url, key, current });
-    const { history } = await fetchHistory(url);
+    const { history, stats } = await fetchHistory(url);
     if (myToken !== runToken) return false;
 
     let verdict;
     try {
-      verdict = classify(current, history);
+      verdict = classify(current, history, stats);
     } catch (e) {
       log.warn('classify failed', e && e.message);
       return false;

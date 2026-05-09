@@ -84,6 +84,10 @@
     // Ciclo 1584: Amazon AR + HiperTehno.
     'amazon',
     'hipertehno',
+    // Ciclo 1599: Xiaomi Store AR, Philco AR, Venex (gaming/PC).
+    'xiaomi',
+    'philco',
+    'venex',
   ];
 
   function detectSite(hostname) {
@@ -131,6 +135,11 @@
     // de electrónica con presencia fuerte en Hot Sale.
     if (h.endsWith('amazon.com.ar')) return 'amazon';
     if (h.endsWith('hipertehno.com.ar')) return 'hipertehno';
+    // Ciclo 1599: Xiaomi Store AR (tienda.mi.com/ar), Philco AR (VTEX),
+    // Venex (Magento 2, gaming/PC components).
+    if (h.endsWith('tienda.mi.com')) return 'xiaomi';
+    if (h.endsWith('philco.com.ar')) return 'philco';
+    if (h.endsWith('venex.com.ar')) return 'venex';
     return null;
   }
 

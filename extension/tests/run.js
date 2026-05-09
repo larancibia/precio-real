@@ -148,6 +148,10 @@ console.log('[precio-real tests] starting…');
     ['www.bgh.com.ar', 'bgh'],
     ['www.noblex.com.ar', 'noblex'],
     ['www.whirlpool.com.ar', 'whirlpool'],
+    // Ciclo 1599: Xiaomi Store, Philco, Venex.
+    ['tienda.mi.com', 'xiaomi'],
+    ['www.philco.com.ar', 'philco'],
+    ['www.venex.com.ar', 'venex'],
     ['www.amazon.com', null],
     ['', null],
   ];
@@ -317,6 +321,15 @@ console.log('[precio-real tests] starting…');
   }
   for (const k of ['changomas', 'electrolux', 'drean', 'motorola', 'todomodo', 'amazon', 'hipertehno']) {
     assert(PR.SUPPORTED_SITES.includes(k), `SUPPORTED_SITES includes ${k} (ciclo 1582/1584)`);
+  }
+  // Ciclo 1599: Xiaomi Store AR, Philco AR, Venex.
+  for (const k of ['xiaomi', 'philco', 'venex']) {
+    assert(PR.SUPPORTED_SITES.includes(k), `SUPPORTED_SITES includes ${k} (ciclo 1599)`);
+    assert(PR.RETAILERS && PR.RETAILERS[k], `RETAILERS["${k}"] exists (ciclo 1599)`);
+    assert(
+      Array.isArray(PR.RETAILERS[k] && PR.RETAILERS[k].selectors) && PR.RETAILERS[k].selectors.length > 0,
+      `RETAILERS["${k}"].selectors not empty (ciclo 1599)`
+    );
   }
 }
 

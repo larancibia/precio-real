@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Precio Real",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Detecta si los descuentos del Hot Sale Argentina son reales",
   "permissions": ["storage", "activeTab"],
   "host_permissions": [
@@ -38,6 +38,9 @@
     "https://*.todomodo.com.ar/*",
     "https://*.amazon.com.ar/*",
     "https://*.hipertehno.com.ar/*",
+    "https://tienda.mi.com/ar/*",
+    "https://*.philco.com.ar/*",
+    "https://*.venex.com.ar/*",
     "http://localhost:8787/*"
   ],
   "action": {
@@ -82,7 +85,10 @@
         "https://*.motorola.com.ar/*",
         "https://*.todomodo.com.ar/*",
         "https://*.amazon.com.ar/*",
-        "https://*.hipertehno.com.ar/*"
+        "https://*.hipertehno.com.ar/*",
+        "https://tienda.mi.com/ar/*",
+        "https://*.philco.com.ar/*",
+        "https://*.venex.com.ar/*"
       ],
       "js": ["config.js", "utils/retailers.js", "utils/helpers.js", "utils/affiliates.js", "content/content.js"],
       "css": ["content/badge.css"],

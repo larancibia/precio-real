@@ -771,6 +771,74 @@
         'meta[property="og:price:amount"]',
       ],
     },
+    // Ciclo 1599: Xiaomi Store AR, Philco AR y Venex (gaming).
+    xiaomi: {
+      label: 'Xiaomi Store',
+      hostnameSuffix: 'tienda.mi.com',
+      currency: 'ARS',
+      selectors: [
+        // Xiaomi AR usa una SPA Next.js propia. El precio de venta activo
+        // normalmente vive en un elemento con data-testid="product-price" o
+        // class "product-price__current". El precio de lista (tachado) está
+        // en "product-price__original" que filtra isStrikethroughPrice.
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '[data-testid="final-price"]',
+        '.product-price__current',
+        '.product-price__sale',
+        '[class*="SalePrice" i]',
+        '[class*="CurrentPrice" i]',
+        '[class*="FinalPrice" i]',
+        // Fallback schema.org (Xiaomi emite JSON-LD de Product en todas sus PDPs).
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    philco: {
+      label: 'Philco',
+      hostnameSuffix: 'philco.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Philco AR usa VTEX-classic (misma plataforma que BGH/Electrolux).
+        // El precio de venda principal vive en sellingPriceValue; también
+        // expone meta itemprop="price" con formato US (schema.org).
+        '.vtex-product-price-1-x-sellingPriceValue',
+        '.vtex-product-price-1-x-sellingPrice',
+        '.vtex-product-price-1-x-currencyContainer',
+        '[class*="sellingPriceValue" i]',
+        '[class*="sellingPrice" i]',
+        '[class*="currentPrice" i]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    venex: {
+      label: 'Venex',
+      hostnameSuffix: 'venex.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Venex usa Magento 2 con tema custom (similar a Cetrogar/Rodo/Noblex).
+        // Precio final en .price-final_price [data-price-amount] (US-formatted).
+        // El precio tachado (.old-price) lo filtra isStrikethroughPrice.
+        '.product-info-price .price-final_price [data-price-amount]',
+        '.product-info-price .price-final_price .price',
+        '.special-price [data-price-amount]',
+        '.special-price .price',
+        '.price-box .price-final_price [data-price-amount]',
+        '.price-box .price',
+        '[data-price-amount]',
+        '.product-price',
+        '.price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
   };
 
   const GENERIC_PRICE_SELECTORS = [
