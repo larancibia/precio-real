@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Precio Real",
   "version": "0.2.0",
-  "description": "Detecta si los descuentos del Hot Sale Argentina son reales",
+  "description": "Detectá descuentos truchos en Hot Sale: historial real de precios en 96 e-commerce argentinos. Sin cuenta, sin tracking.",
   "permissions": ["storage", "activeTab"],
   "host_permissions": [
     "https://*.mercadolibre.com.ar/*",

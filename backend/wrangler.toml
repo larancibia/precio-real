@@ -5,7 +5,7 @@ compatibility_date = "2026-05-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "precio-real"
-database_id = "REPLACE_WITH_D1_ID"
+database_id = "29336d7a-6496-451d-b6dd-9569e5bc0e2c"
 
 [triggers]
 crons = ["0 */6 * * *"]

@@ -7,8 +7,8 @@
   if (window.__precioRealLoaded) return;
   window.__precioRealLoaded = true;
 
-  // Ciclo 1618: versión del content script para facilitar debugging en consola.
-  const CONTENT_VERSION = '1618';
+  // Ciclo 1619: versión del content script para facilitar debugging en consola.
+  const CONTENT_VERSION = '1619';
 
   const PR = window.PrecioReal;
   if (!PR) { console.warn('[Precio Real] helpers not loaded'); return; }
@@ -681,11 +681,12 @@
     // scripts que reescriben z-index o visibility en el body tardíamente),
     // 20000ms (Ciclo 1605: GTM/pixel scripts que inyectan CSS extra muy tarde en
     // retailers con muchos third-party tags como Garbarino, Naldo, Megatone).
-    setTimeout(runCheck, 300);
-    setTimeout(runCheck, 1500);
-    setTimeout(runCheck, 5000);
-    setTimeout(runCheck, 10000);
-    setTimeout(runCheck, 20000);
+    // Ciclo 1619: array-driven para facilitar añadir/quitar disparos sin contar
+    // setTimeout llamadas sueltas.
+    const POST_MOUNT_DELAYS_MS = [300, 1500, 5000, 10000, 20000];
+    for (const d of POST_MOUNT_DELAYS_MS) {
+      setTimeout(runCheck, d);
+    }
   }
 
   async function tryMount(siteKey, myToken) {
@@ -725,7 +726,14 @@
 
     log.debug(siteKey, 'tryMount', { url, key, current });
     const { history, stats } = await fetchHistory(url);
+    // Ciclo 1619: re-verificar siteKey post-fetch. El usuario pudo navegar a otra
+    // URL mientras el fetch estaba en vuelo (especialmente en conexiones lentas
+    // durante Hot Sale). Si el sitio cambió, el runToken ya habrá rotado pero si
+    // la navegación fue dentro del mismo dominio (SPA), myToken puede seguir siendo
+    // válido aunque estemos en un producto distinto. El check de URL es la red de
+    // seguridad correcta en ese caso.
     if (myToken !== runToken) return false;
+    if (PR.detectSite(location.hostname) !== siteKey) return false;
 
     let verdict;
     try {
@@ -1167,8 +1175,26 @@
     // Defensa extra: cuando la página vuelve a foco, verificar si la URL cambió.
     // Algunos SPAs swallowean pushState en service workers o navegan vía
     // window.location sin disparar popstate.
+    // Ciclo 1619: también re-chequear badge health al volver a foco. Algunos SPAs
+    // (VTEX IO, Next.js App Router) actualizan el virtual DOM mientras el tab está
+    // en background, borrando el badge root sin disparar el variant observer ni el
+    // bodySwapObs (porque Chrome suspende/throttlea MutationObservers en tabs ocultos).
     document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') maybeRunOnLocationChange();
+      if (document.visibilityState !== 'visible') return;
+      maybeRunOnLocationChange();
+      // Re-verificar badge incluso cuando la URL no cambió.
+      if (mounted) {
+        const root = document.getElementById('precio-real-badge-root');
+        if (!root || !badgeIsInDOM(root)) {
+          mounted = false;
+          const sk = PR.detectSite && PR.detectSite(location.hostname);
+          if (sk) {
+            tryMount(sk, runToken).then((didMount) => {
+              if (didMount) schedulePostMountCheck(sk);
+            }).catch(() => {});
+          }
+        }
+      }
     });
     // Ciclo 12: poll de URL como red de seguridad final. Algunos SPAs (sobre
     // todo Next.js con app-router custom) reasignan history.pushState DESPUÉS

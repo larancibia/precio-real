@@ -396,8 +396,17 @@
     Object.entries(RETAILERS).map(([k, cfg]) => [k, cfg.selectors || []])
   );
 
+  // Ciclo 1619: agregamos og:price:amount y product:price:amount como fallbacks
+  // genéricos. Estos meta Open Graph son emitidos por la mayoría de plataformas
+  // (Shopify, WooCommerce, Magento, PrestaShop) incluso cuando el retailer no
+  // tiene un selector específico en retailers.js. Colocamos los meta primero porque
+  // son más confiables (formato US schema.org, valor limpio sin decoración) y
+  // evitan falsos positivos de precios tachados o cuotas que pueden estar dentro
+  // de un elemento .price en retailers no mapeados.
   const GENERIC_PRICE_SELECTORS = (ns && ns.GENERIC_PRICE_SELECTORS) || [
     'meta[itemprop="price"]',
+    'meta[property="og:price:amount"]',
+    'meta[property="product:price:amount"]',
     '[itemprop="price"]',
     '.price',
     '.product-price',
@@ -751,7 +760,12 @@
     const info = extractPriceInfo(siteKey);
     if (!info) return null;
     const price = info.price;
-    if (price == null || isNaN(price) || price <= 0 || price > 50_000_000) return null;
+    // Ciclo 1619: usar isPriceSane() como única fuente de verdad para validación
+    // de rango. Antes este wrapper tenía un cap de 50_000_000 que era más restrictivo
+    // que isPriceSane (1e9), causando que precios legítimos de equipos industriales,
+    // servidores o electrodomésticos premium se descartaran silenciosamente aquí
+    // antes de llegar al caller.
+    if (!isPriceSane(price)) return null;
     return price;
   }
 
@@ -909,6 +923,10 @@
       try {
         nodes = document.querySelectorAll(sel);
       } catch (e) {
+        // Ciclo 1619: loggear selectores inválidos en modo debug para ayudar a
+        // detectar regresiones en retailers.js durante el desarrollo. En producción
+        // el log.debug es no-op salvo que el usuario active precio_real_debug.
+        log.debug(retailer, 'invalid selector skipped', sel, e && e.message);
         continue;
       }
       for (const el of nodes) {
