@@ -36,6 +36,8 @@
     "https://*.drean.com.ar/*",
     "https://*.motorola.com.ar/*",
     "https://*.todomodo.com.ar/*",
+    "https://*.amazon.com.ar/*",
+    "https://*.hipertehno.com.ar/*",
     "http://localhost:8787/*"
   ],
   "action": {
@@ -78,7 +80,9 @@
         "https://*.electrolux.com.ar/*",
         "https://*.drean.com.ar/*",
         "https://*.motorola.com.ar/*",
-        "https://*.todomodo.com.ar/*"
+        "https://*.todomodo.com.ar/*",
+        "https://*.amazon.com.ar/*",
+        "https://*.hipertehno.com.ar/*"
       ],
       "js": ["config.js", "utils/retailers.js", "utils/helpers.js", "utils/affiliates.js", "content/content.js"],
       "css": ["content/badge.css"],

@@ -712,6 +712,56 @@
         'meta[property="og:price:amount"]',
       ],
     },
+    // Ciclo 1584: Amazon AR y HiperTehno.
+    amazon: {
+      label: 'Amazon Argentina',
+      hostnameSuffix: 'amazon.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Amazon usa #corePrice_feature_div como contenedor del precio principal.
+        // .a-price-whole contiene la parte entera; .a-offscreen el precio full
+        // formateado (ej "$ 1.234,56") que es el más fácil de parsear.
+        '#corePrice_feature_div .a-price .a-offscreen',
+        '#corePrice_feature_div .a-price-whole',
+        // Precio con descuento ("deal price"):
+        '#priceblock_dealprice',
+        '#priceblock_ourprice',
+        // Variante de precio en el buy-box cuando hay multiple sellers:
+        '#apex_offerDisplay_desktop .a-price .a-offscreen',
+        '#apex_offerDisplay_desktop .a-price-whole',
+        // Precio en la sección de envíos/variantes (fallback).
+        '.a-price.a-text-price .a-offscreen',
+        '.a-color-price',
+        // JSON-LD / meta como último recurso (Amazon suele emitirlos).
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    hipertehno: {
+      label: 'HiperTehno',
+      hostnameSuffix: 'hipertehno.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // HiperTehno usa WooCommerce / PrestaShop según la categoría.
+        // WooCommerce: .woocommerce-Price-amount con precio final en <ins> si hay descuento.
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        // PrestaShop (si aplica): .current-price-value es el precio activo.
+        '.current-price-value',
+        '.current-price .product-price',
+        // Fallbacks genéricos con data-testid que algunos temas custom usan.
+        '[data-testid="product-price"]',
+        '[data-test-id="product-price"]',
+        '.product-price',
+        '.precio-actual',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
   };
 
   const GENERIC_PRICE_SELECTORS = [
