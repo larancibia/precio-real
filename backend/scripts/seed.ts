@@ -107,6 +107,18 @@ const QUERIES = [
 ];
 const LIMIT_PER_QUERY = 10;
 const HISTORY_DAYS = 30;
+// Mirror discovery.ts: parallel waves keep total wall time bounded even if a
+// few queries are slow, without saturating ML's public search.
+const FETCH_CONCURRENCY = 5;
+// Per-fetch timeout. ML API search is usually well under a second; 10s is a
+// generous ceiling that catches network hangs without giving up too eagerly
+// during transient slowness.
+const FETCH_TIMEOUT_MS = 10_000;
+// Retry transient failures (5xx, 429, network/timeout). Two retries with a
+// short linear backoff is enough for the occasional flake without dragging
+// the whole seed when ML is genuinely down.
+const FETCH_MAX_RETRIES = 2;
+const FETCH_RETRY_DELAY_MS = 750;
 
 function sqlEscape(value: string | null | undefined): string {
   if (value === null || value === undefined) return "NULL";
@@ -178,19 +190,58 @@ function generateHistory(
   return out;
 }
 
-async function fetchQuery(query: string): Promise<MLSearchItem[]> {
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function fetchQueryOnce(query: string): Promise<MLSearchItem[]> {
   const url = `https://api.mercadolibre.com/sites/MLA/search?q=${encodeURIComponent(query)}&limit=${LIMIT_PER_QUERY}`;
-  const res = await fetch(url, {
-    headers: {
-      "User-Agent": "precio-real-seed/0.1 (+https://precioreal.ar)",
-      Accept: "application/json",
-    },
-  });
-  if (!res.ok) {
-    throw new Error(`ML API ${res.status} for query=${query}`);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+  try {
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "precio-real-seed/0.1 (+https://precioreal.ar)",
+        Accept: "application/json",
+      },
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      const transient = res.status === 429 || res.status >= 500;
+      const err = new Error(`ML API ${res.status} for query=${query}`);
+      (err as Error & { transient?: boolean }).transient = transient;
+      throw err;
+    }
+    const body = (await res.json()) as MLSearchResponse;
+    return body.results ?? [];
+  } finally {
+    clearTimeout(timeout);
   }
-  const body = (await res.json()) as MLSearchResponse;
-  return body.results ?? [];
+}
+
+async function fetchQuery(query: string): Promise<MLSearchItem[]> {
+  let lastErr: unknown = null;
+  for (let attempt = 0; attempt <= FETCH_MAX_RETRIES; attempt++) {
+    try {
+      return await fetchQueryOnce(query);
+    } catch (err) {
+      lastErr = err;
+      // Retry on AbortError (timeout), network errors, and transient HTTP.
+      const isAbort =
+        err instanceof Error && (err.name === "AbortError" || err.message.includes("aborted"));
+      const isTransientHttp =
+        err instanceof Error && (err as Error & { transient?: boolean }).transient === true;
+      const isNetwork =
+        err instanceof Error &&
+        !isTransientHttp &&
+        !(err as Error & { transient?: boolean }).transient &&
+        !err.message.startsWith("ML API ");
+      const retriable = isAbort || isTransientHttp || isNetwork;
+      if (!retriable || attempt === FETCH_MAX_RETRIES) break;
+      await sleep(FETCH_RETRY_DELAY_MS * (attempt + 1));
+    }
+  }
+  throw lastErr instanceof Error ? lastErr : new Error(String(lastErr));
 }
 
 async function main(): Promise<void> {
@@ -217,17 +268,39 @@ async function main(): Promise<void> {
   let productsInserted = 0;
   let pricesInserted = 0;
   let idx = 0;
+  let queriesFailed = 0;
 
-  for (const query of QUERIES) {
-    process.stderr.write(`[seed] fetching "${query}"... `);
-    let items: MLSearchItem[] = [];
-    try {
-      items = await fetchQuery(query);
-    } catch (err) {
-      process.stderr.write(`FAILED (${err instanceof Error ? err.message : err})\n`);
+  // Fetch in concurrent waves so total wall time scales with QUERIES.length /
+  // FETCH_CONCURRENCY instead of being strictly sequential. We still emit SQL
+  // in original query order so the bucket rotation (idx % 3) remains stable
+  // and the output diff stays human-readable across runs.
+  const fetched: { query: string; items: MLSearchItem[] | null; error?: string }[] = [];
+
+  for (let i = 0; i < QUERIES.length; i += FETCH_CONCURRENCY) {
+    const wave = QUERIES.slice(i, i + FETCH_CONCURRENCY);
+    process.stderr.write(`[seed] fetching wave ${i / FETCH_CONCURRENCY + 1}: ${wave.join(", ")}\n`);
+    const settled = await Promise.allSettled(wave.map((q) => fetchQuery(q)));
+    settled.forEach((outcome, j) => {
+      const query = wave[j];
+      if (outcome.status === "fulfilled") {
+        fetched.push({ query, items: outcome.value });
+      } else {
+        const message =
+          outcome.reason instanceof Error ? outcome.reason.message : String(outcome.reason);
+        fetched.push({ query, items: null, error: message });
+      }
+    });
+  }
+
+  for (const { query, items, error } of fetched) {
+    if (items === null) {
+      process.stderr.write(`[seed] "${query}" FAILED (${error})\n`);
+      lines.push(`-- Query: ${query} (FAILED: ${error})`);
+      lines.push("");
+      queriesFailed++;
       continue;
     }
-    process.stderr.write(`got ${items.length}\n`);
+    process.stderr.write(`[seed] "${query}" got ${items.length}\n`);
 
     lines.push(`-- Query: ${query} (${items.length} items)`);
 
@@ -281,7 +354,9 @@ async function main(): Promise<void> {
   writeFileSync(outPath, lines.join("\n"), "utf8");
 
   process.stderr.write(
-    `[seed] wrote ${outPath}\n[seed] products: ${productsInserted}, price rows: ${pricesInserted}\n`,
+    `[seed] wrote ${outPath}\n` +
+      `[seed] queries: ${QUERIES.length} (failed: ${queriesFailed}), ` +
+      `products: ${productsInserted}, price rows: ${pricesInserted}\n`,
   );
   process.stderr.write(`[seed] apply with: npm run db:seed:apply (remote) or db:seed:apply:local\n`);
 }
