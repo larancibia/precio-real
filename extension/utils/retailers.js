@@ -37,12 +37,18 @@
       hostnameSuffix: 'fravega.com',
       currency: 'ARS',
       selectors: [
+        // PDP nuevo (Next.js) usa data-test-id sobre el span.
         '[data-test-id="product-price"]',
         '[data-test-id="product-price-current"]',
+        '[data-test-id="product-pdp-price"]',
+        // Styled-components con hash variable: matchear prefijos.
+        'span[class*="sc-" i][class*="Price" i]',
         'span[class*="sale-price" i]',
         'span[class*="OfferPrice" i]',
         'span[class*="Price-sc" i]',
         'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
       ],
     },
     garbarino: {
@@ -50,11 +56,18 @@
       hostnameSuffix: 'garbarino.com',
       currency: 'ARS',
       selectors: [
+        // Garbarino migró parcial a VTEX/Next.js: ambos patrones presentes.
         '[data-testid="price"]',
         '[data-test-id="price"]',
+        '[data-testid="product-price"]',
+        '[data-test-id="product-price"]',
+        '.vtex-product-price-1-x-sellingPriceValue',
+        '[class*="sellingPrice" i]',
         '.price-label',
         '.product-price',
         'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
       ],
     },
     falabella: {
@@ -67,10 +80,13 @@
         '[data-internet-price]',
         '[data-testid="prices-0"] .copy10',
         '[data-testid="prices-0"]',
+        '[data-testid="testPointer-bigPrice"]',
         'li[data-cmr-price]',
         'li[data-internet-price]',
         '.copy10',
         'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
       ],
     },
     carrefour: {
@@ -78,10 +94,17 @@
       hostnameSuffix: 'carrefour.com.ar',
       currency: 'ARS',
       selectors: [
-        '[data-test-id="price"]',
+        // Carrefour AR está en FastStore (FS = data-fs-* attrs). El selling
+        // price tiene su propio data-fs-price-variant="selling".
+        '[data-fs-price-variant="selling"]',
         '[data-fs-product-price]',
+        '[data-test-id="price"]',
+        '[data-testid="price-value"]',
         'span[class*="currencyContainer" i]',
+        'span[class*="price__value" i]',
         'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
       ],
     },
     coto: {
@@ -89,10 +112,16 @@
       hostnameSuffix: 'cotodigital3.com.ar',
       currency: 'ARS',
       selectors: [
+        // Coto Digital 3 (ATG legacy): atg_store_newPrice. Coto Digital 4
+        // (rediseño 2024) usa data-testid="price-value" y .priceLabel.
+        '[data-testid="price-value"]',
+        '.priceLabel',
         '.atg_store_newPrice',
         '.product_price',
         'span[class*="newPrice" i]',
         'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
       ],
     },
     naldo: {
@@ -102,9 +131,13 @@
       selectors: [
         '[data-testid="product-price"]',
         '[data-test-id="product-price"]',
+        '[data-testid="pdp-price-value"]',
+        'span[class*="sc-" i][class*="Price" i]',
         '.product-price',
         'span[class*="Price-sc" i]',
         'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
       ],
     },
     musimundo: {
@@ -112,11 +145,17 @@
       hostnameSuffix: 'musimundo.com',
       currency: 'ARS',
       selectors: [
+        // Musimundo (VTEX): el sellingPrice es el del producto seleccionado.
         '[data-testid="price-value"]',
+        '.vtex-product-price-1-x-sellingPriceValue',
+        '[class*="sellingPriceValue" i]',
+        '[class*="sellingPrice" i]',
         '.price-value',
         '.product-price',
         'span[class*="price" i]',
         'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
       ],
     },
     cetrogar: {
@@ -124,11 +163,18 @@
       hostnameSuffix: 'cetrogar.com.ar',
       currency: 'ARS',
       selectors: [
+        // Cetrogar Magento 2: data-price-amount es el camino más confiable.
+        // .price-final_price .price es donde Magento renderea el precio final.
+        '.product-info-price .price-final_price [data-price-amount]',
         '.product-info-price .price-final_price .price',
         '.product-price-container .price',
         '.price-best-price',
         '[data-price-amount]',
+        '.special-price [data-price-amount]',
+        '.special-price .price',
         'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
       ],
     },
     megatone: {
@@ -136,10 +182,18 @@
       hostnameSuffix: 'megatone.net',
       currency: 'ARS',
       selectors: [
+        // Megatone es ASP.NET clásico: el precio venta vive en un span con id.
+        // El "PrecioConFinanciacion" suele ser el precio con tarjeta y debe
+        // evitarse — preferimos PrecioVenta (efectivo/transferencia).
         '#lblPrecioVenta',
+        '#lblPrecio',
+        '#PrecioVenta',
+        '.precio-venta',
         '.precio',
-        'span[class*="precio" i]',
+        'span[class*="precio" i]:not([class*="financiacion" i]):not([class*="cuota" i])',
         'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
       ],
     },
     dia: {
@@ -148,7 +202,11 @@
       currency: 'ARS',
       selectors: [
         'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+        '.vtex-product-price-1-x-sellingPriceValue',
         '.vtex-product-price-1-x-sellingPrice',
+        '[class*="sellingPriceValue" i]',
         '[class*="sellingPrice" i]',
         '[class*="currentPrice" i]',
       ],
@@ -159,9 +217,13 @@
       currency: 'ARS',
       selectors: [
         'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
         '.jumboargentinaio-store-theme-1ydiUYi5RQt9V_LCJ7I36W',
+        '.vtex-product-price-1-x-sellingPriceValue',
         '.vtex-product-price-1-x-sellingPrice',
         '.product-price__price',
+        '[class*="sellingPriceValue" i]',
         '[class*="sellingPrice" i]',
         '[class*="Price" i]',
       ],
@@ -172,8 +234,12 @@
       currency: 'ARS',
       selectors: [
         'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+        '.vtex-product-price-1-x-sellingPriceValue',
         '.vtex-product-price-1-x-sellingPrice',
         '.product-price__price',
+        '[class*="sellingPriceValue" i]',
         '[class*="sellingPrice" i]',
         '[class*="Price" i]',
       ],
@@ -183,13 +249,18 @@
       hostnameSuffix: 'sodimac.com.ar',
       currency: 'ARS',
       selectors: [
+        // Sodimac comparte plataforma con Falabella (Linio Group), por eso
+        // los mismos data-attrs aparecen.
         '[data-testid="product-detail-price"]',
+        '[data-testid="testPointer-bigPrice"]',
         '[data-automation-id="product-price"]',
         '[data-cmr-price]',
         '[data-internet-price]',
         '.copy10',
         'span[class*="price" i]',
         'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
       ],
     },
     easy: {
@@ -198,7 +269,11 @@
       currency: 'ARS',
       selectors: [
         'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+        '.vtex-product-price-1-x-sellingPriceValue',
         '.vtex-product-price-1-x-sellingPrice',
+        '[class*="sellingPriceValue" i]',
         '[class*="sellingPrice" i]',
         '[class*="currentPrice" i]',
         'span[class*="price" i]',
@@ -210,7 +285,11 @@
       currency: 'ARS',
       selectors: [
         'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+        '.vtex-product-price-1-x-sellingPriceValue',
         '.vtex-product-price-1-x-sellingPrice',
+        '[class*="sellingPriceValue" i]',
         '[class*="sellingPrice" i]',
         '.product-price',
         'span[class*="price" i]',
@@ -223,11 +302,19 @@
       selectors: [
         // Rodo (Magento 2 + temas custom) expone el precio en data-price-amount
         // ("amount" es US-formatted) y un span .price con AR-formatted.
-        '[data-price-amount]',
+        // Priorizar el .price-final_price (precio final) sobre .old-price
+        // (precio anterior tachado, ya filtrado por isStrikethroughPrice pero
+        // mejor evitarlo desde el selector).
         '.product-info-price .price-final_price [data-price-amount]',
         '.product-info-price .price-final_price .price',
+        '.special-price [data-price-amount]',
+        '.special-price .price',
+        '.price-box .price-final_price [data-price-amount]',
         '.price-box .price',
+        '[data-price-amount]',
         'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
         'span[class*="price" i]',
       ],
     },

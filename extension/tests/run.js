@@ -297,6 +297,9 @@ function fakeEl({ tag = 'span', className = '', text = '', attrs = {}, parent = 
       if (name === 'class') return this.className || null;
       return Object.prototype.hasOwnProperty.call(this._attrs, name) ? this._attrs[name] : null;
     },
+    hasAttribute(name) {
+      return Object.prototype.hasOwnProperty.call(this._attrs, name);
+    },
   };
   // closest: walk up parentElement and check tag/class via simple matching.
   // Soportamos solo selectores de tag o `.class`. Suficiente para los tests.
@@ -330,6 +333,9 @@ function fakeEl({ tag = 'span', className = '', text = '', attrs = {}, parent = 
     'productPriceOld', 'priceOld', 'txt-strike', 'crossedOut', 'reference-price',
     'referencePrice', 'precio-anterior', 'precioTachado', 'antes', 'tachado', 'line-through',
     'price--compare-at', 'from-price', 'fromPrice',
+    // Ciclo 11: patrones adicionales.
+    'msrp', 'retail-price', 'retailPrice', 'before-price', 'beforePrice',
+    'pre-discount', 'preDiscount', 'sale-off', 'saleOff', 'wasAmount', 'was-amount',
   ];
   for (const c of cases) {
     assertEq(
@@ -420,6 +426,39 @@ function fakeEl({ tag = 'span', className = '', text = '', attrs = {}, parent = 
     false,
     'isInstallmentPrice plain price'
   );
+  // Ciclo 11: nuevos patrones (Cuota Simple gov, sin interés, financiación).
+  assertEq(
+    PR.isInstallmentPrice(fakeEl({ tag: 'span', text: 'Cuota Simple en 3 cuotas' })),
+    true,
+    'isInstallmentPrice "Cuota Simple"'
+  );
+  assertEq(
+    PR.isInstallmentPrice(fakeEl({ tag: 'span', text: '$1.234 sin interés' })),
+    true,
+    'isInstallmentPrice "sin interés"'
+  );
+  assertEq(
+    PR.isInstallmentPrice(fakeEl({ tag: 'span', text: 'Financiación en 6 pagos' })),
+    true,
+    'isInstallmentPrice "Financiación"'
+  );
+  assertEq(
+    PR.isInstallmentPrice(fakeEl({ tag: 'span', text: '6 pagos de $1.234' })),
+    true,
+    'isInstallmentPrice "X pagos de"'
+  );
+  assertEq(
+    PR.isInstallmentPrice(fakeEl({ tag: 'span', text: 'Precio mensual $1.234' })),
+    true,
+    'isInstallmentPrice "Precio mensual"'
+  );
+  // Ancestro Cuota Simple (clases de wrapper).
+  const cuotaSimple = fakeEl({ tag: 'div', className: 'cuota-simple-row' });
+  const priceCS = fakeEl({ tag: 'span', text: '$1.234', parent: cuotaSimple });
+  assertEq(PR.isInstallmentPrice(priceCS), true, 'isInstallmentPrice ancestor cuota-simple');
+  const paymentPlan = fakeEl({ tag: 'div', className: 'payment-plan-info' });
+  const pricePP = fakeEl({ tag: 'span', text: '$1.234', parent: paymentPlan });
+  assertEq(PR.isInstallmentPrice(pricePP), true, 'isInstallmentPrice ancestor payment-plan');
 }
 
 // isHiddenNode — display:none, visibility:hidden, aria-hidden=true.
@@ -456,6 +495,115 @@ function fakeEl({ tag = 'span', className = '', text = '', attrs = {}, parent = 
   // Null/undefined: defensivo.
   assertEq(PR.isHiddenNode(null), false, 'isHiddenNode null');
   assertEq(PR.isHiddenNode(undefined), false, 'isHiddenNode undefined');
+  // Ciclo 11: HTML5 `hidden` attribute.
+  assertEq(
+    PR.isHiddenNode(fakeEl({ tag: 'span', attrs: { hidden: '' } })),
+    true,
+    'isHiddenNode HTML5 hidden attr'
+  );
+  // Ciclo 11: opacity:0 + pointer-events:none combo.
+  assertEq(
+    PR.isHiddenNode(fakeEl({ tag: 'span', attrs: { style: 'opacity: 0; pointer-events: none;' } })),
+    true,
+    'isHiddenNode opacity:0 + pointer-events:none'
+  );
+  // opacity:0 solo NO debería ocultar (el nodo aún reserva espacio y puede
+  // tener color fade-in).
+  assertEq(
+    PR.isHiddenNode(fakeEl({ tag: 'span', attrs: { style: 'opacity: 0;' } })),
+    false,
+    'isHiddenNode opacity:0 alone (not hidden)'
+  );
+}
+
+// isPlaceholderPriceText (ciclo 11) — descarta nodos con "Consultar precio",
+// "Sin stock", etc. cuando no contienen dígitos.
+{
+  const PR = freshNs();
+  assertEq(
+    PR.isPlaceholderPriceText(fakeEl({ tag: 'span', text: 'Consultar precio' })),
+    true,
+    'isPlaceholderPriceText "Consultar precio"'
+  );
+  assertEq(
+    PR.isPlaceholderPriceText(fakeEl({ tag: 'span', text: 'Sin stock' })),
+    true,
+    'isPlaceholderPriceText "Sin stock"'
+  );
+  assertEq(
+    PR.isPlaceholderPriceText(fakeEl({ tag: 'span', text: 'Agotado' })),
+    true,
+    'isPlaceholderPriceText "Agotado"'
+  );
+  assertEq(
+    PR.isPlaceholderPriceText(fakeEl({ tag: 'span', text: 'Próximamente' })),
+    true,
+    'isPlaceholderPriceText "Próximamente"'
+  );
+  assertEq(
+    PR.isPlaceholderPriceText(fakeEl({ tag: 'span', text: 'No disponible' })),
+    true,
+    'isPlaceholderPriceText "No disponible"'
+  );
+  // Precio numérico real: no debería matchear.
+  assertEq(
+    PR.isPlaceholderPriceText(fakeEl({ tag: 'span', text: '$1.234,56' })),
+    false,
+    'isPlaceholderPriceText real price (no match)'
+  );
+  // meta tag siempre falso (no tiene textContent visible).
+  assertEq(
+    PR.isPlaceholderPriceText(fakeEl({ tag: 'meta', text: 'Consultar' })),
+    false,
+    'isPlaceholderPriceText meta tag (always false)'
+  );
+  // Texto vacío: false.
+  assertEq(
+    PR.isPlaceholderPriceText(fakeEl({ tag: 'span', text: '' })),
+    false,
+    'isPlaceholderPriceText empty (false)'
+  );
+  // Defensivo.
+  assertEq(PR.isPlaceholderPriceText(null), false, 'isPlaceholderPriceText null');
+}
+
+// detectDocumentCurrency (ciclo 11) — lee og:price:currency / itemprop /
+// ld+json. Retorna uppercased string o null.
+{
+  function makeContextWithCurrency({ metaCurrency = null, ldCurrency = null } = {}) {
+    const ctx = makeContext();
+    ctx.document.querySelector = (sel) => {
+      if (metaCurrency) {
+        if (sel === 'meta[property="og:price:currency"]') {
+          return { getAttribute: () => metaCurrency };
+        }
+        if (sel === 'meta[property="product:price:currency"]') {
+          return { getAttribute: () => metaCurrency };
+        }
+        if (sel === 'meta[itemprop="priceCurrency"]') {
+          return { getAttribute: () => metaCurrency };
+        }
+      }
+      return null;
+    };
+    ctx.document.querySelectorAll = (sel) => {
+      if (sel === 'script[type="application/ld+json"]' && ldCurrency) {
+        return [{ textContent: `{"@type":"Product","offers":{"priceCurrency":"${ldCurrency}"}}` }];
+      }
+      return [];
+    };
+    loadInto(ctx, 'utils/retailers.js');
+    loadInto(ctx, 'utils/helpers.js');
+    return ctx.window.PrecioReal;
+  }
+  const prArs = makeContextWithCurrency({ metaCurrency: 'ARS' });
+  assertEq(prArs.detectDocumentCurrency(), 'ARS', 'detectDocumentCurrency ARS via og:price:currency');
+  const prUsd = makeContextWithCurrency({ metaCurrency: 'usd' });
+  assertEq(prUsd.detectDocumentCurrency(), 'USD', 'detectDocumentCurrency uppercases');
+  const prLd = makeContextWithCurrency({ ldCurrency: 'ARS' });
+  assertEq(prLd.detectDocumentCurrency(), 'ARS', 'detectDocumentCurrency from ld+json');
+  const prNone = makeContextWithCurrency({});
+  assertEq(prNone.detectDocumentCurrency(), null, 'detectDocumentCurrency null when absent');
 }
 
 // walkLdJson via API pública: cargamos un script ld+json sintético y validamos

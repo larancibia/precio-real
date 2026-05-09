@@ -291,7 +291,7 @@
       // camelCase (oldPrice, originalPrice, listPrice, regularPrice, wasPrice,
       // productPriceOld), Magento (old-price, special-price-from), Shopify
       // (price--compare-at, price__compare-at), txt-strike, sale-price-from.
-      if (/line-through|strike|crossed|old[-_]?price|oldprice|previous[-_]?price|prev[-_]?price|list[-_]?price|listprice|regular[-_]?price|regularprice|was[-_]?price|wasprice|antes|tachad|original[-_]?price|originalprice|compare[-_]?at|compareat|product[-_]?price[-_]?old|priceold|txt[-_]?strike|crossed[-_]?out|crossedout|from[-_]?price|fromprice|reference[-_]?price|referenceprice|previousprice|preciotachado|precio[-_]?anterior/i.test(cls)) {
+      if (/line-through|strike|crossed|old[-_]?price|oldprice|previous[-_]?price|prev[-_]?price|list[-_]?price|listprice|regular[-_]?price|regularprice|was[-_]?price|wasprice|antes|tachad|original[-_]?price|originalprice|compare[-_]?at|compareat|product[-_]?price[-_]?old|priceold|txt[-_]?strike|crossed[-_]?out|crossedout|from[-_]?price|fromprice|reference[-_]?price|referenceprice|previousprice|preciotachado|precio[-_]?anterior|sale[-_]?off|saleoff|msrp|retail[-_]?price|retailprice|before[-_]?price|beforeprice|pretty[-_]?strike|pre[-_]?discount|prediscount|de\s*\$|wasamount|was[-_]?amount/i.test(cls)) {
         return true;
       }
       // Inline style (algunos retailers usan style="text-decoration: line-through")
@@ -322,13 +322,23 @@
     // 1) Inspección directa del texto del elemento (más rápido y certero).
     let ownText = '';
     try { ownText = (el.textContent || '').trim(); } catch (_) {}
-    if (/\bcuotas?\s+(de|sin|fijas|con|mensuales)\b/i.test(ownText)) return true;
+    if (/\bcuotas?\s+(de|sin|fijas|con|mensuales|fijas\s+sin)\b/i.test(ownText)) return true;
     if (/\bx\s+\d{1,2}\s+cuotas?\b/i.test(ownText)) return true;
     if (/\b\d{1,2}\s*x\s*\$/i.test(ownText)) return true; // "12x $1.234"
     if (/\bpor\s+mes\b/i.test(ownText)) return true; // "$1.234 por mes"
     if (/\bal\s+mes\b/i.test(ownText)) return true; // "$1.234 al mes"
     if (/\bmensuales?\b/i.test(ownText) && /\$/.test(ownText)) return true;
     if (/\bhasta\s+(en\s+)?\d{1,2}\s+cuotas?\b/i.test(ownText)) return true;
+    // Programa "Cuota Simple" del gobierno argentino (3/6 cuotas fijas con tasa).
+    if (/\bcuota\s+simple\b/i.test(ownText)) return true;
+    // "Sin interés" usado solo en contexto de cuotas (raramente aparece sin "cuotas"
+    // al lado en un nodo de precio principal — si aparece, es indicador de cuotas).
+    if (/\bsin\s+inter[eé]s\b/i.test(ownText)) return true;
+    // "Financiación" / "financiado en X pagos".
+    if (/\bfinanciaci[oó]n\b/i.test(ownText)) return true;
+    if (/\b\d{1,2}\s+pagos?\s+(de|sin|fijos)\b/i.test(ownText)) return true;
+    // "Precio por mes" / "Precio mensual" explícito.
+    if (/\bprecio\s+mensual\b/i.test(ownText)) return true;
     // 2) Ancestros: buscar contenedores marcados como cuotas/promo/instalment.
     let node = el;
     for (let i = 0; i < 4 && node; i++) {
@@ -336,7 +346,9 @@
       const id = (node.id || '') + '';
       const dataTest = (node.getAttribute && (node.getAttribute('data-testid') || node.getAttribute('data-test-id'))) || '';
       const blob = `${cls} ${id} ${dataTest}`;
-      if (/installment|cuota|finance|finan|monthly|per[-_]?month|permonth|promo[-_]?banc|promobanc|mensual|ahora[-_]?12|ahora12|ahora-?\d{1,2}|nowx\d/i.test(blob)) return true;
+      // installment / cuota / finance / monthly / promo bancaria / mensual / Ahora-12 (Argentina) /
+      // Cuota Simple, financiacion, pagos-fijos, finance-row, paymentplan.
+      if (/installment|cuota|finance|finan|monthly|per[-_]?month|permonth|promo[-_]?banc|promobanc|mensual|ahora[-_]?12|ahora12|ahora-?\d{1,2}|nowx\d|cuota[-_]?simple|cuotasimple|payment[-_]?plan|paymentplan|pago[-_]?fijo|pagofijo/i.test(blob)) return true;
       node = node.parentElement;
     }
     return false;
@@ -354,9 +366,14 @@
     if (tag === 'meta' || tag === 'link' || tag === 'script') return false;
     try {
       if (el.getAttribute && el.getAttribute('aria-hidden') === 'true') return true;
+      // HTML5 `hidden` attribute (algunos retailers la usan para variantes
+      // no-seleccionadas que tienen su propio precio renderizado en el DOM).
+      if (el.hasAttribute && el.hasAttribute('hidden')) return true;
       const inline = (el.getAttribute && el.getAttribute('style')) || '';
       if (/display\s*:\s*none/i.test(inline)) return true;
       if (/visibility\s*:\s*hidden/i.test(inline)) return true;
+      // opacity:0 + pointer-events:none es otro patrón típico.
+      if (/opacity\s*:\s*0(?!\.)/i.test(inline) && /pointer-events\s*:\s*none/i.test(inline)) return true;
       const cs = el.ownerDocument && el.ownerDocument.defaultView
         ? el.ownerDocument.defaultView.getComputedStyle(el) : null;
       if (cs) {
@@ -370,6 +387,57 @@
   function extractPrice(siteKey) {
     const info = extractPriceInfo(siteKey);
     return info ? info.price : null;
+  }
+
+  // Detecta nodos cuyo textContent es un placeholder no-numérico ("Consultar
+  // precio", "Sin stock", "Agotado", "Producto agotado", "Próximamente"). Algunos
+  // retailers AR (Garbarino, Naldo, Cetrogar) renderizan estos strings dentro del
+  // mismo selector `.product-price` cuando no hay precio. Sin este filtro, el
+  // parser puede agarrar un meta `itemprop="price"` con `content="0"` que ya
+  // pasa isPriceSane (rechazado por <1) — pero sirve también para evitar
+  // selectores `.price` con texto literal.
+  function isPlaceholderPriceText(el) {
+    if (!el || !el.textContent) return false;
+    const tag = (el.tagName || '').toLowerCase();
+    if (tag === 'meta') return false; // los metas no tienen textContent visible
+    let txt = '';
+    try { txt = (el.textContent || '').trim(); } catch (_) { return false; }
+    if (!txt) return false;
+    // Placeholders típicos: si el nodo NO tiene ningún dígito, claramente no es precio.
+    if (!/\d/.test(txt)) {
+      if (/consultar|agotad|sin\s+stock|próximamente|proximamente|no\s+disponible|preventa|comuníquese|comuniquese|pre[-_]?venta|stock\s+limitado/i.test(txt)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  // Detecta currency mismatch: si el documento expone og:price:currency u otra
+  // pista y NO es ARS (algunos retailers AR listan electrónicos con precio USD
+  // y un disclaimer "USD se convierte al cambio"), preferimos no clasificar
+  // porque el histórico que tenemos en backend es siempre ARS y el cruce sería
+  // engañoso. Devuelve la currency declarada (uppercased) o null.
+  function detectDocumentCurrency() {
+    try {
+      const sels = [
+        'meta[property="og:price:currency"]',
+        'meta[property="product:price:currency"]',
+        'meta[itemprop="priceCurrency"]',
+      ];
+      for (const sel of sels) {
+        const el = document.querySelector(sel);
+        const c = el && el.getAttribute && el.getAttribute('content');
+        if (c) return String(c).trim().toUpperCase();
+      }
+      // Fallback: ld+json sin walkear todo.
+      const scripts = document.querySelectorAll('script[type="application/ld+json"]');
+      for (const s of scripts) {
+        const txt = s.textContent || '';
+        const m = txt.match(/"priceCurrency"\s*:\s*"([A-Z]{3})"/);
+        if (m) return m[1];
+      }
+    } catch (_) { /* ignore */ }
+    return null;
   }
 
   // Sanity check: descartar precios obviamente espurios. Hot Sale AR rara vez
@@ -448,6 +516,8 @@
         // Saltar precios que en realidad son cuotas mensuales o promos
         // bancarias (el ancestro o el propio texto lo declara).
         if (isInstallmentPrice(el)) continue;
+        // Saltar placeholders textuales tipo "Consultar precio" / "Sin stock".
+        if (isPlaceholderPriceText(el)) continue;
 
         // Camino especializado para Mercado Libre: reconstruir desde el
         // contenedor `.andes-money-amount` para no perder los cents.
@@ -638,6 +708,8 @@
   ns.isInstallmentPrice = isInstallmentPrice;
   ns.isHiddenNode = isHiddenNode;
   ns.isPriceSane = isPriceSane;
+  ns.isPlaceholderPriceText = isPlaceholderPriceText;
+  ns.detectDocumentCurrency = detectDocumentCurrency;
   ns.log = log;
   ns.DEBUG = DEBUG;
 })();

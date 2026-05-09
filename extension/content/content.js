@@ -377,8 +377,15 @@
         subtree: true,
         attributes: true,
         attributeFilter: [
-          'data-sku', 'data-product-id', 'data-variant-id', 'data-value',
+          // Variantes: SKU/product-id/variant-id se actualizan al cambiar swatch.
+          'data-sku', 'data-product-sku', 'data-product-id', 'data-variant-id',
+          'data-value', 'data-fs-product-id',
+          // Atributos ARIA del swatch seleccionado.
           'aria-checked', 'aria-pressed', 'aria-selected',
+          // VTEX/Magento exponen el precio mismo como atributo (data-price-amount,
+          // data-internet-price). Si cambia, el precio cambió.
+          'data-price-amount', 'data-internet-price', 'data-cmr-price',
+          'data-fs-price-variant',
         ],
       });
     } catch (_) { variantObserver = null; }
