@@ -1176,4 +1176,71 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "mochila trekking 50l",
   "bastones trekking telescopicos",
   "botella hidratacion camelbak",
+  // Ciclo 1626 — invierno AR profundo (junio-agosto 2026): calefacción y confort
+  "calefactor split inverter",
+  "estufa de alta eficiencia",
+  "calefactor electrico bajo consumo",
+  "radiador de panel electrico",
+  "alfombra electrica calefactora",
+  "cama electrica calefactada",
+  // Ciclo 1626 — indumentaria técnica invierno avanzada
+  "campera esqui hombre",
+  "campera esqui mujer",
+  "traje de ski completo",
+  "pantalon de nieve impermeable",
+  "guantes ski impermeables",
+  "anteojos de ski snowboard",
+  // Ciclo 1626 — smartphones emergentes y modelos 2026 H2
+  "samsung galaxy s25 fe",
+  "xiaomi redmi 14 pro",
+  "motorola razr 50",
+  "oneplus 13 celular",
+  "google pixel 9",
+  "honor magic7",
+  // Ciclo 1626 — computacion: portátiles nuevos 2026
+  "notebook arm windows",
+  "chromebook escolar",
+  "notebook 2 en 1 touch",
+  "laptop ultradelgada 14 pulgadas",
+  // Ciclo 1626 — audio / música: alta rotación invierno
+  "auriculares over ear hifi",
+  "dac amplificador portatil",
+  "parlante resistente agua",
+  "radiotransmisor fm auto",
+  // Ciclo 1626 — salud y bienestar: dispositivos médicos domésticos
+  "monitor de glucosa continuo",
+  "espirómetro digital",
+  "electro estimulador tens",
+  "cama de luz infrarroja",
+  // Ciclo 1626 — hogar conectado: nuevos dispositivos 2026
+  "robot cortacesped inteligente",
+  "medidor calidad aire interior",
+  "detector de humo inteligente",
+  "interruptor inteligente wifi",
+  // Ciclo 1626 — gaming: lanzamientos y periféricos 2026 H2
+  "ps5 pro consola",
+  "joystick hall effect pc",
+  "monitor oled 27 gaming",
+  "teclado 65 porciento compacto",
+  "mouse trackball ergonomico",
+  // Ciclo 1626 — electrodomésticos inteligentes / eficiencia
+  "lavarropas con secadora integrada",
+  "heladera inverter a",
+  "lavavajillas pequeño 45cm",
+  "horno vapor combinado",
+  // Ciclo 1626 — moda / lifestyle invierno AR
+  "botas de cuero mujer taco",
+  "zapatillas plataforma mujer",
+  "cartera de cuero genuino",
+  "reloj cronografo hombre",
+  // Ciclo 1626 — mascotas: nuevas categorías
+  "cama calefaccionada mascotas",
+  "gps collar perro",
+  "bebedero fuente gatos",
+  "ropa abrigo perro invierno",
+  // Ciclo 1626 — construcción / mejoras del hogar invierno
+  "pistola de calor electrica",
+  "aislante termico rollos",
+  "espuma poliuretano expansiva",
+  "burletes para puertas",
 ];
