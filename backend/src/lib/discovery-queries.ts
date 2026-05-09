@@ -718,4 +718,58 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "juego de mesa adultos",
   "puzzle 1000 piezas",
   "juego de cartas",
+  // Ciclo 1617 — pesca / deportes pesca (alta rotación MLA AR)
+  "caña de pesca",
+  "reel de pesca",
+  "kit pesca completo",
+  "señuelo de pesca",
+  // Ciclo 1617 — cocina / repostería
+  "amasadora repostera",
+  "deshidratador de frutas",
+  "sorbetiera heladera casera",
+  "molde silicona reposteria",
+  "manga pastelera set",
+  // Ciclo 1617 — electrónica — carga rápida GaN
+  "cargador gan 65w",
+  "cargador gan 100w",
+  "cable usb c 100w",
+  // Ciclo 1617 — audio vinilo / hifi
+  "tocadiscos portatil",
+  "bandeja giradiscos usb",
+  "amplificador hifi stereo",
+  // Ciclo 1617 — deportes específicos gym / box
+  "guantes de boxeo",
+  "saco de boxeo",
+  "cuerda de saltar velocidad",
+  "rodillera deportiva",
+  "tobillera lastrada",
+  // Ciclo 1617 — bebés / puericultura adicional
+  "bañera plegable bebe",
+  "portabebe ergonomico",
+  "cuna viaje plegable",
+  "mochila maternal",
+  // Ciclo 1617 — energía / emergencia (blackout AR)
+  "power station portatil",
+  "generador solar portatil",
+  "bateria power bank solar",
+  "ups 1500va",
+  // Ciclo 1617 — limpieza del hogar
+  "aspiradora vertical sin cable",
+  "mopa electrica recargable",
+  "limpiador a vapor multiuso",
+  "cepillo sonic limpieza",
+  // Ciclo 1617 — tecnología wearable
+  "lentes realidad virtual vr",
+  "smartwatch samsung galaxy watch",
+  "fitbit pulsera actividad",
+  // Ciclo 1617 — accesorios auto adicional
+  "cubierta auto 175/70 r13",
+  "aceite motor 10w40",
+  "kit luces led auto",
+  "funda asiento auto universal",
+  // Ciclo 1617 — componentes PC adicional
+  "gabinete mini itx",
+  "placa madre am5",
+  "cooler cpu 120mm",
+  "case pc vidrio templado",
 ];
