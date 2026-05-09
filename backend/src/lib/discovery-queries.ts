@@ -102,4 +102,23 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "silla de oficina",
   "lampara led",
   "alarma casa",
+  // Tech adicional
+  "notebook gamer",
+  "camara de seguridad",
+  "robot aspiradora",
+  "disco rigido externo",
+  "mouse gamer",
+  "teclado mecanico",
+  "webcam",
+  // Climatización
+  "calefactor",
+  "estufa electrica",
+  // Bebés / puericultura
+  "silla de comer bebe",
+  "andador bebe",
+  // Fitness adicional
+  "eliptica",
+  // Electrohogar adicional
+  "caloventor",
+  "purificador agua",
 ];

@@ -7,8 +7,8 @@
  *                                    inflated, last_scraped_at, history_days, history }
  *   GET  /api/stats              → { products, prices, last_scraped_at, oldest_scraped_at,
  *                                    products_with_prices }
- *   GET  /api/search?q=<keyword>&limit=<n>
- *                                → { count, results: [{ id, url, title, seller, image_url }] }
+ *   GET  /api/search?q=<keyword>&limit=<n>&offset=<n>
+ *                                → { count, offset, results: [{ id, url, title, seller, image_url }] }
  *   GET  /api/movers?limit=&min_drop=
  *                                → { generated_at, count, min_drop_pct, movers: [...] }
  *                                  Top real-discount products (current price below
@@ -45,15 +45,23 @@ const CORS_HEADERS = {
   "Access-Control-Allow-Headers": "Content-Type",
 };
 
-function json(body: unknown, status = 200): Response {
+function json(body: unknown, status = 200, extraHeaders?: Record<string, string>): Response {
   return new Response(JSON.stringify(body), {
     status,
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       ...CORS_HEADERS,
+      ...extraHeaders,
     },
   });
 }
+
+// Short-lived edge cache for read-only endpoints that are cheap to re-derive
+// but expensive to query (D1 read units). Prices change every 6h; stats and
+// movers don't need to be fresher than 5 min for the UI.
+const CACHE_PRICE = "public, max-age=900, stale-while-revalidate=3600";
+const CACHE_STATS = "public, max-age=300, stale-while-revalidate=900";
+const CACHE_MOVERS = "public, max-age=300, stale-while-revalidate=900";
 
 async function handlePrice(
   request: Request,
@@ -124,13 +132,17 @@ async function handlePrice(
       ? Math.max(0, Math.round((last_scraped_at - oldest_scraped_at) / 86400))
       : 0;
 
-  return json({
-    product,
-    ...stats,
-    last_scraped_at,
-    history_days,
-    history: rows,
-  });
+  return json(
+    {
+      product,
+      ...stats,
+      last_scraped_at,
+      history_days,
+      history: rows,
+    },
+    200,
+    { "Cache-Control": CACHE_PRICE },
+  );
 }
 
 interface StatsRow {
@@ -165,10 +177,11 @@ async function handleStats(env: Env): Promise<Response> {
     products_with_prices: priceAgg?.unique_products ?? 0,
   };
 
-  return json(out, 200);
+  return json(out, 200, { "Cache-Control": CACHE_STATS });
 }
 
 const SEARCH_MAX_LIMIT = 50;
+const SEARCH_MAX_OFFSET = 10_000;
 
 async function handleSearch(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
@@ -180,17 +193,23 @@ async function handleSearch(request: Request, env: Env): Promise<Response> {
   const limit = Number.isFinite(rawLimit) && rawLimit > 0
     ? Math.min(SEARCH_MAX_LIMIT, Math.floor(rawLimit))
     : 10;
+  const rawOffset = Number(url.searchParams.get("offset") ?? "0");
+  const offset = Number.isFinite(rawOffset) && rawOffset >= 0
+    ? Math.min(SEARCH_MAX_OFFSET, Math.floor(rawOffset))
+    : 0;
 
-  const pattern = `%${q.replace(/%/g, "\\%").replace(/_/g, "\\_")}%`;
+  // LOWER() on both sides for case-insensitive matching (SQLite LIKE is only
+  // ASCII-case-insensitive; LOWER() covers accented chars in product titles).
+  const pattern = `%${q.toLowerCase().replace(/%/g, "\\%").replace(/_/g, "\\_")}%`;
   const rows = await env.DB
     .prepare(
-      "SELECT id, url, title, seller, image_url FROM products WHERE title LIKE ?1 ESCAPE '\\' ORDER BY id DESC LIMIT ?2",
+      "SELECT id, url, title, seller, image_url FROM products WHERE LOWER(title) LIKE ?1 ESCAPE '\\' ORDER BY id DESC LIMIT ?2 OFFSET ?3",
     )
-    .bind(pattern, limit)
+    .bind(pattern, limit, offset)
     .all<Pick<ProductRow, "id" | "url" | "title" | "seller" | "image_url">>();
 
   const results = rows.results ?? [];
-  return json({ count: results.length, results });
+  return json({ count: results.length, offset, results });
 }
 
 async function handleMovers(request: Request, env: Env): Promise<Response> {
@@ -201,13 +220,17 @@ async function handleMovers(request: Request, env: Env): Promise<Response> {
 
   const movers = await fetchMovers(env, { limit, minDropPct });
 
-  return json({
-    generated_at: Math.floor(Date.now() / 1000),
-    count: movers.length,
-    limit,
-    min_drop_pct: minDropPct ?? 10,
-    movers,
-  });
+  return json(
+    {
+      generated_at: Math.floor(Date.now() / 1000),
+      count: movers.length,
+      limit,
+      min_drop_pct: minDropPct ?? 10,
+      movers,
+    },
+    200,
+    { "Cache-Control": CACHE_MOVERS },
+  );
 }
 
 async function handleWaybackScrape(request: Request, env: Env): Promise<Response> {
