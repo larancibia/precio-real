@@ -570,6 +570,53 @@
   </script>
 </head>
 <body>
+  <!-- Hot Sale 2026 countdown banner — auto-hides after event ends (May 15) -->
+  <div class="hs-banner" id="hs-banner" role="banner" aria-label="Cuenta regresiva Hot Sale Argentina 2026">
+    <span aria-hidden="true">🔥</span>
+    Hot Sale Argentina 2026 arranca en
+    <span class="hs-banner__countdown" id="hs-countdown" aria-live="off">
+      <span class="hs-banner__unit"><span class="hs-banner__unit-val" id="hsc-d">—</span><span class="hs-banner__unit-label">días</span></span>
+      <span class="hs-banner__sep">:</span>
+      <span class="hs-banner__unit"><span class="hs-banner__unit-val" id="hsc-h">—</span><span class="hs-banner__unit-label">hs</span></span>
+      <span class="hs-banner__sep">:</span>
+      <span class="hs-banner__unit"><span class="hs-banner__unit-val" id="hsc-m">—</span><span class="hs-banner__unit-label">min</span></span>
+      <span class="hs-banner__sep">:</span>
+      <span class="hs-banner__unit"><span class="hs-banner__unit-val" id="hsc-s">—</span><span class="hs-banner__unit-label">seg</span></span>
+    </span>
+    — <a href="/#instalar">Instalá Precio Real antes</a> y no te la cuenten.
+  </div>
+  <script>
+  (function () {
+    var TARGET = new Date('2026-05-13T00:00:00-03:00').getTime();
+    var END    = new Date('2026-05-16T00:00:00-03:00').getTime();
+    var banner = document.getElementById('hs-banner');
+    var dEl = document.getElementById('hsc-d');
+    var hEl = document.getElementById('hsc-h');
+    var mEl = document.getElementById('hsc-m');
+    var sEl = document.getElementById('hsc-s');
+    function pad(n) { return n < 10 ? '0' + n : '' + n; }
+    function tick() {
+      var now = Date.now();
+      if (now >= END) { banner.hidden = true; return; }
+      if (now >= TARGET) {
+        banner.innerHTML = '<span aria-hidden="true">🔥</span> ¡Hot Sale Argentina 2026 está activo! — <a href="/#instalar">Instalá Precio Real</a> y detectá los descuentos truchos ahora.';
+        return;
+      }
+      var diff = Math.floor((TARGET - now) / 1000);
+      var d = Math.floor(diff / 86400);
+      var h = Math.floor((diff % 86400) / 3600);
+      var m = Math.floor((diff % 3600) / 60);
+      var s = diff % 60;
+      dEl.textContent = d;
+      hEl.textContent = pad(h);
+      mEl.textContent = pad(m);
+      sEl.textContent = pad(s);
+    }
+    tick();
+    setInterval(tick, 1000);
+  })();
+  </script>
+
   <header class="hero">
     <nav class="nav" aria-label="Navegación principal">
       <a href="#" class="nav__brand" aria-label="Precio Real — inicio">
@@ -824,6 +871,20 @@
             <summary class="faq__question">¿El código es auditable?</summary>
             <div class="faq__answer">
               <p>Sí, todo el código (extensión + backend + landing) está publicado en GitHub: <a href="https://github.com/larancibia/precio-real" target="_blank" rel="noopener noreferrer">github.com/larancibia/precio-real</a>. Podés revisar exactamente qué hace, abrir issues o mandar pull requests.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">¿Cuándo es el Hot Sale Argentina 2026?</summary>
+            <div class="faq__answer">
+              <p>El Hot Sale Argentina 2026 se realiza del <strong>13 al 15 de mayo de 2026</strong>, organizado por la Cámara Argentina de Comercio Electrónico (CACE). Es el evento de descuentos online más grande del país y el momento donde más aumentos disfrazados de descuentos se detectan. Instalá Precio Real antes del evento para tener el historial de precios listo.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">¿Funciona también para CyberMonday y Black Friday Argentina?</summary>
+            <div class="faq__answer">
+              <p>Sí. Precio Real funciona todo el año, no solo en Hot Sale. El historial de precios que guarda cubre los períodos anteriores a CyberMonday (octubre), Black Friday (noviembre) y cualquier otra campaña donde los retailers suelen inflar precios previamente. Cuanto antes lo instalás, más historial acumulamos para ayudarte.</p>
             </div>
           </details>
         </div>

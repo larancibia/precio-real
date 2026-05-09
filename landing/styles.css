@@ -86,6 +86,45 @@ ol, ul { margin: 0; padding: 0; list-style: none; }
   margin-top: 1.25rem;
 }
 
+/* ---------- Hot Sale Countdown Banner ---------- */
+.hs-banner {
+  background: linear-gradient(90deg, #ff6b35, #f7931e, #fbbf24);
+  color: #0a0a0f;
+  text-align: center;
+  padding: .6rem 1rem;
+  font-size: .9rem;
+  font-weight: 600;
+  letter-spacing: .01em;
+  position: relative;
+  z-index: 10;
+}
+.hs-banner a {
+  color: #0a0a0f;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.hs-banner a:hover { color: #1a1a2e; }
+.hs-banner__countdown {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  margin-left: .5rem;
+}
+.hs-banner__unit {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(0,0,0,.15);
+  border-radius: 4px;
+  padding: .1rem .4rem;
+  min-width: 36px;
+  font-variant-numeric: tabular-nums;
+}
+.hs-banner__unit-val { font-size: 1.05rem; line-height: 1.1; }
+.hs-banner__unit-label { font-size: .6rem; font-weight: 700; text-transform: uppercase; opacity: .75; letter-spacing: .05em; }
+.hs-banner__sep { font-size: 1.1rem; line-height: 1; opacity: .6; }
+.hs-banner[hidden] { display: none; }
+
 /* ---------- Hero ---------- */
 .hero {
   position: relative;
