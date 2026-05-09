@@ -1,0 +1,27 @@
+/* TEAM */
+
+  Maintainer: Luis Arancibia
+  Site:       https://preciorreal.com/
+  GitHub:     https://github.com/larancibia/precio-real
+  Location:   Argentina
+
+/* THANKS */
+
+  La comunidad argentina que reportó tiendas faltantes y bugs durante el lanzamiento.
+  EcoGo, por la nota que disparó el proyecto.
+
+/* SITE */
+
+  Last update:   2026-05-09
+  Standards:     HTML5, CSS3, schema.org, Manifest V3
+  Components:    Cloudflare Pages + Workers + D1
+  Software:      Open source — github.com/larancibia/precio-real
+  Language:      Español (es-AR)
+
+/* PROJECT */
+
+  Mission:    Mostrar el precio histórico real de productos en e-commerce
+              argentinos para que nadie compre humo durante el Hot Sale.
+  License:    MIT
+  Stack:      Vanilla HTML/CSS/JS (landing) · TypeScript Workers (backend)
+              · Manifest V3 extension (Chrome/Edge/Brave)

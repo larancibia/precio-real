@@ -2,3 +2,6 @@ User-agent: *
 Allow: /
 
 Sitemap: https://preciorreal.com/sitemap.xml
+
+# Humans:   https://preciorreal.com/humans.txt
+# Security: https://preciorreal.com/.well-known/security.txt

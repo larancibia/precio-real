@@ -24,6 +24,8 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Precio Real — extensión que muestra el precio histórico real de cada producto">
+  <meta property="og:updated_time" content="2026-05-09T10:00:00-03:00">
+  <meta property="article:modified_time" content="2026-05-09T10:00:00-03:00">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
@@ -136,6 +138,36 @@
         "text": "Mirá el historial de precios y las alertas de aumentos disfrazados de descuentos directamente en la página del producto.",
         "url": "https://preciorreal.com/#como-funciona"
       }
+    ]
+  }
+  </script>
+
+  <!-- Structured data: ItemList of supported retailers (helps Google understand entity coverage) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "E-commerce argentinos soportados por Precio Real",
+    "description": "Listado de tiendas online argentinas donde Precio Real muestra el historial real de precios.",
+    "numberOfItems": 16,
+    "itemListOrder": "https://schema.org/ItemListOrderAscending",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1,  "item": { "@type": "Organization", "name": "Mercado Libre Argentina", "url": "https://www.mercadolibre.com.ar/" } },
+      { "@type": "ListItem", "position": 2,  "item": { "@type": "Organization", "name": "Frávega",                "url": "https://www.fravega.com/" } },
+      { "@type": "ListItem", "position": 3,  "item": { "@type": "Organization", "name": "Garbarino",              "url": "https://www.garbarino.com/" } },
+      { "@type": "ListItem", "position": 4,  "item": { "@type": "Organization", "name": "Falabella Argentina",    "url": "https://www.falabella.com.ar/" } },
+      { "@type": "ListItem", "position": 5,  "item": { "@type": "Organization", "name": "Carrefour Argentina",    "url": "https://www.carrefour.com.ar/" } },
+      { "@type": "ListItem", "position": 6,  "item": { "@type": "Organization", "name": "Coto Digital",           "url": "https://www.cotodigital3.com.ar/" } },
+      { "@type": "ListItem", "position": 7,  "item": { "@type": "Organization", "name": "Naldo",                  "url": "https://www.naldo.com.ar/" } },
+      { "@type": "ListItem", "position": 8,  "item": { "@type": "Organization", "name": "Musimundo",              "url": "https://www.musimundo.com/" } },
+      { "@type": "ListItem", "position": 9,  "item": { "@type": "Organization", "name": "Cetrogar",               "url": "https://www.cetrogar.com.ar/" } },
+      { "@type": "ListItem", "position": 10, "item": { "@type": "Organization", "name": "Megatone",               "url": "https://www.megatone.net/" } },
+      { "@type": "ListItem", "position": 11, "item": { "@type": "Organization", "name": "Día Online",             "url": "https://diaonline.supermercadosdia.com.ar/" } },
+      { "@type": "ListItem", "position": 12, "item": { "@type": "Organization", "name": "Jumbo",                  "url": "https://www.jumbo.com.ar/" } },
+      { "@type": "ListItem", "position": 13, "item": { "@type": "Organization", "name": "Disco",                  "url": "https://www.disco.com.ar/" } },
+      { "@type": "ListItem", "position": 14, "item": { "@type": "Organization", "name": "Sodimac Argentina",      "url": "https://www.sodimac.com.ar/" } },
+      { "@type": "ListItem", "position": 15, "item": { "@type": "Organization", "name": "Easy Argentina",         "url": "https://www.easy.com.ar/" } },
+      { "@type": "ListItem", "position": 16, "item": { "@type": "Organization", "name": "Hendel",                 "url": "https://www.hendel.com.ar/" } }
     ]
   }
   </script>
@@ -281,6 +313,88 @@
       </div>
     </section>
 
+    <section id="tiendas" class="section section--retailers" aria-labelledby="retailers-title">
+      <div class="section__inner">
+        <h2 id="retailers-title" class="section__title">Tiendas soportadas</h2>
+        <p class="section__lead">
+          Precio Real funciona en <strong>16 e-commerce argentinos</strong>, agrupados en cuatro categorías.
+          Si tu tienda favorita no está, abrí un issue en GitHub y la sumamos.
+        </p>
+
+        <div class="retailers">
+          <article class="retailer-group" aria-labelledby="rg-marketplace">
+            <h3 id="rg-marketplace" class="retailer-group__title">Marketplaces</h3>
+            <ul class="retailer-group__list">
+              <li><span class="retailer-pill" data-key="meli">Mercado Libre Argentina</span></li>
+            </ul>
+          </article>
+
+          <article class="retailer-group" aria-labelledby="rg-tecno">
+            <h3 id="rg-tecno" class="retailer-group__title">Electro y tecno</h3>
+            <ul class="retailer-group__list">
+              <li><span class="retailer-pill">Frávega</span></li>
+              <li><span class="retailer-pill">Garbarino</span></li>
+              <li><span class="retailer-pill">Falabella</span></li>
+              <li><span class="retailer-pill">Naldo</span></li>
+              <li><span class="retailer-pill">Musimundo</span></li>
+              <li><span class="retailer-pill">Cetrogar</span></li>
+              <li><span class="retailer-pill">Megatone</span></li>
+            </ul>
+          </article>
+
+          <article class="retailer-group" aria-labelledby="rg-super">
+            <h3 id="rg-super" class="retailer-group__title">Supermercados</h3>
+            <ul class="retailer-group__list">
+              <li><span class="retailer-pill">Carrefour</span></li>
+              <li><span class="retailer-pill">Coto Digital</span></li>
+              <li><span class="retailer-pill">Día Online</span></li>
+              <li><span class="retailer-pill">Jumbo</span></li>
+              <li><span class="retailer-pill">Disco</span></li>
+            </ul>
+          </article>
+
+          <article class="retailer-group" aria-labelledby="rg-hogar">
+            <h3 id="rg-hogar" class="retailer-group__title">Hogar y construcción</h3>
+            <ul class="retailer-group__list">
+              <li><span class="retailer-pill">Sodimac</span></li>
+              <li><span class="retailer-pill">Easy</span></li>
+              <li><span class="retailer-pill">Hendel</span></li>
+            </ul>
+          </article>
+        </div>
+
+        <p class="retailers__note">
+          ¿Falta tu tienda? <a href="https://github.com/larancibia/precio-real/issues/new" target="_blank" rel="noopener noreferrer">Pedila en GitHub</a> y la sumamos en la próxima release.
+        </p>
+      </div>
+    </section>
+
+    <section id="stats" class="section section--stats" aria-labelledby="stats-title">
+      <div class="section__inner section__inner--center">
+        <h2 id="stats-title" class="section__title">Lo que llevamos seguido</h2>
+        <p class="section__lead">Datos en vivo del backend. Si la fecha está desactualizada, avisanos.</p>
+
+        <dl class="stats" id="live-stats" data-state="loading" aria-live="polite">
+          <div class="stats__item">
+            <dt class="stats__label">Productos seguidos</dt>
+            <dd class="stats__value" data-stat="products">—</dd>
+          </div>
+          <div class="stats__item">
+            <dt class="stats__label">Precios registrados</dt>
+            <dd class="stats__value" data-stat="prices">—</dd>
+          </div>
+          <div class="stats__item">
+            <dt class="stats__label">Última actualización</dt>
+            <dd class="stats__value" data-stat="last">—</dd>
+          </div>
+        </dl>
+
+        <noscript>
+          <p class="stats__note">Activá JavaScript para ver los números en vivo. La extensión funciona igual sin JS.</p>
+        </noscript>
+      </div>
+    </section>
+
     <section id="faq" class="section section--faq" aria-labelledby="faq-title">
       <div class="section__inner">
         <h2 id="faq-title" class="section__title">Preguntas frecuentes</h2>
@@ -349,6 +463,8 @@
     <div class="footer__inner">
       <p class="footer__copy">© 2026 Precio Real</p>
       <nav class="footer__links" aria-label="Enlaces del pie de página">
+        <a href="#tiendas">Tiendas</a>
+        <span class="footer__sep" aria-hidden="true">·</span>
         <a href="#faq">Preguntas frecuentes</a>
         <span class="footer__sep" aria-hidden="true">·</span>
         <a href="/privacidad.html">Privacidad</a>
@@ -359,6 +475,44 @@
       </nav>
     </div>
   </footer>
+
+  <!-- Live stats widget — fetches /api/stats from the backend -->
+  <script>
+  (function () {
+    var root = document.getElementById('live-stats');
+    if (!root) return;
+    var nf = new Intl.NumberFormat('es-AR');
+    function set(key, val) {
+      var el = root.querySelector('[data-stat="' + key + '"]');
+      if (el) el.textContent = val;
+    }
+    function relTime(ts) {
+      if (!ts) return 'sin datos';
+      var ms = Date.now() - ts * 1000;
+      var min = Math.round(ms / 60000);
+      if (min < 1) return 'hace segundos';
+      if (min < 60) return 'hace ' + min + ' min';
+      var hr = Math.round(min / 60);
+      if (hr < 48) return 'hace ' + hr + ' h';
+      var d = Math.round(hr / 24);
+      return 'hace ' + d + ' días';
+    }
+    fetch('https://preciorreal.com/api/stats', { headers: { 'accept': 'application/json' } })
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('http ' + r.status)); })
+      .then(function (s) {
+        set('products', nf.format(s.products || 0));
+        set('prices', nf.format(s.prices || 0));
+        set('last', relTime(s.last_scraped_at));
+        root.setAttribute('data-state', 'ready');
+      })
+      .catch(function () {
+        root.setAttribute('data-state', 'error');
+        set('products', '—');
+        set('prices', '—');
+        set('last', 'sin conexión');
+      });
+  })();
+  </script>
 
   <!-- Cloudflare Web Analytics -->
   <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "TOKEN_PLACEHOLDER"}'></script>
