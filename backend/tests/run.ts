@@ -125,6 +125,9 @@ function assertEq<T>(actual: T, expected: T, msg: string): void {
       inflated: false,
       baseline_at: null,
       baseline_age_days: null,
+      price_min: null,
+      price_max: null,
+      price_30d_ago: null,
     },
     "computeStats empty history",
   );
@@ -216,6 +219,45 @@ function assertEq<T>(actual: T, expected: T, msg: string): void {
     sparse.baseline_age_days,
     5,
     "sparse: baseline_age_days = 5 (actual pick, not hardcoded 7)",
+  );
+
+  // price_min / price_max / price_30d_ago fields
+  // price_min and price_max over a set of rows
+  const range = computeStats(
+    [
+      { price: 800, currency: "ARS", scraped_at: NOW },
+      { price: 1200, currency: "ARS", scraped_at: NOW - 7 * DAY },
+      { price: 600, currency: "ARS", scraped_at: NOW - 31 * DAY },
+      { price: 950, currency: "ARS", scraped_at: NOW - 15 * DAY },
+    ],
+    NOW,
+  );
+  assertEq(range.price_min, 600, "computeStats price_min: picks global minimum");
+  assertEq(range.price_max, 1200, "computeStats price_max: picks global maximum");
+  // 30d row: scraped_at=NOW-31d → older than 20d threshold → exposed
+  assertEq(range.price_30d_ago, 600, "computeStats price_30d_ago: closest to 30d ago");
+
+  // Single row: min/max equal current price; price_30d_ago null (no history > 20d)
+  const singleRange = computeStats(
+    [{ price: 500, currency: "ARS", scraped_at: NOW }],
+    NOW,
+  );
+  assertEq(singleRange.price_min, 500, "computeStats single row: price_min = current_price");
+  assertEq(singleRange.price_max, 500, "computeStats single row: price_max = current_price");
+  assertEq(singleRange.price_30d_ago, null, "computeStats single row: price_30d_ago null (no 30d history)");
+
+  // price_30d_ago null when all rows are within 20 days (sparse recent history)
+  const recent = computeStats(
+    [
+      { price: 800, currency: "ARS", scraped_at: NOW },
+      { price: 850, currency: "ARS", scraped_at: NOW - 10 * DAY },
+    ],
+    NOW,
+  );
+  assertEq(
+    recent.price_30d_ago,
+    null,
+    "computeStats price_30d_ago: null when no row older than 20d",
   );
 }
 

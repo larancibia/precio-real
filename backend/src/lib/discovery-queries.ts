@@ -358,4 +358,31 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   // Accesorios celular marca
   "auriculares samsung galaxy buds",
   "cargador inalambrico samsung",
+  // Ciclo 1606 — categorías nuevas sin cobertura previa
+  // Instrumentos musicales adicional
+  "bajo electrico",
+  "bateria electronica",
+  "ukulele",
+  // Energía solar / renovable
+  "panel solar portatil",
+  "bateria litio recargable",
+  // Mascotas — accesorios faltantes
+  "correa perro retractil",
+  "transportin mascotas",
+  "juguetes para perros",
+  // Ropa bebé / niños
+  "ropa bebe recien nacido",
+  "zapatillas nenas",
+  "mochila escolar primaria",
+  // Fitness / wearables adicional
+  "garmin forerunner",
+  "mancuernas ajustables",
+  "barra dominadas",
+  // Hogar / iluminación
+  "espejo led baño",
+  "lampara escritorio led",
+  "foco led smart",
+  // Accesorios hogar tech
+  "medidor consumo electrico",
+  "enchufe inteligente wifi",
 ];
