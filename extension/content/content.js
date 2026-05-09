@@ -7,8 +7,8 @@
   if (window.__precioRealLoaded) return;
   window.__precioRealLoaded = true;
 
-  // Ciclo 1605: versión del content script para facilitar debugging en consola.
-  const CONTENT_VERSION = '1605';
+  // Ciclo 1606: versión del content script para facilitar debugging en consola.
+  const CONTENT_VERSION = '1606';
 
   const PR = window.PrecioReal;
   if (!PR) { console.warn('[Precio Real] helpers not loaded'); return; }
@@ -572,6 +572,16 @@
                 const transform = acs.transform || '';
                 const perspective = acs.perspective || '';
                 const mixBlendMode = acs.mixBlendMode || '';
+                // Ciclo 1606: overflow:hidden en un ancestro puede clipear position:fixed
+                // cuando ese ancestro también crea un stacking context (lo cual sucede
+                // frecuentemente junto con transform/will-change). En Shopify Debut/Dawn
+                // (TCL AR, Coolbox AR, iPoint AR) el wrapper #shopify-section-header tiene
+                // overflow:hidden + position:sticky, lo que clipea nuestro badge en mobile.
+                // Detectamos overflow:clip y overflow:hidden como señal adicional para hoist.
+                const overflowX = acs.overflowX || '';
+                const overflowY = acs.overflowY || '';
+                const overflowHidden = (overflowX === 'hidden' || overflowX === 'clip' ||
+                                        overflowY === 'hidden' || overflowY === 'clip');
                 if ((backdropFilter && backdropFilter !== 'none') ||
                     /strict|layout|paint/.test(contain) ||
                     isolation === 'isolate' ||
@@ -579,7 +589,11 @@
                     (clipPath && clipPath !== 'none') ||
                     (transform && transform !== 'none') ||
                     (perspective && perspective !== 'none') ||
-                    (mixBlendMode && mixBlendMode !== 'normal')) {
+                    (mixBlendMode && mixBlendMode !== 'normal') ||
+                    // Solo hoist por overflow si también hay un stacking context implícito
+                    // (position:sticky/fixed en el ancestor, o z-index distinto de auto):
+                    (overflowHidden && (acs.position === 'sticky' || acs.position === 'fixed' ||
+                                        (acs.zIndex && acs.zIndex !== 'auto')))) {
                   needsHoist = true;
                   break;
                 }
@@ -769,6 +783,11 @@
           // data-loading en el contenedor de precio al cambiar variante. WooCommerce
           // con bulk pricing puede cambiar precio con data-quantity.
           'data-fs-sku', 'data-loading', 'data-quantity',
+          // Ciclo 1606: data-fs-variant-id es el selector de variante en VTEX
+          // Faststore v2+ (Carrefour AR, Changomás). data-product-variant-id
+          // aparece en algunos temas Shopify custom (Coolbox AR, Full AR).
+          // data-selected-variant es del Debut/Dawn theme de Shopify.
+          'data-fs-variant-id', 'data-product-variant-id', 'data-selected-variant',
         ],
       });
     } catch (_) { variantObserver = null; }
@@ -922,6 +941,10 @@
             // Ciclo 1605: data-fs-product-id (VTEX Faststore PDPs, ej. Garbarino nuevo)
             // estaba en el variant observer pero no en el observer de montaje inicial.
             'data-fs-product-id',
+            // Ciclo 1606: data-fs-variant-id (VTEX Faststore v2+, Carrefour/Changomás);
+            // data-product-variant-id (Shopify custom: Coolbox AR, Full AR);
+            // data-selected-variant (Shopify Dawn/Debut themes).
+            'data-fs-variant-id', 'data-product-variant-id', 'data-selected-variant',
           ],
         });
       } else {

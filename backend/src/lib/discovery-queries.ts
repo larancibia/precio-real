@@ -772,4 +772,65 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "placa madre am5",
   "cooler cpu 120mm",
   "case pc vidrio templado",
+  // Ciclo 1618 — fútbol / deportes team sports (alta rotación pretemporada AR)
+  "camiseta seleccion argentina",
+  "pelota futbol oficial",
+  "arco de futbol patio",
+  "raqueta de tenis",
+  "pelota de basquet",
+  "guantes de arquero",
+  "tobillera de futbol",
+  // Ciclo 1618 — gaming retro / handhelds (tendencia 2025-2026)
+  "anbernic rg35xx",
+  "miyoo mini plus",
+  "consola retro portatil",
+  "game boy advance repuesto",
+  // Ciclo 1618 — e-readers / lectura digital
+  "kindle amazon",
+  "e-reader pantalla tinta",
+  "kindle paperwhite",
+  // Ciclo 1618 — joyería / accesorios moda fina
+  "anillo de plata mujer",
+  "cadena de plata hombre",
+  "aros de plata",
+  "pulsera de cuero hombre",
+  // Ciclo 1618 — audio profesional / podcast / streaming
+  "interfaz de audio usb",
+  "controlador midi teclado",
+  "microfono dinamico podcast",
+  "auriculares monitoreo",
+  // Ciclo 1618 — fotografía avanzada / creadores
+  "flash externo camara",
+  "tripode profesional aluminio",
+  "dji mini 4 pro",
+  "filtro nd camara",
+  // Ciclo 1618 — calzado de trabajo / seguridad
+  "bota de seguridad punta de acero",
+  "zapatilla de seguridad",
+  "calzado de trabajo",
+  // Ciclo 1618 — electrónica automotriz adicional
+  "radio auto android pantalla",
+  "camara de reversa auto",
+  "sensor de estacionamiento",
+  "alarm car tracker gps",
+  // Ciclo 1618 — textil hogar / blanco (siempre activo en MLA)
+  "juego de toallas algodon",
+  "mantel antimanchas",
+  "cortina de baño impermeable",
+  "cubre sommier elastizado",
+  // Ciclo 1618 — papelería / arte / manualidades
+  "marcadores acuarelables",
+  "lienzo para pintar",
+  "acuarelas profesionales",
+  "block de dibujo a4",
+  // Ciclo 1618 — marcas línea blanca AR sin cobertura previa
+  "heladera bgh",
+  "heladera patrick",
+  "lavarropas patrick",
+  "cocina a gas longvie",
+  "heladera aurora",
+  // Ciclo 1618 — skateboarding / deportes urbanos
+  "tabla de skate completa",
+  "patines en linea adultos",
+  "casco patines skate",
 ];

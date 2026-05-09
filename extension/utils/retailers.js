@@ -1118,6 +1118,155 @@
         'meta[property="og:price:amount"]',
       ],
     },
+    // Ciclo 1606: Acer Store AR (Magento 2), Coolbox AR (Shopify gaming), Olimpo (WooCommerce).
+    acer: {
+      label: 'Acer Store',
+      hostnameSuffix: 'acer.com',
+      currency: 'ARS',
+      selectors: [
+        // Acer Store AR (store.acer.com/es-ar/) usa Magento 2 con tema custom.
+        // El precio de venta final vive en .price-final_price [data-price-amount]
+        // (US-formatted). El precio de lista tachado (.old-price) lo filtra
+        // isStrikethroughPrice. También expone [data-testid="product-price"] en
+        // su SPA overlay cuando el usuario configura specs (Aspire/Predator).
+        '.product-info-price .price-final_price [data-price-amount]',
+        '.product-info-price .price-final_price .price',
+        '.special-price [data-price-amount]',
+        '.special-price .price',
+        '.price-box .price-final_price [data-price-amount]',
+        '.price-box .price',
+        '[data-price-amount]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        '.price-current',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    coolbox: {
+      label: 'Coolbox',
+      hostnameSuffix: 'coolbox.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Coolbox AR (periféricos y gaming) usa Shopify con tema custom próximo
+        // al Debut/Dawn. El precio de venta activo vive en .price-item--sale
+        // cuando hay descuento; sin descuento, en .price-item--regular. El
+        // precio de lista tachado (dentro de .price--on-sale) lo filtra
+        // isStrikethroughPrice. También expone [data-product-variant-id] en el
+        // selector de variantes al cambiar color/memoria.
+        '.price__sale .price-item--sale',
+        '.price-item--sale',
+        '.price__regular .price-item--regular',
+        '.price-item--regular',
+        '[data-testid="product-price"]',
+        '[data-testid="price"]',
+        'span[class*="price-item" i]',
+        '.product-price',
+        '.product__price',
+        '.price',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    olimpo: {
+      label: 'Olimpo',
+      hostnameSuffix: 'olimpo.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Olimpo AR (electrónica/electrodomésticos) usa WooCommerce con tema
+        // custom. El precio con descuento vive en .price ins .woocommerce-Price-amount;
+        // sin descuento en .woocommerce-Price-amount directamente.
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        'ins .woocommerce-Price-amount.amount bdi',
+        'ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount bdi',
+        '[data-testid="product-price"]',
+        '[data-test-id="product-price"]',
+        '.product-price',
+        '.precio-actual',
+        '.precio-web',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    // Ciclo 1607: Dexter (Shopify deportes), TGC (Magento 2 gaming), Maxiconsumo (VTEX supermercado).
+    dexter: {
+      label: 'Dexter',
+      hostnameSuffix: 'dexter.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Dexter AR (indumentaria/calzado deportivo) usa Shopify con tema custom.
+        // El precio de venta activo vive en .price-item--sale cuando hay descuento;
+        // sin descuento, en .price-item--regular. El precio de lista tachado
+        // (dentro de .price--on-sale) lo filtra isStrikethroughPrice.
+        '.price__sale .price-item--sale',
+        '.price-item--sale',
+        '.price__regular .price-item--regular',
+        '.price-item--regular',
+        '[data-testid="product-price"]',
+        '[data-testid="price"]',
+        'span[class*="price-item" i]',
+        '[data-price-value]',
+        '.product-price',
+        '.product__price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    tgc: {
+      label: 'TGC',
+      hostnameSuffix: 'tgc.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // TGC AR (gaming/hardware) usa Magento 2 con tema custom. El precio final
+        // vive en .price-final_price [data-price-amount] (US-formatted). El precio
+        // tachado (.old-price) lo filtra isStrikethroughPrice.
+        '.product-info-price .price-final_price [data-price-amount]',
+        '.product-info-price .price-final_price .price',
+        '.special-price [data-price-amount]',
+        '.special-price .price',
+        '.price-box .price-final_price [data-price-amount]',
+        '.price-box .price',
+        '[data-price-amount]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    maxiconsumo: {
+      label: 'Maxiconsumo',
+      hostnameSuffix: 'maxiconsumo.com',
+      currency: 'ARS',
+      selectors: [
+        // Maxiconsumo AR (supermercado mayorista) usa VTEX IO. El precio de venta
+        // principal vive en sellingPriceValue. También expone meta itemprop="price"
+        // (formato US) como fallback universal. JSON-LD Product presente en todas las PDPs.
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+        '.vtex-product-price-1-x-sellingPriceValue',
+        '.vtex-product-price-1-x-sellingPrice',
+        '.vtex-product-price-1-x-currencyContainer',
+        '.product-price__price',
+        '[class*="sellingPriceValue" i]',
+        '[class*="sellingPrice" i]',
+        '[class*="currentPrice" i]',
+        '[data-testid="price-value"]',
+        '[data-testid="product-price"]',
+      ],
+    },
     // Ciclo 1613: Newsan (VTEX, appliances), Asus Store AR (Next.js), Mac Center (WooCommerce).
     newsan: {
       label: 'Newsan',

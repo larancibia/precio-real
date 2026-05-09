@@ -56,6 +56,12 @@
     "https://*.full.com.ar/*",
     "https://*.microcenter.com.ar/*",
     "https://*.ipoint.com.ar/*",
+    "https://store.acer.com/es-ar/*",
+    "https://*.coolbox.com.ar/*",
+    "https://*.olimpo.com.ar/*",
+    "https://*.dexter.com.ar/*",
+    "https://*.tgc.com.ar/*",
+    "https://*.maxiconsumo.com/*",
     "http://localhost:8787/*"
   ],
   "action": {
@@ -118,7 +124,13 @@
         "https://*.maccenter.com.ar/*",
         "https://*.full.com.ar/*",
         "https://*.microcenter.com.ar/*",
-        "https://*.ipoint.com.ar/*"
+        "https://*.ipoint.com.ar/*",
+        "https://store.acer.com/es-ar/*",
+        "https://*.coolbox.com.ar/*",
+        "https://*.olimpo.com.ar/*",
+        "https://*.dexter.com.ar/*",
+        "https://*.tgc.com.ar/*",
+        "https://*.maxiconsumo.com/*"
       ],
       "js": ["config.js", "utils/retailers.js", "utils/helpers.js", "utils/affiliates.js", "content/content.js"],
       "css": ["content/badge.css"],

@@ -107,6 +107,16 @@
     'full',
     'microcenter',
     'ipoint',
+    // Ciclo 1606: Acer Store AR (Magento 2), Coolbox AR (Shopify gaming),
+    // Olimpo AR (WooCommerce electrónica).
+    'acer',
+    'coolbox',
+    'olimpo',
+    // Ciclo 1607: Dexter AR (Shopify deportes), TGC AR (Magento 2 gaming),
+    // Maxiconsumo AR (VTEX supermercado mayorista).
+    'dexter',
+    'tgc',
+    'maxiconsumo',
   ];
 
   function detectSite(hostname) {
@@ -183,6 +193,18 @@
     if (h.endsWith('full.com.ar')) return 'full';
     if (h.endsWith('microcenter.com.ar')) return 'microcenter';
     if (h.endsWith('ipoint.com.ar')) return 'ipoint';
+    // Ciclo 1606: Acer Store AR (store.acer.com/es-ar/), Coolbox AR (Shopify gaming),
+    // Olimpo AR (WooCommerce electrónica). Acer usa el subdominio store.acer.com
+    // con locale /es-ar/; el manifest restringe a ese path. Coolbox y Olimpo son
+    // retailers .com.ar dedicados al mercado argentino.
+    if (h === 'store.acer.com') return 'acer';
+    if (h.endsWith('coolbox.com.ar')) return 'coolbox';
+    if (h.endsWith('olimpo.com.ar')) return 'olimpo';
+    // Ciclo 1607: Dexter AR (Shopify deportes), TGC AR (Magento 2 gaming),
+    // Maxiconsumo AR (VTEX supermercado mayorista).
+    if (h.endsWith('dexter.com.ar')) return 'dexter';
+    if (h.endsWith('tgc.com.ar')) return 'tgc';
+    if (h.endsWith('maxiconsumo.com')) return 'maxiconsumo';
     return null;
   }
 
@@ -287,8 +309,28 @@
         // Ciclo 1604: atributos adicionales observados en nuevos retailers.
         || el.dataset.specialPrice    // Magento 2 precio de oferta (sale price real)
         || el.dataset.fsPrice         // VTEX Faststore (data-fs-price)
-        || el.dataset.sellingPrice;   // Shopify apps custom (data-selling-price)
-      if (dp) return { raw: dp, fromAttribute: true };
+        || el.dataset.sellingPrice    // Shopify apps custom (data-selling-price)
+        // Ciclo 1607: atributos adicionales observados en nuevos retailers.
+        || el.dataset.fsPriceValue    // VTEX Faststore v2+ (data-fs-price-value)
+        || el.dataset.priceValue      // Shopify custom themes (data-price-value, en centavos: dividir por 100)
+        || el.dataset.comparePrice    // Shopify compare-at price (NO usar — es precio anterior)
+        || el.dataset.productPrice    // WooCommerce custom (data-product-price)
+        || el.dataset.salePrice;      // WooCommerce / Magento generic (data-sale-price)
+      // Shopify expone data-price-value en centavos (integer: 12345 = $123.45).
+      // Si el valor viene de dataset.priceValue, dividir por 100 antes de devolver.
+      if (dp) {
+        // Detectar si es Shopify data-price-value (siempre entero en centavos).
+        // Heurística: si el atributo que matcheó es priceValue y el valor parece entero
+        // > 1000 (sin separador decimal), asumimos que está en centavos.
+        if (el.dataset.priceValue && dp === el.dataset.priceValue) {
+          const asInt = parseInt(dp, 10);
+          if (!isNaN(asInt) && asInt > 0 && String(asInt) === dp.trim()) {
+            // Valor entero en centavos: devolver como string dividido por 100.
+            return { raw: String(asInt / 100), fromAttribute: true };
+          }
+        }
+        return { raw: dp, fromAttribute: true };
+      }
     }
     return { raw: el.textContent, fromAttribute: false };
   }
@@ -990,33 +1032,47 @@
         if (/\/(ProductDetail|product|item)\//.test(location.pathname)) return true;
         // Caer al microdata check: Asus emite JSON-LD de Product en sus PDPs.
       }
-      // Magento 2 (Cetrogar, Rodo, Noblex, Venex, BGood, HP Tienda, Pycca):
+      // Magento 2 (Cetrogar, Rodo, Noblex, Venex, BGood, HP Tienda, Pycca, Acer, TGC):
       // body tiene la clase catalog-product-view en todas las PDPs de Magento 2.
       // Es el identificador más confiable: Magento lo agrega server-side antes de
       // que JS hidrate, por lo que está disponible en document_idle.
+      // Ciclo 1607: TGC AR también usa Magento 2.
       if (siteKey === 'cetrogar' || siteKey === 'rodo' || siteKey === 'noblex' ||
           siteKey === 'venex' || siteKey === 'bgood' || siteKey === 'hptienda' || siteKey === 'pycca' ||
-          siteKey === 'microcenter') {
+          siteKey === 'microcenter' || siteKey === 'acer' || siteKey === 'tgc') {
         try {
           if (document.body && document.body.classList.contains('catalog-product-view')) return true;
         } catch (_) {}
         // Magento 2 emite JSON-LD de Product: caer al microdata check.
       }
-      // Shopify (TCL AR, iPoint AR, Musimundo, Compumundo): PDPs tienen /products/ en la
+      // Shopify (TCL AR, iPoint AR, Musimundo, Compumundo, Coolbox AR, Dexter AR): PDPs tienen /products/ en la
       // ruta y/o body.template-product. Musimundo/Compumundo usan Shopify custom theme.
-      if (siteKey === 'tcl' || siteKey === 'ipoint' || siteKey === 'musimundo' || siteKey === 'compumundo') {
+      // Ciclo 1606: Coolbox AR también usa Shopify (Debut/Dawn theme con /products/ en ruta).
+      // Ciclo 1607: Dexter AR también usa Shopify.
+      if (siteKey === 'tcl' || siteKey === 'ipoint' || siteKey === 'musimundo' || siteKey === 'compumundo' ||
+          siteKey === 'coolbox' || siteKey === 'dexter') {
         if (/\/products\//.test(location.pathname)) return true;
         try {
           if (document.body && document.body.classList.contains('template-product')) return true;
         } catch (_) {}
         // Shopify emite JSON-LD de Product en PDPs: caer al microdata check.
       }
+      // WooCommerce (Olimpo AR): single-product tiene body.single-product o /product/ en la ruta.
+      // Ciclo 1606: Olimpo AR usa WooCommerce, misma detección que Drean/HiperTehno/EXO.
+      if (siteKey === 'olimpo') {
+        try {
+          if (document.body && document.body.classList.contains('single-product')) return true;
+        } catch (_) {}
+        if (/\/product\//.test(location.pathname)) return true;
+        // WooCommerce emite JSON-LD de Product: caer al microdata check.
+      }
       // Ciclo 1604: VTEX IO — PDPs siempre tienen pathname terminando en /p (antes del
       // query string). También: skuId en query = variante de un PDP (siempre producto).
       // Cubre: garbarino, jumbo, disco, easy, carrefour, changomas, hisense, philco, newsan.
       // No incluimos fravega aquí porque usa VTEX Classic con URLs distintas.
+      // Ciclo 1607: maxiconsumo también usa VTEX IO.
       const VTEX_IO_SITES = ['garbarino', 'jumbo', 'disco', 'easy', 'carrefour', 'changomas',
-                             'hisense', 'philco', 'newsan'];
+                             'hisense', 'philco', 'newsan', 'maxiconsumo'];
       if (VTEX_IO_SITES.indexOf(siteKey) !== -1) {
         if (/\/p$/.test(location.pathname)) return true;
         try {

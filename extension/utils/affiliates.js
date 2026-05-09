@@ -313,6 +313,19 @@
       enabled: true,
       utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
     },
+    // Ciclo 1606: Acer Store AR (Magento 2), Coolbox AR (Shopify gaming), Olimpo AR (WooCommerce).
+    acer: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    coolbox: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    olimpo: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
   };
 
   function applyUtm(rawUrl, utm) {
