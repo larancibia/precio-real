@@ -36,6 +36,7 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { DISCOVERY_QUERIES } from "../src/lib/discovery-queries";
+import { SEED_FIXTURES, type SeedFixture } from "./seed-fixtures";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -263,6 +264,54 @@ async function main(): Promise<void> {
     });
   }
 
+  // Helper: emits product + history rows for a single normalized item.
+  // Shared between the live-API path and the fixture-fallback path so the
+  // bucket rotation, dedupe, and SQL output stay byte-identical regardless
+  // of source.
+  const emitItem = (
+    item: { permalink: string; title: string; price: number; currency_id: string; thumbnail: string | null; seller: string | null },
+  ): boolean => {
+    if (!item.permalink || typeof item.price !== "number") return false;
+    if (seenUrls.has(item.permalink)) return false;
+    seenUrls.add(item.permalink);
+
+    const bucket = (idx % 4) as 0 | 1 | 2 | 3;
+    const bucketLabel =
+      bucket === 0 ? "stable" : bucket === 1 ? "real" : bucket === 2 ? "inflated" : "recent_drop";
+    const currency = item.currency_id || "ARS";
+
+    lines.push(
+      `-- product idx=${idx} bucket=${bucket} (${bucketLabel}) currentPrice=${item.price}`,
+    );
+    lines.push(
+      `INSERT OR IGNORE INTO products (url, title, seller, image_url) VALUES (` +
+        [
+          sqlEscape(item.permalink),
+          sqlEscape(item.title),
+          sqlEscape(item.seller),
+          sqlEscape(item.thumbnail),
+        ].join(", ") +
+        `);`,
+    );
+    productsInserted++;
+
+    const history = generateHistory(item.price, bucket);
+    const urlSql = sqlEscape(item.permalink);
+    const currencySql = sqlEscape(currency);
+    for (const point of history) {
+      lines.push(
+        `INSERT INTO prices (product_id, price, currency, scraped_at) ` +
+          `SELECT id, ${point.price.toFixed(2)}, ${currencySql}, ` +
+          `strftime('%s','now') - ${point.daysAgo}*86400 ` +
+          `FROM products WHERE url = ${urlSql};`,
+      );
+      pricesInserted++;
+    }
+
+    idx++;
+    return true;
+  };
+
   for (const { query, items, error } of fetched) {
     if (items === null) {
       process.stderr.write(`[seed] "${query}" FAILED (${error})\n`);
@@ -276,51 +325,43 @@ async function main(): Promise<void> {
     lines.push(`-- Query: ${query} (${items.length} items)`);
 
     for (const item of items) {
-      if (!item.permalink || typeof item.price !== "number") continue;
-      if (seenUrls.has(item.permalink)) continue;
-      seenUrls.add(item.permalink);
+      emitItem({
+        permalink: item.permalink,
+        title: item.title,
+        price: item.price,
+        currency_id: item.currency_id || "ARS",
+        thumbnail: item.thumbnail ?? null,
+        seller: item.seller?.nickname ?? null,
+      });
+    }
+    lines.push("");
+  }
 
-      const seller = item.seller?.nickname ?? null;
-      const bucket = (idx % 4) as 0 | 1 | 2 | 3;
-      const bucketLabel =
-        bucket === 0
-          ? "stable"
-          : bucket === 1
-            ? "real"
-            : bucket === 2
-              ? "inflated"
-              : "recent_drop";
-      const currency = item.currency_id || "ARS";
-
-      lines.push(
-        `-- product idx=${idx} bucket=${bucket} (${bucketLabel}) currentPrice=${item.price}`,
-      );
-      lines.push(
-        `INSERT OR IGNORE INTO products (url, title, seller, image_url) VALUES (` +
-          [
-            sqlEscape(item.permalink),
-            sqlEscape(item.title),
-            sqlEscape(seller),
-            sqlEscape(item.thumbnail),
-          ].join(", ") +
-          `);`,
-      );
-      productsInserted++;
-
-      const history = generateHistory(item.price, bucket);
-      const urlSql = sqlEscape(item.permalink);
-      const currencySql = sqlEscape(currency);
-      for (const point of history) {
-        lines.push(
-          `INSERT INTO prices (product_id, price, currency, scraped_at) ` +
-            `SELECT id, ${point.price.toFixed(2)}, ${currencySql}, ` +
-            `strftime('%s','now') - ${point.daysAgo}*86400 ` +
-            `FROM products WHERE url = ${urlSql};`,
-        );
-        pricesInserted++;
-      }
-
-      idx++;
+  // Fallback: if the live API yielded no usable products (e.g. ML returned
+  // 403 from the runner's IP, regional outage, all queries timed out), fill
+  // from the bundled curated fixtures so dev never ends up with an empty
+  // database. The fallback uses the same emitItem helper so the bucket
+  // rotation continues seamlessly.
+  let fixturesUsed = 0;
+  if (productsInserted === 0 && SEED_FIXTURES.length > 0) {
+    process.stderr.write(
+      `[seed] live API yielded 0 products (${queriesFailed}/${QUERIES.length} queries failed); ` +
+        `falling back to ${SEED_FIXTURES.length} bundled fixtures.\n`,
+    );
+    lines.push(
+      `-- FALLBACK: live ML API returned 0 usable products ` +
+        `(${queriesFailed}/${QUERIES.length} queries failed). Emitting ${SEED_FIXTURES.length} bundled fixtures.`,
+    );
+    for (const fx of SEED_FIXTURES as SeedFixture[]) {
+      const ok = emitItem({
+        permalink: fx.permalink,
+        title: fx.title,
+        price: fx.price,
+        currency_id: fx.currency_id,
+        thumbnail: fx.thumbnail,
+        seller: fx.seller_nickname,
+      });
+      if (ok) fixturesUsed++;
     }
     lines.push("");
   }
@@ -328,13 +369,26 @@ async function main(): Promise<void> {
   lines.push("COMMIT;");
   lines.push("");
 
+  // Hard fail when the SQL would produce zero products. Better to refuse to
+  // overwrite seed.sql than to silently emit a noop file that wipes any
+  // populated local DB on `npm run db:seed:apply:local`.
+  if (productsInserted === 0) {
+    process.stderr.write(
+      `[seed] FATAL: produced 0 products (live API failed and no fixtures available). ` +
+        `Refusing to overwrite seed.sql.\n`,
+    );
+    process.exit(1);
+  }
+
   const outPath = resolve(__dirname, "seed.sql");
   writeFileSync(outPath, lines.join("\n"), "utf8");
 
   process.stderr.write(
     `[seed] wrote ${outPath}\n` +
       `[seed] queries: ${QUERIES.length} (failed: ${queriesFailed}), ` +
-      `products: ${productsInserted}, price rows: ${pricesInserted}\n`,
+      `products: ${productsInserted}` +
+      (fixturesUsed > 0 ? ` (${fixturesUsed} from fallback fixtures)` : "") +
+      `, price rows: ${pricesInserted}\n`,
   );
   process.stderr.write(`[seed] apply with: npm run db:seed:apply (remote) or db:seed:apply:local\n`);
 }
