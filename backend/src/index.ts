@@ -8,7 +8,8 @@
  *   GET  /api/stats              → { products, prices, last_scraped_at, oldest_scraped_at,
  *                                    products_with_prices }
  *   GET  /api/search?q=<keyword>&limit=<n>&offset=<n>
- *                                → { count, offset, results: [{ id, url, title, seller, image_url }] }
+ *                                → { total, count, offset, results: [{ id, url, title, seller, image_url }] }
+ *                                  total = full match count (for pagination); count = items in this page
  *   GET  /api/movers?limit=&min_drop=
  *                                → { generated_at, count, min_drop_pct, movers: [...] }
  *                                  Top real-discount products (current price below
@@ -201,15 +202,29 @@ async function handleSearch(request: Request, env: Env): Promise<Response> {
   // LOWER() on both sides for case-insensitive matching (SQLite LIKE is only
   // ASCII-case-insensitive; LOWER() covers accented chars in product titles).
   const pattern = `%${q.toLowerCase().replace(/%/g, "\\%").replace(/_/g, "\\_")}%`;
-  const rows = await env.DB
-    .prepare(
-      "SELECT id, url, title, seller, image_url FROM products WHERE LOWER(title) LIKE ?1 ESCAPE '\\' ORDER BY id DESC LIMIT ?2 OFFSET ?3",
-    )
-    .bind(pattern, limit, offset)
-    .all<Pick<ProductRow, "id" | "url" | "title" | "seller" | "image_url">>();
+
+  // Fetch total count + page results in parallel to keep the round-trip to
+  // D1 bounded at 2 queries rather than sequential. The total lets callers
+  // build pagination UI ("mostrando 1-10 de 47 resultados") without issuing
+  // a separate count request.
+  const [countRow, rows] = await Promise.all([
+    env.DB
+      .prepare(
+        "SELECT COUNT(*) AS n FROM products WHERE LOWER(title) LIKE ?1 ESCAPE '\\'",
+      )
+      .bind(pattern)
+      .first<{ n: number }>(),
+    env.DB
+      .prepare(
+        "SELECT id, url, title, seller, image_url FROM products WHERE LOWER(title) LIKE ?1 ESCAPE '\\' ORDER BY id DESC LIMIT ?2 OFFSET ?3",
+      )
+      .bind(pattern, limit, offset)
+      .all<Pick<ProductRow, "id" | "url" | "title" | "seller" | "image_url">>(),
+  ]);
 
   const results = rows.results ?? [];
-  return json({ count: results.length, offset, results });
+  const total = countRow?.n ?? results.length;
+  return json({ total, count: results.length, offset, results });
 }
 
 async function handleMovers(request: Request, env: Env): Promise<Response> {

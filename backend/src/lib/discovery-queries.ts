@@ -121,4 +121,31 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   // Electrohogar adicional
   "caloventor",
   "purificador agua",
+  // Hogar inteligente / smart home
+  "parlante inteligente",
+  "lampara inteligente",
+  "enchufe inteligente",
+  "timbre con camara",
+  // Gaming / accesorios
+  "silla gamer reclinable",
+  "auriculares gamer",
+  "monitor gamer",
+  "control xbox",
+  // Oficina / estudio
+  "silla ergonomica",
+  "soporte notebook",
+  "hub usb",
+  "disco solido",
+  // Cuidado personal
+  "afeitadora electrica",
+  "depiladora",
+  "cepillo dental electrico",
+  // Nutricion / salud
+  "proteina whey",
+  "suplemento deportivo",
+  // Audio / video
+  "barra de sonido",
+  "proyector",
+  "vinilo parlante",
+  "camara gopro",
 ];
