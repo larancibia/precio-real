@@ -101,8 +101,7 @@
     "https://*.coppel.com/*",
     "https://*.megatronics.com.ar/*",
     "https://*.macstation.com.ar/*",
-    "https://*.winpy.com.ar/*",
-    "http://localhost:8787/*"
+    "https://*.winpy.com.ar/*"
   ],
   "action": {
     "default_popup": "popup/popup.html",
