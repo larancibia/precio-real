@@ -7,14 +7,28 @@
   const ns = (window.PrecioReal = window.PrecioReal || {});
 
   // hostname → retailer key. detectSite() in helpers.js uses these suffixes.
+  // Notas:
+  //  • Los selectores se prueban en orden. Los más específicos primero.
+  //  • Los retailers VTEX (dia, jumbo, disco, easy, hendel, fravega-pdp viejo)
+  //    suelen exponer `meta[itemprop="price"]` con `content="1234.56"` en formato
+  //    US, parseable directo. Lo dejamos primero como camino feliz.
+  //  • Evitamos selectores tipo `[class*="price" i]` muy laxos que matchean
+  //    elementos de "precio anterior tachado" — para eso helpers.isStrikethroughPrice
+  //    filtra, pero si podemos ser precisos, mejor.
   const RETAILERS = {
     mercadolibre: {
       label: 'Mercado Libre',
       hostnameSuffix: 'mercadolibre.com.ar',
       currency: 'ARS',
       selectors: [
-        'meta[itemprop="price"]',
+        // Precio principal (oferta) en PDP:
+        '.ui-pdp-price__second-line .andes-money-amount[data-testid="price-part"] .andes-money-amount__fraction',
         '.ui-pdp-price__second-line .andes-money-amount__fraction',
+        '.ui-pdp-price__main-container .andes-money-amount__fraction',
+        // Meta tags como último recurso (suelen estar en formato US):
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
         '.andes-money-amount__fraction',
       ],
     },
@@ -24,33 +38,62 @@
       currency: 'ARS',
       selectors: [
         '[data-test-id="product-price"]',
-        'span[class*="sale-price"]',
-        'span[class*="Price"]',
+        '[data-test-id="product-price-current"]',
+        'span[class*="sale-price" i]',
+        'span[class*="OfferPrice" i]',
+        'span[class*="Price-sc" i]',
+        'meta[itemprop="price"]',
       ],
     },
     garbarino: {
       label: 'Garbarino',
       hostnameSuffix: 'garbarino.com',
       currency: 'ARS',
-      selectors: ['[data-testid="price"]', '.price-label', '.product-price'],
+      selectors: [
+        '[data-testid="price"]',
+        '[data-test-id="price"]',
+        '.price-label',
+        '.product-price',
+        'meta[itemprop="price"]',
+      ],
     },
     falabella: {
       label: 'Falabella',
       hostnameSuffix: 'falabella.com.ar',
       currency: 'ARS',
-      selectors: ['[data-testid="prices-0"]', '.copy10', 'span[class*="price"]'],
+      selectors: [
+        // Falabella usa data-internet-price / data-event-price / data-cmr-price
+        // dependiendo del medio de pago. Internet price es el "neto" para todos.
+        '[data-internet-price]',
+        '[data-testid="prices-0"] .copy10',
+        '[data-testid="prices-0"]',
+        'li[data-cmr-price]',
+        'li[data-internet-price]',
+        '.copy10',
+        'meta[itemprop="price"]',
+      ],
     },
     carrefour: {
       label: 'Carrefour',
       hostnameSuffix: 'carrefour.com.ar',
       currency: 'ARS',
-      selectors: ['[data-test-id="price"]', 'span[class*="currencyContainer"]'],
+      selectors: [
+        '[data-test-id="price"]',
+        '[data-fs-product-price]',
+        'span[class*="currencyContainer" i]',
+        'meta[itemprop="price"]',
+      ],
     },
     coto: {
       label: 'Coto',
       hostnameSuffix: 'cotodigital3.com.ar',
       currency: 'ARS',
-      selectors: ['.atg_store_newPrice', '.product_price'],
+      selectors: [
+        '.atg_store_newPrice',
+        '.product_price',
+        'span[class*="newPrice" i]',
+        'meta[itemprop="price"]',
+      ],
     },
     naldo: {
       label: 'Naldo',
@@ -58,8 +101,10 @@
       currency: 'ARS',
       selectors: [
         '[data-testid="product-price"]',
+        '[data-test-id="product-price"]',
         '.product-price',
-        'span[class*="Price"]',
+        'span[class*="Price-sc" i]',
+        'meta[itemprop="price"]',
       ],
     },
     musimundo: {
@@ -69,7 +114,9 @@
       selectors: [
         '[data-testid="price-value"]',
         '.price-value',
-        'span[class*="price"]',
+        '.product-price',
+        'span[class*="price" i]',
+        'meta[itemprop="price"]',
       ],
     },
     cetrogar: {
@@ -77,9 +124,11 @@
       hostnameSuffix: 'cetrogar.com.ar',
       currency: 'ARS',
       selectors: [
+        '.product-info-price .price-final_price .price',
         '.product-price-container .price',
         '.price-best-price',
-        'span[class*="price"]',
+        '[data-price-amount]',
+        'meta[itemprop="price"]',
       ],
     },
     megatone: {
@@ -89,7 +138,8 @@
       selectors: [
         '#lblPrecioVenta',
         '.precio',
-        'span[class*="precio"]',
+        'span[class*="precio" i]',
+        'meta[itemprop="price"]',
       ],
     },
     dia: {
@@ -99,7 +149,8 @@
       selectors: [
         'meta[itemprop="price"]',
         '.vtex-product-price-1-x-sellingPrice',
-        '[class*="sellingPrice"]',
+        '[class*="sellingPrice" i]',
+        '[class*="currentPrice" i]',
       ],
     },
     jumbo: {
@@ -108,8 +159,11 @@
       currency: 'ARS',
       selectors: [
         'meta[itemprop="price"]',
+        '.jumboargentinaio-store-theme-1ydiUYi5RQt9V_LCJ7I36W',
+        '.vtex-product-price-1-x-sellingPrice',
         '.product-price__price',
-        '[class*="Price"]',
+        '[class*="sellingPrice" i]',
+        '[class*="Price" i]',
       ],
     },
     disco: {
@@ -118,8 +172,10 @@
       currency: 'ARS',
       selectors: [
         'meta[itemprop="price"]',
+        '.vtex-product-price-1-x-sellingPrice',
         '.product-price__price',
-        '[class*="Price"]',
+        '[class*="sellingPrice" i]',
+        '[class*="Price" i]',
       ],
     },
     sodimac: {
@@ -129,8 +185,11 @@
       selectors: [
         '[data-testid="product-detail-price"]',
         '[data-automation-id="product-price"]',
+        '[data-cmr-price]',
+        '[data-internet-price]',
         '.copy10',
-        'span[class*="price"]',
+        'span[class*="price" i]',
+        'meta[itemprop="price"]',
       ],
     },
     easy: {
@@ -140,8 +199,9 @@
       selectors: [
         'meta[itemprop="price"]',
         '.vtex-product-price-1-x-sellingPrice',
-        '[class*="sellingPrice"]',
-        'span[class*="price"]',
+        '[class*="sellingPrice" i]',
+        '[class*="currentPrice" i]',
+        'span[class*="price" i]',
       ],
     },
     hendel: {
@@ -150,8 +210,10 @@
       currency: 'ARS',
       selectors: [
         'meta[itemprop="price"]',
+        '.vtex-product-price-1-x-sellingPrice',
+        '[class*="sellingPrice" i]',
         '.product-price',
-        'span[class*="price"]',
+        'span[class*="price" i]',
       ],
     },
   };

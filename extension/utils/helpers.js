@@ -4,6 +4,48 @@
 
   const ns = (window.PrecioReal = window.PrecioReal || {});
 
+  // ── Logger condicional ────────────────────────────────────────────────────
+  // Activado por:
+  //   • Query param `?precio_real_debug=1` (sticky en sessionStorage)
+  //   • localStorage.precioRealDebug = '1'
+  //   • localStorage.precioRealDebug = '<retailer>' (filtra solo ese retailer)
+  // Nada de logs en producción a menos que el dev/usuario los pida explícitamente.
+  function readDebugFlag() {
+    try {
+      const params = new URLSearchParams(location.search);
+      const q = params.get('precio_real_debug');
+      if (q === '1' || q === 'true') {
+        try { sessionStorage.setItem('precioRealDebug', '1'); } catch (_) {}
+        return '1';
+      }
+      const ss = (function () {
+        try { return sessionStorage.getItem('precioRealDebug'); } catch (_) { return null; }
+      })();
+      if (ss) return ss;
+      const ls = (function () {
+        try { return localStorage.getItem('precioRealDebug'); } catch (_) { return null; }
+      })();
+      return ls;
+    } catch (_) { return null; }
+  }
+  const DEBUG_FLAG = readDebugFlag();
+  const DEBUG = !!DEBUG_FLAG;
+  function debugMatches(siteKey) {
+    if (!DEBUG) return false;
+    if (DEBUG_FLAG === '1' || DEBUG_FLAG === 'true' || DEBUG_FLAG === '*') return true;
+    if (!siteKey) return true;
+    return DEBUG_FLAG === siteKey;
+  }
+  const log = {
+    debug(siteKey, ...args) {
+      if (debugMatches(siteKey)) {
+        try { console.log('[Precio Real][debug]', siteKey || '-', ...args); } catch (_) {}
+      }
+    },
+    info(...args) { try { console.info('[Precio Real]', ...args); } catch (_) {} },
+    warn(...args) { try { console.warn('[Precio Real]', ...args); } catch (_) {} },
+  };
+
   const SUPPORTED_SITES = [
     'mercadolibre',
     'fravega',
@@ -265,6 +307,47 @@
     }
   }
 
+  // productKey: identifica un producto + variante. La URL canónica solita no
+  // alcanza porque retailers como Mercado Libre, Frávega, Falabella mantienen
+  // la URL fija al cambiar talle/color y solo cambian un query param o el
+  // estado del DOM. Combinamos canonicalUrl con SKU/variantId/color cuando el
+  // DOM los expone (data-* o JSON-LD).
+  function productKey(href) {
+    const base = canonicalUrl(href || location.href);
+    let variant = '';
+    try {
+      // 1) Variante en el query (ML usa ?variation=...)
+      const u = new URL(href || location.href);
+      const variationParams = ['variation', 'sku', 'pid', 'productId', 'variant'];
+      for (const k of variationParams) {
+        const v = u.searchParams.get(k);
+        if (v) { variant += `|${k}=${v}`; }
+      }
+      // 2) DOM: el elemento [data-sku] / [data-product-id] suele actualizarse
+      //    al cambiar variante.
+      const skuEl = document.querySelector('[data-sku],[data-product-sku],[data-product-id],[data-variant-id]');
+      if (skuEl) {
+        const sku = skuEl.getAttribute('data-sku')
+          || skuEl.getAttribute('data-product-sku')
+          || skuEl.getAttribute('data-product-id')
+          || skuEl.getAttribute('data-variant-id');
+        if (sku) variant += `|sku=${sku}`;
+      }
+      // 3) Variante seleccionada en el atributo aria-pressed/selected.
+      const selectedSwatch = document.querySelector(
+        '[role="radio"][aria-checked="true"][data-value],' +
+        '[aria-pressed="true"][data-value],' +
+        '.is-selected[data-value],' +
+        '.selected[data-value]'
+      );
+      if (selectedSwatch) {
+        const v = selectedSwatch.getAttribute('data-value');
+        if (v) variant += `|swatch=${v}`;
+      }
+    } catch (_) { /* ignore */ }
+    return base + variant;
+  }
+
   function fallbackClassify(current, history) {
     const DAY = 86400;
     const now = Math.floor(Date.now() / 1000);
@@ -300,6 +383,67 @@
     return `${sign}${pct.toFixed(1)}%`;
   }
 
+  // ── Detección "página de producto" reforzada ──────────────────────────────
+  // isProductPageStrict() devuelve true solo cuando hay señales fuertes:
+  // schema.org Product, og:type=product, JSON-LD con Product, o microdata con
+  // itemtype Product. Se complementa con `urlLooksLikeListing()` que marca como
+  // false hits típicos de categoría/listado.
+  function urlLooksLikeListing(siteKey, pathname) {
+    const p = (pathname || location.pathname || '').toLowerCase();
+    // Patrones genéricos de listado/categoría/búsqueda.
+    if (/^\/(categor[ií]a|categorias|seccion|secciones|listado|listing|search|busqueda|buscar|ofertas|outlet|hot[-_]?sale|cyber|black[-_]?friday|marca|marcas|departamento|colecci[oó]n|colecciones)(\/|$)/i.test(p)) {
+      return true;
+    }
+    // ML: /listado, /listings, /jm/search
+    if (siteKey === 'mercadolibre') {
+      if (p.startsWith('/listado') || p.includes('/jm/search') || p.startsWith('/c/')) return true;
+    }
+    // VTEX (jumbo, disco, dia, easy, hendel): URLs de search típicamente terminan en `?map=...&_q=`.
+    if (location.search && /[?&]map=/.test(location.search) && !/[?&]sku=/.test(location.search)) {
+      return true;
+    }
+    return false;
+  }
+
+  function hasProductMicrodata() {
+    try {
+      if (document.querySelector('[itemtype*="schema.org/Product" i]')) return true;
+      if (document.querySelector('[itemprop="price"]')) return true;
+      const og = document.querySelector('meta[property="og:type"]');
+      if (og && /product/i.test(og.getAttribute('content') || '')) return true;
+      const ld = document.querySelectorAll('script[type="application/ld+json"]');
+      for (const s of ld) {
+        const txt = s.textContent || '';
+        if (/"@type"\s*:\s*"?Product"?/i.test(txt) || txt.includes('"Product"')) return true;
+      }
+    } catch (_) { /* ignore */ }
+    return false;
+  }
+
+  function isProductPageStrict(siteKey) {
+    try {
+      if (urlLooksLikeListing(siteKey)) return false;
+      if (siteKey === 'mercadolibre') {
+        if (location.hostname.startsWith('articulo.')) return true;
+        if (/\/p\//.test(location.pathname)) return true;
+        if (/MLA-?\d+/i.test(location.pathname)) return true;
+        return false;
+      }
+      if (hasProductMicrodata()) return true;
+      // Fallback: existe nodo de precio típico en el viewport.
+      if (document.querySelector('.price, .product-price, [data-testid*="price" i], [data-test-id*="price" i]')) {
+        // …pero también hay un contenedor "producto" (form add-to-cart, gallery, sku).
+        const productSignals = document.querySelector(
+          '[itemtype*="Product" i], [data-testid*="product" i], [data-test-id*="product" i], ' +
+          'button[aria-label*="agregar" i], button[aria-label*="add to cart" i], ' +
+          '[id*="addToCart" i], form[action*="cart" i]'
+        );
+        if (productSignals) return true;
+      }
+    } catch (_) { return true; /* ante duda, intentar */ }
+    return false;
+  }
+
   ns.SUPPORTED_SITES = SUPPORTED_SITES;
   ns.detectSite = detectSite;
   ns.normalizePrice = normalizePrice;
@@ -307,6 +451,12 @@
   ns.extractPrice = extractPrice;
   ns.extractPriceInfo = extractPriceInfo;
   ns.canonicalUrl = canonicalUrl;
+  ns.productKey = productKey;
   ns.fallbackClassify = fallbackClassify;
   ns.formatDiscount = formatDiscount;
+  ns.urlLooksLikeListing = urlLooksLikeListing;
+  ns.hasProductMicrodata = hasProductMicrodata;
+  ns.isProductPageStrict = isProductPageStrict;
+  ns.log = log;
+  ns.DEBUG = DEBUG;
 })();

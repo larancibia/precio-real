@@ -13,6 +13,12 @@
   // Usar config compartido para que el switch dev↔prod sea un solo archivo.
   const BACKEND = (window.PrecioRealConfig && window.PrecioRealConfig.API_BASE) || 'http://localhost:8787';
 
+  // Logger condicional. Si falta (helpers viejo), fallback a console.
+  const log = (PR && PR.log) || {
+    debug() {}, info: console.info.bind(console, '[Precio Real]'),
+    warn: console.warn.bind(console, '[Precio Real]'),
+  };
+
   // ── Tunables ──────────────────────────────────────────────────────────────
   // Mutation observer debounce: muchos retailers re-renderizan partes del DOM
   // continuamente (carruseles, ads, lazy-loaded sections) y eso disparaba la
@@ -33,6 +39,14 @@
   const FETCH_RETRY_BASE_MS = 600;
 
   function isProductPage() {
+    // Si helpers expone la versión strict (incluye filtro de URLs de listado),
+    // la preferimos. Caemos al detector legacy si no.
+    if (typeof PR.isProductPageStrict === 'function') {
+      try {
+        const site = PR.detectSite ? PR.detectSite(location.hostname) : null;
+        return PR.isProductPageStrict(site);
+      } catch (_) { /* caer al legacy */ }
+    }
     try {
       const site = PR.detectSite ? PR.detectSite(location.hostname) : null;
       if (site === 'mercadolibre') {
@@ -73,10 +87,10 @@
     close.textContent = '×';
     close.setAttribute('aria-label', 'Cerrar');
     close.addEventListener('click', () => {
-      // Marcamos que el usuario cerró el badge para esta URL — el observer
-      // sigue corriendo pero tryMount va a respetar la decisión hasta que
-      // navegue a otra URL.
-      userClosedForUrl = lastUrl;
+      // Marcamos que el usuario cerró el badge para este producto+variante. El
+      // observer sigue corriendo pero tryMount va a respetar la decisión hasta
+      // que navegue a otra URL o cambie de variante (productKey distinto).
+      userClosedForKey = lastKey;
       try { wrap.remove(); } catch (_) {}
       const root = document.getElementById('precio-real-badge-root');
       if (root) try { root.remove(); } catch (_) {}
@@ -110,7 +124,7 @@
         }
       } catch (e) {
         // Si affiliateWrap explota por una URL rara, mejor mostrar el badge sin CTA.
-        console.warn('[Precio Real] affiliateWrap failed', e && e.message);
+        log.warn('affiliateWrap failed', e && e.message);
       }
     }
 
@@ -143,23 +157,33 @@
     return { kind: 'neutral', pct: 0, label: 'Precio Real', sub: '' };
   }
 
-  let lastUrl = null;
+  let lastUrl = null;        // canonicalUrl
+  let lastKey = null;        // productKey (incluye variante)
   let lastPrice = null;
   let mounted = false;
   let observer = null;
   let observerTimeout = null;
   let observerFires = 0;
   let runToken = 0;
-  // URL para la que el usuario apretó la X. Mientras la URL no cambie, no
-  // re-montamos el badge aunque el observer se dispare por un re-render.
-  let userClosedForUrl = null;
+  // productKey para el que el usuario apretó la X. Mientras no cambie de
+  // producto/variante, no re-montamos el badge aunque el observer se dispare.
+  let userClosedForKey = null;
+
+  function getProductKey(href) {
+    if (typeof PR.productKey === 'function') {
+      try { return PR.productKey(href); } catch (_) {}
+    }
+    return PR.canonicalUrl(href || location.href);
+  }
 
   function unmountBadge() {
     const root = document.getElementById('precio-real-badge-root');
     if (root) try { root.remove(); } catch (_) {}
     mounted = false;
     lastUrl = null;
+    lastKey = null;
     lastPrice = null;
+    teardownVariantObserver();
   }
 
   // fetch con timeout + retry. Devuelve {ok:true, history} o {ok:false}.
@@ -196,26 +220,32 @@
         await new Promise((r) => setTimeout(r, wait));
       }
     }
-    if (lastErr) console.warn('[Precio Real] fetch failed', lastErr.message || lastErr);
+    if (lastErr) log.warn('fetch failed', lastErr.message || lastErr);
     return { ok: false, history: [] };
   }
 
   async function tryMount(siteKey, myToken) {
     if (myToken !== runToken) return false;
-    let current, url;
+    let current, url, key;
     try {
       if (PR.detectSite(location.hostname) !== siteKey) return false;
       current = PR.extractPrice(siteKey);
-      if (!current) return false;
+      if (!current) {
+        log.debug(siteKey, 'extractPrice → null');
+        return false;
+      }
       url = PR.canonicalUrl(location.href);
+      key = getProductKey(location.href);
     } catch (e) {
-      console.warn('[Precio Real] tryMount DOM read failed', e && e.message);
+      log.warn('tryMount DOM read failed', e && e.message);
       return false;
     }
-    // Respetar cierre manual mientras la URL siga siendo la misma.
-    if (userClosedForUrl && userClosedForUrl === url) return true;
-    if (mounted && url === lastUrl && current === lastPrice) return true;
+    // Respetar cierre manual mientras estemos en el mismo producto+variante.
+    if (userClosedForKey && userClosedForKey === key) return true;
+    // Si nada cambió, devolver true (badge ya válido).
+    if (mounted && key === lastKey && current === lastPrice) return true;
 
+    log.debug(siteKey, 'tryMount', { url, key, current });
     const { history } = await fetchHistory(url);
     if (myToken !== runToken) return false;
 
@@ -223,14 +253,16 @@
     try {
       verdict = classify(current, history);
     } catch (e) {
-      console.warn('[Precio Real] classify failed', e && e.message);
+      log.warn('classify failed', e && e.message);
       return false;
     }
     const ok = mountBadge(verdict, { retailer: siteKey, href: location.href });
     if (!ok) return false;
     mounted = true;
     lastUrl = url;
+    lastKey = key;
     lastPrice = current;
+    log.debug(siteKey, 'mounted', verdict);
     return true;
   }
 
@@ -240,23 +272,80 @@
     observerFires = 0;
   }
 
+  // Observador "ligero" que sigue activo después de montar el badge para
+  // detectar cambios de variante (talle/color → cambia el precio sin cambiar
+  // la URL). Throttle más agresivo (1s) porque solo nos importa cambios reales
+  // de precio/variante, no re-renders cosméticos.
+  let variantObserver = null;
+  let variantTimer = null;
+  const VARIANT_CHECK_MS = 1000;
+
+  function teardownVariantObserver() {
+    if (variantObserver) { try { variantObserver.disconnect(); } catch (_) {} variantObserver = null; }
+    if (variantTimer) { clearTimeout(variantTimer); variantTimer = null; }
+  }
+
+  function startVariantObserver(siteKey, myToken) {
+    teardownVariantObserver();
+    if (!document.body || typeof MutationObserver !== 'function') return;
+    const schedule = () => {
+      if (variantTimer) return;
+      variantTimer = setTimeout(() => {
+        variantTimer = null;
+        if (myToken !== runToken) { teardownVariantObserver(); return; }
+        if (!mounted) return;
+        // Solo nos interesa: el precio o productKey cambiaron sin nav.
+        let current = null, key = null;
+        try {
+          current = PR.extractPrice(siteKey);
+          key = getProductKey(location.href);
+        } catch (_) { return; }
+        if (!current) return;
+        if (key === lastKey && current === lastPrice) return;
+        // Algo cambió → si el usuario había cerrado el badge para la variante
+        // anterior, reseteamos su decisión solo si la variante (key) cambió.
+        if (key !== lastKey) userClosedForKey = null;
+        log.debug(siteKey, 'variant change detected', {
+          oldKey: lastKey, newKey: key, oldPrice: lastPrice, newPrice: current,
+        });
+        tryMount(siteKey, myToken).catch((e) => {
+          log.warn('variant tryMount threw', e && e.message);
+        });
+      }, VARIANT_CHECK_MS);
+    };
+    try {
+      variantObserver = new MutationObserver(schedule);
+      variantObserver.observe(document.body, { childList: true, subtree: true, attributes: true,
+        attributeFilter: ['data-sku', 'data-product-id', 'data-variant-id', 'data-value', 'aria-checked', 'aria-pressed', 'class'] });
+    } catch (_) { variantObserver = null; }
+  }
+
   async function run() {
     runToken++;
     const myToken = runToken;
     teardownObserver();
+    teardownVariantObserver();
     // Si dejamos de estar en una página de producto (nav SPA a categoría/home),
     // tenemos que sacar el badge viejo para no mostrar info stale.
-    if (!isProductPage()) { unmountBadge(); return; }
+    if (!isProductPage()) {
+      log.debug(null, 'not a product page, unmount', location.href);
+      unmountBadge();
+      return;
+    }
     const siteKey = PR.detectSite(location.hostname);
     if (!siteKey) { unmountBadge(); return; }
+    log.debug(siteKey, 'run start', location.href);
 
     for (const d of INITIAL_DELAYS_MS) {
       if (myToken !== runToken) return;
       if (d) await new Promise((r) => setTimeout(r, d));
       try {
-        if (await tryMount(siteKey, myToken)) return;
+        if (await tryMount(siteKey, myToken)) {
+          startVariantObserver(siteKey, myToken);
+          return;
+        }
       } catch (e) {
-        console.warn('[Precio Real] tryMount threw', e && e.message);
+        log.warn('tryMount threw', e && e.message);
       }
     }
 
@@ -267,9 +356,12 @@
       if (myToken !== runToken) { teardownObserver(); return; }
       if (++observerFires > OBS_MAX_FIRES) { teardownObserver(); return; }
       tryMount(siteKey, myToken).then((didMount) => {
-        if (didMount) teardownObserver();
+        if (didMount) {
+          teardownObserver();
+          startVariantObserver(siteKey, myToken);
+        }
       }).catch((e) => {
-        console.warn('[Precio Real] observer tryMount threw', e && e.message);
+        log.warn('observer tryMount threw', e && e.message);
       });
     };
     const schedule = () => {
@@ -296,7 +388,7 @@
     observerTimeout = setTimeout(() => {
       teardownObserver();
       if (myToken === runToken && !mounted) {
-        console.info('[Precio Real] no price after retries+observer', siteKey, location.href);
+        log.info('no price after retries+observer', siteKey, location.href);
       }
     }, OBS_TIMEOUT_MS);
   }
@@ -306,7 +398,7 @@
     try { newUrl = PR.canonicalUrl(location.href); } catch (_) { return; }
     if (newUrl !== lastUrl) {
       // URL cambió → resetear estado de "cerrado manualmente" y re-correr.
-      userClosedForUrl = null;
+      userClosedForKey = null;
       mounted = false;
       run();
     }
