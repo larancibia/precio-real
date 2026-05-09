@@ -3,8 +3,8 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://preciorreal.com/</loc>
-    <lastmod>2026-05-09</lastmod>
-    <changefreq>weekly</changefreq>
+    <lastmod>2026-05-09T21:00:00-03:00</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
     <image:image>
       <image:loc>https://preciorreal.com/og-image.png</image:loc>
@@ -14,20 +14,20 @@
   </url>
   <url>
     <loc>https://preciorreal.com/guia-hot-sale.html</loc>
-    <lastmod>2026-05-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-05-09T21:00:00-03:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
     <image:image>
       <image:loc>https://preciorreal.com/og-image.png</image:loc>
       <image:title>Guía Hot Sale Argentina 2026 — descuentos truchos</image:title>
-      <image:caption>Cómo leer el historial real de precios y no comprar humo.</image:caption>
+      <image:caption>Cómo leer el historial real de precios y no comprar humo en el Hot Sale 2026.</image:caption>
     </image:image>
   </url>
   <url>
     <loc>https://preciorreal.com/checklist-hot-sale-2026.html</loc>
-    <lastmod>2026-05-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2026-05-09T21:00:00-03:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.85</priority>
     <image:image>
       <image:loc>https://preciorreal.com/og-image.png</image:loc>
       <image:title>Checklist Hot Sale Argentina 2026 — qué revisar antes de comprar</image:title>
