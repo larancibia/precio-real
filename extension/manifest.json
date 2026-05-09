@@ -50,6 +50,9 @@
     "https://*.hisense.com.ar/*",
     "https://*.tcl.com.ar/*",
     "https://*.pycca.com.ar/*",
+    "https://*.newsan.com.ar/*",
+    "https://store.asus.com/ar/*",
+    "https://*.maccenter.com.ar/*",
     "http://localhost:8787/*"
   ],
   "action": {
@@ -106,7 +109,10 @@
         "https://*.exo.com.ar/*",
         "https://*.hisense.com.ar/*",
         "https://*.tcl.com.ar/*",
-        "https://*.pycca.com.ar/*"
+        "https://*.pycca.com.ar/*",
+        "https://*.newsan.com.ar/*",
+        "https://store.asus.com/ar/*",
+        "https://*.maccenter.com.ar/*"
       ],
       "js": ["config.js", "utils/retailers.js", "utils/helpers.js", "utils/affiliates.js", "content/content.js"],
       "css": ["content/badge.css"],

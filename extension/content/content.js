@@ -200,6 +200,26 @@
       log.warn('mountBadge DOM write failed', e && e.message);
       return false;
     }
+    // Chequeo sincrónico de stacking context: si inmediatamente después de
+    // appendear el badge root NO está en el cuadrante top-right del viewport,
+    // algún ancestro tiene transform/filter/contain/backdrop-filter que convierte
+    // nuestro position:fixed en relativo a ese ancestro. Hoistamos a <html> ahora
+    // mismo en lugar de esperar el schedulePostMountCheck diferido.
+    try {
+      const win = body.ownerDocument && body.ownerDocument.defaultView;
+      if (win) {
+        const vw = win.innerWidth || 0;
+        if (vw > 400) {
+          const rect = root.getBoundingClientRect();
+          if (rect.right < vw / 2) {
+            const docEl = body.ownerDocument.documentElement;
+            if (docEl && root.parentElement !== docEl) {
+              docEl.appendChild(root);
+            }
+          }
+        }
+      }
+    } catch (_) {}
     return true;
   }
 
@@ -460,7 +480,8 @@
           log.debug(siteKey, 'badge CSS self-heal: opacity/pointer-events restored');
         }
         // 2) Stacking context fix: si rect.right < vw/2, un ancestro tiene
-        //    un nuevo stacking context (transform, filter, perspective, will-change).
+        //    un nuevo stacking context (transform, filter, perspective, will-change,
+        //    backdrop-filter, contain:layout/paint/strict).
         const vw = win.innerWidth || root.ownerDocument.documentElement.clientWidth || 0;
         if (vw > 400) {
           const rect = root.getBoundingClientRect();
@@ -480,6 +501,33 @@
             if (docEl && root.parentElement !== docEl) {
               docEl.appendChild(root);
               log.debug(siteKey, 'badge hoisted to <html> (out-of-viewport stacking context)');
+            }
+          }
+          // Chequeo proactivo: recorrer ancestros buscando propiedades que crean
+          // stacking context para position:fixed (backdrop-filter es el más común
+          // en themes Shopify modernos; contain:layout/paint en VTEX IO reciente).
+          if (root.isConnected && root.parentElement && root.parentElement !== root.ownerDocument.documentElement) {
+            let ancestor = root.parentElement;
+            let needsHoist = false;
+            for (let i = 0; i < 12 && ancestor && ancestor.tagName; i++) {
+              try {
+                const acs = win.getComputedStyle(ancestor);
+                const backdropFilter = acs.backdropFilter || acs.webkitBackdropFilter || '';
+                const contain = acs.contain || '';
+                if ((backdropFilter && backdropFilter !== 'none') ||
+                    /strict|layout|paint/.test(contain)) {
+                  needsHoist = true;
+                  break;
+                }
+              } catch (_) {}
+              ancestor = ancestor.parentElement;
+            }
+            if (needsHoist) {
+              const docEl = root.ownerDocument.documentElement;
+              if (docEl && root.parentElement !== docEl) {
+                docEl.appendChild(root);
+                log.debug(siteKey, 'badge hoisted to <html> (backdrop-filter/contain stacking context)');
+              }
             }
           }
         }

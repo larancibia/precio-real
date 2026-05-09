@@ -99,6 +99,10 @@
     'hisense',
     'tcl',
     'pycca',
+    // Ciclo 1613: Newsan (VTEX appliances), Asus Store AR (Next.js), Mac Center (WooCommerce).
+    'newsan',
+    'asus',
+    'maccenter',
   ];
 
   function detectSite(hostname) {
@@ -166,6 +170,11 @@
     if (h.endsWith('hisense.com.ar')) return 'hisense';
     if (h.endsWith('tcl.com.ar')) return 'tcl';
     if (h.endsWith('pycca.com.ar')) return 'pycca';
+    // Ciclo 1613: Newsan (VTEX), Asus Store AR (store.asus.com/ar/), Mac Center (WooCommerce).
+    // Asus usa store.asus.com como hostname; el manifest restringe a /ar/* paths.
+    if (h.endsWith('newsan.com.ar')) return 'newsan';
+    if (h === 'store.asus.com') return 'asus';
+    if (h.endsWith('maccenter.com.ar')) return 'maccenter';
     return null;
   }
 
@@ -911,6 +920,11 @@
     // /products/<handle> son PDPs. Un path que empieza en /collections/ y no
     // tiene /products/ anidado es siempre un listado.
     if (/^\/collections\/[^/]+(\/|$)/.test(p) && !/\/products\//.test(p)) return true;
+    // Asus Store AR (store.asus.com/ar/): /ar/shop/, /ar/Accessories/, /ar/search/
+    // son listados; /ar/Shop/ProductDetail/ y /ar/product/ son PDPs.
+    if (siteKey === 'asus') {
+      if (/^\/ar\/(shop|search|brand|accessories|gaming-deals?|store\/promotion)(\/|$)/i.test(p) && !/productdetail/i.test(p)) return true;
+    }
     return false;
   }
 
@@ -949,13 +963,18 @@
       if (siteKey === 'amazon') {
         return /\/(dp|gp\/product)\/[A-Z0-9]{10}/i.test(location.pathname);
       }
-      // WooCommerce (Drean, HiperTehno, EXO): single-product tiene body.single-product o /product/ en la ruta.
-      if (siteKey === 'drean' || siteKey === 'hipertehno' || siteKey === 'exo') {
+      // WooCommerce (Drean, HiperTehno, EXO, Mac Center): single-product tiene body.single-product o /product/ en la ruta.
+      if (siteKey === 'drean' || siteKey === 'hipertehno' || siteKey === 'exo' || siteKey === 'maccenter') {
         try {
           if (document.body && document.body.classList.contains('single-product')) return true;
         } catch (_) {}
         if (/\/product\//.test(location.pathname)) return true;
         // Caer al microdata check: WooCommerce siempre emite JSON-LD de Product.
+      }
+      // Asus Store AR: PDPs tienen /ProductDetail/ o /product/ en la ruta, o JSON-LD Product.
+      if (siteKey === 'asus') {
+        if (/\/(ProductDetail|product|item)\//.test(location.pathname)) return true;
+        // Caer al microdata check: Asus emite JSON-LD de Product en sus PDPs.
       }
       // Magento 2 (Cetrogar, Rodo, Noblex, Venex, BGood, HP Tienda, Pycca):
       // body tiene la clase catalog-product-view en todas las PDPs de Magento 2.

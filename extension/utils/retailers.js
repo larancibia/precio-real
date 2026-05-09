@@ -1048,6 +1048,76 @@
         'meta[property="og:price:amount"]',
       ],
     },
+    // Ciclo 1613: Newsan (VTEX, appliances), Asus Store AR (Next.js), Mac Center (WooCommerce).
+    newsan: {
+      label: 'Newsan',
+      hostnameSuffix: 'newsan.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Newsan AR usa VTEX IO. Mismos selectores estándar VTEX que otros appliance brands
+        // (Electrolux, Philco, BGH). JSON-LD Product siempre presente en todas las PDPs.
+        '.vtex-product-price-1-x-sellingPriceValue',
+        '.vtex-product-price-1-x-sellingPrice',
+        '.vtex-product-price-1-x-currencyContainer',
+        '[class*="sellingPriceValue" i]',
+        '[class*="sellingPrice" i]',
+        '[class*="currentPrice" i]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '[data-testid="pdp-price"]',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    asus: {
+      label: 'Asus Store',
+      hostnameSuffix: 'store.asus.com',
+      currency: 'ARS',
+      selectors: [
+        // Asus Store AR (store.asus.com/ar/) usa Next.js/React con plataforma propia.
+        // El precio principal vive en [data-testid="product-price"] o en elementos con
+        // clase que contiene "Price". JSON-LD Product siempre presente en todas las PDPs.
+        '[data-testid="product-price"]',
+        '[data-testid="selling-price"]',
+        '[data-testid="price-value"]',
+        '[data-testid="pdp-price"]',
+        '.product-price__current',
+        '.product-price__sale',
+        'span[class*="ProductPrice" i]',
+        'span[class*="sellingPrice" i]',
+        'span[class*="CurrentPrice" i]',
+        'span[class*="SalePrice" i]',
+        '.price-wrapper .price',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    maccenter: {
+      label: 'Mac Center',
+      hostnameSuffix: 'maccenter.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Mac Center AR usa WooCommerce con tema custom. Precio con descuento en
+        // .price ins .woocommerce-Price-amount; sin descuento en .woocommerce-Price-amount.
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        'ins .woocommerce-Price-amount.amount bdi',
+        'ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount bdi',
+        '[data-testid="product-price"]',
+        '.product-price',
+        '.precio-actual',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
   };
 
   const GENERIC_PRICE_SELECTORS = [
