@@ -97,9 +97,51 @@
     "@type": "Organization",
     "name": "Precio Real",
     "url": "https://preciorreal.com/",
-    "logo": "https://preciorreal.com/og-image.png",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://preciorreal.com/og-image.png",
+      "width": 1200,
+      "height": 630
+    },
+    "foundingDate": "2026",
+    "areaServed": {
+      "@type": "Country",
+      "name": "Argentina"
+    },
+    "contactPoint": [
+      {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "email": "contacto@preciorreal.com",
+        "url": "https://github.com/larancibia/precio-real/issues",
+        "availableLanguage": ["es", "en"]
+      },
+      {
+        "@type": "ContactPoint",
+        "contactType": "security",
+        "email": "contacto@preciorreal.com",
+        "url": "https://preciorreal.com/.well-known/security.txt",
+        "availableLanguage": ["es", "en"]
+      }
+    ],
     "sameAs": [
       "https://github.com/larancibia/precio-real"
+    ]
+  }
+  </script>
+
+  <!-- Structured data: BreadcrumbList (home) — helps Google show breadcrumbs on SERP -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Inicio",
+        "item": "https://preciorreal.com/"
+      }
     ]
   }
   </script>
@@ -201,6 +243,11 @@
   {
     "@context": "https://schema.org",
     "@type": "FAQPage",
+    "inLanguage": "es-AR",
+    "about": {
+      "@type": "Thing",
+      "name": "Extensión Precio Real para detectar descuentos truchos en Hot Sale Argentina"
+    },
     "mainEntity": [
       {
         "@type": "Question",
