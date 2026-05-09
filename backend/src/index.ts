@@ -15,6 +15,10 @@
  *                                  Top real-discount products (current price below
  *                                  ~7-day-ago baseline). Used by the landing page
  *                                  for "ofertas reales hoy".
+ *   GET  /api/products?limit=<n>&offset=<n>&seller=<seller>
+ *                                → { total, count, offset, results: [{ id, url, title, seller, image_url }] }
+ *                                  Paginated catalog browse (all tracked products, optional seller filter).
+ *                                  Results ordered by id DESC (newest-discovered first).
  *   POST /api/scrape/wayback?url=<url> → { inserted, scanned, failed }
  *   POST /api/scrape/run         → manual trigger of the scheduled scraper (debug/seed)
  *   *                             → 404
@@ -227,6 +231,69 @@ async function handleSearch(request: Request, env: Env): Promise<Response> {
   return json({ total, count: results.length, offset, results });
 }
 
+const PRODUCTS_MAX_LIMIT = 100;
+const PRODUCTS_MAX_OFFSET = 50_000;
+
+async function handleProducts(request: Request, env: Env): Promise<Response> {
+  const url = new URL(request.url);
+  const rawLimit = Number(url.searchParams.get("limit") ?? "20");
+  const limit = Number.isFinite(rawLimit) && rawLimit > 0
+    ? Math.min(PRODUCTS_MAX_LIMIT, Math.floor(rawLimit))
+    : 20;
+  const rawOffset = Number(url.searchParams.get("offset") ?? "0");
+  const offset = Number.isFinite(rawOffset) && rawOffset >= 0
+    ? Math.min(PRODUCTS_MAX_OFFSET, Math.floor(rawOffset))
+    : 0;
+  const seller = (url.searchParams.get("seller") ?? "").trim();
+
+  // Fetch total count + page in parallel. Optional seller filter uses an
+  // exact case-insensitive match (LOWER() on both sides) — sellers are
+  // normalised at discovery time (ML nickname) so partial matching would
+  // surface unrelated rows.
+  if (seller) {
+    const sellerPattern = `%${seller.toLowerCase().replace(/%/g, "\\%").replace(/_/g, "\\_")}%`;
+    const [countRow, rows] = await Promise.all([
+      env.DB
+        .prepare("SELECT COUNT(*) AS n FROM products WHERE LOWER(seller) LIKE ?1 ESCAPE '\\'")
+        .bind(sellerPattern)
+        .first<{ n: number }>(),
+      env.DB
+        .prepare(
+          "SELECT id, url, title, seller, image_url FROM products WHERE LOWER(seller) LIKE ?1 ESCAPE '\\' ORDER BY id DESC LIMIT ?2 OFFSET ?3",
+        )
+        .bind(sellerPattern, limit, offset)
+        .all<Pick<ProductRow, "id" | "url" | "title" | "seller" | "image_url">>(),
+    ]);
+    const results = rows.results ?? [];
+    const total = countRow?.n ?? results.length;
+    return json(
+      { total, count: results.length, offset, results },
+      200,
+      { "Cache-Control": CACHE_STATS },
+    );
+  }
+
+  // No seller filter: return full paginated catalog.
+  const [countRow, rows] = await Promise.all([
+    env.DB
+      .prepare("SELECT COUNT(*) AS n FROM products")
+      .first<{ n: number }>(),
+    env.DB
+      .prepare(
+        "SELECT id, url, title, seller, image_url FROM products ORDER BY id DESC LIMIT ?1 OFFSET ?2",
+      )
+      .bind(limit, offset)
+      .all<Pick<ProductRow, "id" | "url" | "title" | "seller" | "image_url">>(),
+  ]);
+  const results = rows.results ?? [];
+  const total = countRow?.n ?? results.length;
+  return json(
+    { total, count: results.length, offset, results },
+    200,
+    { "Cache-Control": CACHE_STATS },
+  );
+}
+
 async function handleMovers(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
   const limit = clampLimit(url.searchParams.get("limit"));
@@ -337,6 +404,15 @@ export default {
     if (request.method === "GET" && url.pathname === "/api/movers") {
       try {
         return await handleMovers(request, env);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        return json({ error: "Internal error", detail: message }, 500);
+      }
+    }
+
+    if (request.method === "GET" && url.pathname === "/api/products") {
+      try {
+        return await handleProducts(request, env);
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unknown error";
         return json({ error: "Internal error", detail: message }, 500);

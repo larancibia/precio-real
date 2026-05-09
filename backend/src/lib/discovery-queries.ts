@@ -148,4 +148,25 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "proyector",
   "vinilo parlante",
   "camara gopro",
+  // Hot Sale 2026 — Apple / premium brand flagships
+  "iphone",
+  "ipad",
+  "apple watch",
+  "macbook",
+  // Hot Sale 2026 — movilidad eléctrica
+  "moto electrica",
+  "bicicleta electrica",
+  // Hot Sale 2026 — ropa / moda deportiva
+  "zapatillas running",
+  "zapatillas nike",
+  "zapatillas adidas",
+  // Hot Sale 2026 — conectividad / trabajo remoto
+  "ups para pc",
+  "adaptador usb c",
+  // Hot Sale 2026 — hogar inteligente adicional
+  "cerradura inteligente",
+  "camara ip wifi",
+  // Hot Sale 2026 — audio premium
+  "auriculares noise cancelling",
+  "auriculares sony",
 ];
