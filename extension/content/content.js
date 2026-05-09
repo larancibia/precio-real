@@ -8,7 +8,7 @@
   window.__precioRealLoaded = true;
 
   // Ciclo 1602: versión del content script para facilitar debugging en consola.
-  const CONTENT_VERSION = '1602';
+  const CONTENT_VERSION = '1603';
 
   const PR = window.PrecioReal;
   if (!PR) { console.warn('[Precio Real] helpers not loaded'); return; }

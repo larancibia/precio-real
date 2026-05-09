@@ -300,6 +300,19 @@
       enabled: true,
       utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
     },
+    // Ciclo 1603: Full (WooCommerce), Micro Center AR (Magento 2), iPoint AR (Shopify).
+    full: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    microcenter: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
+    ipoint: {
+      enabled: true,
+      utm: { source: 'precio-real', medium: 'extension', campaign: 'descuento-real' },
+    },
   };
 
   function applyUtm(rawUrl, utm) {

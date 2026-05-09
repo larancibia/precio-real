@@ -1048,6 +1048,76 @@
         'meta[property="og:price:amount"]',
       ],
     },
+    // Ciclo 1603: Full (WooCommerce/custom), Micro Center AR (Magento 2), iPoint AR (Shopify/custom).
+    full: {
+      label: 'Full',
+      hostnameSuffix: 'full.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Full AR usa WooCommerce con tema custom. El precio con descuento vive en
+        // .price ins .woocommerce-Price-amount; sin descuento directamente.
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        'ins .woocommerce-Price-amount.amount bdi',
+        'ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount bdi',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        '.precio-actual',
+        '.precio-web',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    microcenter: {
+      label: 'Micro Center',
+      hostnameSuffix: 'microcenter.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Micro Center AR usa Magento 2. Precio final en .price-final_price [data-price-amount]
+        // (US-formatted). El precio tachado (.old-price) lo filtra isStrikethroughPrice.
+        '.product-info-price .price-final_price [data-price-amount]',
+        '.product-info-price .price-final_price .price',
+        '.special-price [data-price-amount]',
+        '.special-price .price',
+        '.price-box .price-final_price [data-price-amount]',
+        '.price-box .price',
+        '[data-price-amount]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    ipoint: {
+      label: 'iPoint',
+      hostnameSuffix: 'ipoint.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // iPoint AR (Apple Authorized Reseller) usa Shopify con tema custom.
+        // El precio de venta activo vive en .price-item--sale cuando hay descuento;
+        // sin descuento, en .price-item--regular. Patrón idéntico al de TCL AR.
+        '.price__sale .price-item--sale',
+        '.price-item--sale',
+        '.price__regular .price-item--regular',
+        '.price-item--regular',
+        '[data-testid="product-price"]',
+        '[data-testid="price"]',
+        'span[class*="price-item" i]',
+        '.product-price',
+        '.precio-actual',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
     // Ciclo 1613: Newsan (VTEX, appliances), Asus Store AR (Next.js), Mac Center (WooCommerce).
     newsan: {
       label: 'Newsan',

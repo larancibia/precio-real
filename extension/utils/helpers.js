@@ -103,6 +103,10 @@
     'newsan',
     'asus',
     'maccenter',
+    // Ciclo 1603: Full (WooCommerce), Micro Center AR (Magento 2), iPoint AR (Shopify).
+    'full',
+    'microcenter',
+    'ipoint',
   ];
 
   function detectSite(hostname) {
@@ -175,6 +179,10 @@
     if (h.endsWith('newsan.com.ar')) return 'newsan';
     if (h === 'store.asus.com') return 'asus';
     if (h.endsWith('maccenter.com.ar')) return 'maccenter';
+    // Ciclo 1603: Full (WooCommerce), Micro Center AR (Magento 2), iPoint AR (Shopify).
+    if (h.endsWith('full.com.ar')) return 'full';
+    if (h.endsWith('microcenter.com.ar')) return 'microcenter';
+    if (h.endsWith('ipoint.com.ar')) return 'ipoint';
     return null;
   }
 
@@ -963,8 +971,8 @@
       if (siteKey === 'amazon') {
         return /\/(dp|gp\/product)\/[A-Z0-9]{10}/i.test(location.pathname);
       }
-      // WooCommerce (Drean, HiperTehno, EXO, Mac Center): single-product tiene body.single-product o /product/ en la ruta.
-      if (siteKey === 'drean' || siteKey === 'hipertehno' || siteKey === 'exo' || siteKey === 'maccenter') {
+      // WooCommerce (Drean, HiperTehno, EXO, Mac Center, Full): single-product tiene body.single-product o /product/ en la ruta.
+      if (siteKey === 'drean' || siteKey === 'hipertehno' || siteKey === 'exo' || siteKey === 'maccenter' || siteKey === 'full') {
         try {
           if (document.body && document.body.classList.contains('single-product')) return true;
         } catch (_) {}
@@ -981,14 +989,15 @@
       // Es el identificador más confiable: Magento lo agrega server-side antes de
       // que JS hidrate, por lo que está disponible en document_idle.
       if (siteKey === 'cetrogar' || siteKey === 'rodo' || siteKey === 'noblex' ||
-          siteKey === 'venex' || siteKey === 'bgood' || siteKey === 'hptienda' || siteKey === 'pycca') {
+          siteKey === 'venex' || siteKey === 'bgood' || siteKey === 'hptienda' || siteKey === 'pycca' ||
+          siteKey === 'microcenter') {
         try {
           if (document.body && document.body.classList.contains('catalog-product-view')) return true;
         } catch (_) {}
         // Magento 2 emite JSON-LD de Product: caer al microdata check.
       }
-      // Shopify (TCL AR): PDPs tienen /products/ en la ruta y body.template-product.
-      if (siteKey === 'tcl') {
+      // Shopify (TCL AR, iPoint AR): PDPs tienen /products/ en la ruta y body.template-product.
+      if (siteKey === 'tcl' || siteKey === 'ipoint') {
         if (/\/products\//.test(location.pathname)) return true;
         try {
           if (document.body && document.body.classList.contains('template-product')) return true;

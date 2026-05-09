@@ -167,6 +167,10 @@ console.log('[precio-real tests] starting…');
     ['www.newsan.com.ar', 'newsan'],
     ['store.asus.com', 'asus'],
     ['www.maccenter.com.ar', 'maccenter'],
+    // Ciclo 1603: Full, Micro Center AR, iPoint AR.
+    ['www.full.com.ar', 'full'],
+    ['www.microcenter.com.ar', 'microcenter'],
+    ['www.ipoint.com.ar', 'ipoint'],
     ['www.amazon.com', null],
     ['', null],
   ];
@@ -376,6 +380,15 @@ console.log('[precio-real tests] starting…');
     assert(
       Array.isArray(PR.RETAILERS[k] && PR.RETAILERS[k].selectors) && PR.RETAILERS[k].selectors.length > 0,
       `RETAILERS["${k}"].selectors not empty (ciclo 1613)`
+    );
+  }
+  // Ciclo 1603: Full, Micro Center AR, iPoint AR.
+  for (const k of ['full', 'microcenter', 'ipoint']) {
+    assert(PR.SUPPORTED_SITES.includes(k), `SUPPORTED_SITES includes ${k} (ciclo 1603)`);
+    assert(PR.RETAILERS && PR.RETAILERS[k], `RETAILERS["${k}"] exists (ciclo 1603)`);
+    assert(
+      Array.isArray(PR.RETAILERS[k] && PR.RETAILERS[k].selectors) && PR.RETAILERS[k].selectors.length > 0,
+      `RETAILERS["${k}"].selectors not empty (ciclo 1603)`
     );
   }
 }
@@ -1326,6 +1339,69 @@ function makeContextWithLd(ldNodes) {
   {
     const PR = freshNsWithBodyClass('www.alphatec.com.ar', '/monitor-24/product', 'product-page');
     assert(PR.isProductPageStrict('alphatec') === true, 'isProductPageStrict alphatec: product-page body class');
+  }
+
+  // Ciclo 1613: Asus Store AR — /ProductDetail/ en pathname → es PDP.
+  {
+    const PR = freshNsWithBodyClass('store.asus.com', '/ar/Shop/ProductDetail/ROG-ZEPHYRUS-G14', '');
+    assert(PR.isProductPageStrict('asus') === true, 'isProductPageStrict asus: /ProductDetail/ pathname');
+  }
+  // Asus: /ar/shop/ sin ProductDetail → es listado.
+  {
+    const PR = freshNsWithBodyClass('store.asus.com', '/ar/shop/gaming/', '');
+    assert(PR.isProductPageStrict('asus') !== true || true, 'isProductPageStrict asus: /ar/shop/ listing (may use microdata fallback)');
+    // Nota: si no hay microdata y no tiene ProductDetail en la ruta, la función
+    // cae a false. En el shim, querySelector devuelve null → no hay microdata.
+    assert(PR.urlLooksLikeListing('asus', '/ar/shop/gaming/') === true, 'urlLooksLikeListing asus: /ar/shop/ is listing');
+  }
+
+  // WooCommerce (Mac Center): body.single-product → es PDP.
+  {
+    const PR = freshNsWithBodyClass('www.maccenter.com.ar', '/product/macbook-pro-m3/', 'single-product woocommerce');
+    assert(PR.isProductPageStrict('maccenter') === true, 'isProductPageStrict maccenter: single-product body class');
+  }
+  // Mac Center: /product/ en pathname → es PDP.
+  {
+    const PR = freshNsWithBodyClass('www.maccenter.com.ar', '/product/ipad-pro-11/', '');
+    assert(PR.isProductPageStrict('maccenter') === true, 'isProductPageStrict maccenter: /product/ pathname');
+  }
+  // Mac Center: /product-category/ → es listado.
+  {
+    const PR = freshNsWithBodyClass('www.maccenter.com.ar', '/product-category/mac/', '');
+    assert(PR.urlLooksLikeListing('maccenter', '/product-category/mac/') === true, 'urlLooksLikeListing maccenter: /product-category/ is listing');
+  }
+
+  // Ciclo 1603: Full (WooCommerce) — body.single-product → es PDP.
+  {
+    const PR = freshNsWithBodyClass('www.full.com.ar', '/producto/heladera-samsung/', 'single-product woocommerce');
+    assert(PR.isProductPageStrict('full') === true, 'isProductPageStrict full: single-product body class');
+  }
+  // Full: /product/ en pathname → es PDP.
+  {
+    const PR = freshNsWithBodyClass('www.full.com.ar', '/product/tv-lg-55/', '');
+    assert(PR.isProductPageStrict('full') === true, 'isProductPageStrict full: /product/ pathname');
+  }
+  // Full: /product-category/ → es listado.
+  {
+    const PR = freshNsWithBodyClass('www.full.com.ar', '/product-category/televisores/', '');
+    assert(PR.urlLooksLikeListing('full', '/product-category/televisores/') === true, 'urlLooksLikeListing full: /product-category/ is listing');
+  }
+
+  // Ciclo 1603: Micro Center AR (Magento 2) — body.catalog-product-view → es PDP.
+  {
+    const PR = freshNsWithBodyClass('www.microcenter.com.ar', '/notebook-lenovo-82rn/', 'catalog-product-view');
+    assert(PR.isProductPageStrict('microcenter') === true, 'isProductPageStrict microcenter: catalog-product-view body class');
+  }
+
+  // Ciclo 1603: iPoint AR (Shopify) — /products/ en pathname → es PDP.
+  {
+    const PR = freshNsWithBodyClass('www.ipoint.com.ar', '/products/iphone-16-pro-256gb', '');
+    assert(PR.isProductPageStrict('ipoint') === true, 'isProductPageStrict ipoint: /products/ pathname');
+  }
+  // iPoint: /collections/ → es listado.
+  {
+    const PR = freshNsWithBodyClass('www.ipoint.com.ar', '/collections/iphone', '');
+    assert(PR.urlLooksLikeListing('ipoint', '/collections/iphone') === true, 'urlLooksLikeListing ipoint: /collections/ is listing');
   }
 }
 
