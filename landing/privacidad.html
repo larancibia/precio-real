@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Política de privacidad de Precio Real. Qué datos usa la extensión, qué guarda, qué comparte. Sin cuentas, sin tracking personal.">
+  <meta name="theme-color" content="#0a0a0f">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://preciorreal.com/privacidad.html">
+  <title>Política de privacidad — Precio Real</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Lightweight overrides for the legal page so it works without touching shared styles. */
+    .legal { max-width: 760px; margin: 0 auto; padding: 4rem 1.25rem 5rem; }
+    .legal h1 { font-size: clamp(1.75rem, 4vw + 1rem, 2.5rem); margin-bottom: .5rem; }
+    .legal h2 { font-size: 1.35rem; margin: 2.25rem 0 .75rem; color: var(--text); }
+    .legal h3 { font-size: 1.05rem; margin: 1.5rem 0 .5rem; color: var(--text); }
+    .legal p, .legal li { color: var(--text-muted); }
+    .legal p { margin-bottom: 1rem; }
+    .legal ul { list-style: disc; padding-left: 1.25rem; margin-bottom: 1rem; }
+    .legal ul li { margin-bottom: .35rem; }
+    .legal .legal__meta { color: var(--text-dim); font-size: .9rem; margin-bottom: 2.5rem; }
+    .legal a { color: var(--accent); }
+    .legal strong { color: var(--text); }
+  </style>
+</head>
+<body>
+  <header class="hero" style="padding-bottom: 1.5rem;">
+    <nav class="nav" aria-label="Navegación principal">
+      <a href="/" class="nav__brand" aria-label="Precio Real — inicio">
+        <span class="nav__logo" aria-hidden="true">$</span>
+        <span class="nav__name">Precio Real</span>
+      </a>
+      <a href="/#instalar" class="nav__cta">Instalar</a>
+    </nav>
+  </header>
+
+  <main class="legal">
+    <h1>Política de privacidad</h1>
+    <p class="legal__meta">Última actualización: 9 de mayo de 2026</p>
+
+    <p>
+      Precio Real es una extensión gratuita y de código abierto para Google Chrome
+      (y navegadores compatibles con Manifest V3) que muestra el historial real de
+      precios de productos en e-commerce argentinos. Esta política describe, en
+      lenguaje claro, qué datos procesa la extensión, qué guarda y con quién se
+      comparten. No usamos cookies de seguimiento, no pedimos cuenta y no tenemos
+      forma técnica de identificarte.
+    </p>
+
+    <h2>Resumen rápido</h2>
+    <ul>
+      <li><strong>No recolectamos información personal identificable.</strong> No pedimos email, nombre, teléfono ni cuenta.</li>
+      <li><strong>No vendemos datos a terceros.</strong> Nunca. No hay forma — no los tenemos.</li>
+      <li><strong>No usamos analytics dentro de la extensión.</strong> El sitio público (preciorreal.com) usa Cloudflare Web Analytics, que es agregado y sin cookies.</li>
+      <li><strong>El código es auditable</strong> en <a href="https://github.com/larancibia/precio-real" target="_blank" rel="noopener noreferrer">GitHub</a>.</li>
+    </ul>
+
+    <h2>Qué datos procesa la extensión</h2>
+    <p>
+      Cuando navegás un sitio soportado (Mercado Libre Argentina, Frávega, Garbarino,
+      Falabella Argentina, Carrefour Argentina o Coto Digital) y entrás a la ficha de
+      un producto, la extensión:
+    </p>
+    <ul>
+      <li>Lee el <strong>HTML público de la página de producto</strong> (URL, título y precio actual) usando un <em>content script</em>.</li>
+      <li>Envía la <strong>URL canónica del producto</strong> a nuestro backend (<code>preciorreal.com</code>) para consultar su historial de precios.</li>
+      <li>Recibe el historial y muestra un badge en la página con el veredicto (precio real / inflado / neutral).</li>
+    </ul>
+    <p>
+      La extensión <strong>no</strong> lee páginas que no estén en la lista de sitios soportados,
+      <strong>no</strong> lee formularios, contraseñas, datos de pago, ni el contenido de tu carrito.
+    </p>
+
+    <h2>Qué se guarda y dónde</h2>
+    <h3>En tu navegador</h3>
+    <p>
+      Usamos el permiso <code>storage</code> de Chrome únicamente para guardar preferencias locales
+      de la extensión (por ejemplo, si cerraste el badge en una pestaña). Estos datos viven
+      en tu equipo y nunca se envían a un servidor.
+    </p>
+    <h3>En el backend de Precio Real</h3>
+    <p>
+      Nuestro backend (Cloudflare Workers + D1) almacena, por cada producto consultado:
+    </p>
+    <ul>
+      <li>La <strong>URL canónica</strong> del producto.</li>
+      <li>El <strong>precio observado</strong> y la fecha de la observación.</li>
+      <li>Metadatos públicos del producto (título, sitio).</li>
+    </ul>
+    <p>
+      <strong>No guardamos tu IP de forma persistente</strong>, ni un identificador de usuario,
+      ni un historial por persona. Las solicitudes son anónimas: el backend solo ve "alguien
+      preguntó por este producto", no "vos preguntaste por este producto".
+    </p>
+
+    <h2>Permisos solicitados y por qué</h2>
+    <ul>
+      <li><strong><code>storage</code></strong> — Guardar preferencias locales de la extensión (por ejemplo, badges descartados). Se usa solo en tu navegador.</li>
+      <li><strong><code>activeTab</code></strong> — Leer la pestaña activa cuando estás en un sitio soportado, para detectar el producto y su precio. No leemos pestañas inactivas ni en segundo plano.</li>
+      <li><strong>Permisos de host</strong> sobre los dominios <em>mercadolibre.com.ar</em>, <em>fravega.com</em>, <em>garbarino.com</em>, <em>falabella.com.ar</em>, <em>carrefour.com.ar</em> y <em>cotodigital3.com.ar</em> — Necesarios para que el <em>content script</em> corra solo en esos sitios. La extensión no se activa fuera de esa lista.</li>
+    </ul>
+
+    <h2>Servicios de terceros</h2>
+    <ul>
+      <li>
+        <strong>Cloudflare</strong> (CDN + Workers + D1): hostea el backend y el sitio público.
+        Cloudflare puede registrar metadatos técnicos de las solicitudes (IP, user agent) por
+        cortos períodos para protección DDoS y operación, según su propia política. No tenemos
+        acceso a esos logs como datos de usuario.
+      </li>
+      <li>
+        <strong>Cloudflare Web Analytics</strong> (solo en el sitio <em>preciorreal.com</em>, no en la extensión):
+        métricas agregadas y sin cookies. No identifica usuarios.
+      </li>
+      <li>
+        <strong>Cafecito</strong>: solo si elegís invitar un café desde el sitio. La transacción
+        ocurre en el sitio de Cafecito; nosotros no recibimos tus datos de pago.
+      </li>
+    </ul>
+
+    <h2>Datos que NO usamos</h2>
+    <ul>
+      <li>Ubicación geográfica precisa.</li>
+      <li>Datos personales identificables (nombre, email, teléfono, DNI).</li>
+      <li>Información de pago, tarjetas o credenciales.</li>
+      <li>Historial de navegación fuera de los sitios soportados.</li>
+      <li>Contenido de mensajes, formularios o cookies de otros sitios.</li>
+      <li>Lista de pestañas, marcadores ni historial del navegador.</li>
+    </ul>
+
+    <h2>Menores de edad</h2>
+    <p>
+      Precio Real no está dirigido a menores de 13 años y no recolecta deliberadamente
+      información de menores. Como no pedimos datos personales en ningún momento, no
+      hay información de menores en nuestros sistemas.
+    </p>
+
+    <h2>Cambios a esta política</h2>
+    <p>
+      Si cambiamos esta política, vamos a actualizar la fecha de "Última actualización"
+      arriba y, si el cambio es relevante, lo vamos a anunciar en el sitio
+      (<a href="https://preciorreal.com">preciorreal.com</a>) y en el repositorio de GitHub.
+    </p>
+
+    <h2>Contacto</h2>
+    <p>
+      Dudas, reportes o pedidos de eliminación de datos:
+    </p>
+    <ul>
+      <li>Issues en GitHub: <a href="https://github.com/larancibia/precio-real/issues" target="_blank" rel="noopener noreferrer">github.com/larancibia/precio-real/issues</a></li>
+      <li>Email: <a href="mailto:contacto@preciorreal.com">contacto@preciorreal.com</a></li>
+    </ul>
+
+    <p style="margin-top: 2.5rem;">
+      <a href="/">← Volver al inicio</a>
+    </p>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <p class="footer__copy">© 2026 Precio Real</p>
+      <nav class="footer__links" aria-label="Enlaces del pie de página">
+        <a href="/privacidad.html">Privacidad</a>
+        <span class="footer__sep" aria-hidden="true">·</span>
+        <a href="https://github.com/larancibia/precio-real" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <span class="footer__sep" aria-hidden="true">·</span>
+        <span class="footer__made">Hecho en Argentina <span aria-hidden="true">🇦🇷</span></span>
+      </nav>
+    </div>
+  </footer>
+</body>
+</html>
