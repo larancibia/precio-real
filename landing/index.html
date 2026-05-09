@@ -39,8 +39,8 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Precio Real — extensión que muestra el precio histórico real de cada producto">
-  <meta property="og:updated_time" content="2026-05-09T21:00:00-03:00">
-  <meta property="article:modified_time" content="2026-05-09T21:00:00-03:00">
+  <meta property="og:updated_time" content="2026-05-09T22:00:00-03:00">
+  <meta property="article:modified_time" content="2026-05-09T22:00:00-03:00">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
@@ -301,7 +301,7 @@
     },
     "datePublished": "2026-04-15",
     "dateModified": "2026-05-09",
-    "lastReviewed": "2026-05-09",
+    "lastReviewed": "2026-05-09T22:00:00-03:00",
     "breadcrumb": {
       "@type": "BreadcrumbList",
       "itemListElement": [
@@ -757,29 +757,106 @@
     <section class="section section--shots" aria-labelledby="shots-title">
       <div class="section__inner">
         <h2 id="shots-title" class="section__title">Así se ve</h2>
-        <p class="section__lead">La extensión en acción. Pronto vas a ver capturas reales.</p>
+        <p class="section__lead">Los badges que aparecen directo en la página del producto. Sin popups molestos, sin salir de la tienda.</p>
 
         <div class="shots">
-          <figure class="shot" role="img" aria-label="Vista previa del historial de precios — próximamente">
-            <div class="shot__placeholder">
-              <span class="shot__icon" aria-hidden="true">📊</span>
-              <span class="shot__label">Screenshot — próximamente</span>
-              <span class="shot__caption">Historial de precios</span>
+          <!-- Mock 1: PRECIO INFLADO -->
+          <figure class="shot" aria-label="Badge PRECIO INFLADO en Mercado Libre — aumento del 22% antes del Hot Sale">
+            <div class="mock-card">
+              <div class="mock-card__browser">
+                <span class="mock-browser-dot" aria-hidden="true"></span>
+                <span class="mock-browser-dot" aria-hidden="true"></span>
+                <span class="mock-browser-dot" aria-hidden="true"></span>
+                <span class="mock-browser-url">mercadolibre.com.ar</span>
+              </div>
+              <div class="mock-card__body">
+                <p class="mock-product-site">Mercado Libre Argentina</p>
+                <p class="mock-product-title">Smart TV 55" 4K UHD Samsung QLED</p>
+                <div class="mock-price-block">
+                  <span class="mock-price-old">$1.320.000</span>
+                  <span class="mock-price-curr">$1.056.000</span>
+                  <span class="mock-discount">20% OFF</span>
+                </div>
+                <div class="mock-badge mock-badge--inflated" role="status" aria-label="Precio inflado: subió 22% antes del Hot Sale">
+                  <span class="mock-badge__icon" aria-hidden="true">↑</span>
+                  <div class="mock-badge__text">
+                    <strong>PRECIO INFLADO</strong>
+                    <span>Subió 22% en los 30 días previos al Hot Sale</span>
+                  </div>
+                </div>
+              </div>
             </div>
+            <figcaption class="shot__caption-real">Detecta el aumento previo al Hot Sale</figcaption>
           </figure>
-          <figure class="shot" role="img" aria-label="Vista previa de alerta de aumento disfrazado — próximamente">
-            <div class="shot__placeholder">
-              <span class="shot__icon" aria-hidden="true">⚠️</span>
-              <span class="shot__label">Screenshot — próximamente</span>
-              <span class="shot__caption">Alerta de aumento</span>
+
+          <!-- Mock 2: PRECIO REAL -->
+          <figure class="shot" aria-label="Badge PRECIO REAL en Frávega — descuento genuino">
+            <div class="mock-card">
+              <div class="mock-card__browser">
+                <span class="mock-browser-dot" aria-hidden="true"></span>
+                <span class="mock-browser-dot" aria-hidden="true"></span>
+                <span class="mock-browser-dot" aria-hidden="true"></span>
+                <span class="mock-browser-url">fravega.com</span>
+              </div>
+              <div class="mock-card__body">
+                <p class="mock-product-site">Frávega</p>
+                <p class="mock-product-title">Notebook Lenovo IdeaPad 15" Intel Core i5</p>
+                <div class="mock-price-block">
+                  <span class="mock-price-old">$870.000</span>
+                  <span class="mock-price-curr">$765.600</span>
+                  <span class="mock-discount">12% OFF</span>
+                </div>
+                <div class="mock-badge mock-badge--real" role="status" aria-label="Precio real: descuento genuino confirmado">
+                  <span class="mock-badge__icon" aria-hidden="true">✓</span>
+                  <div class="mock-badge__text">
+                    <strong>PRECIO REAL</strong>
+                    <span>Descuento genuino vs. historial de 90 días</span>
+                  </div>
+                </div>
+              </div>
             </div>
+            <figcaption class="shot__caption-real">Confirma los descuentos que sí son reales</figcaption>
           </figure>
-          <figure class="shot" role="img" aria-label="Vista previa del comparador entre tiendas — próximamente">
-            <div class="shot__placeholder">
-              <span class="shot__icon" aria-hidden="true">🛒</span>
-              <span class="shot__label">Screenshot — próximamente</span>
-              <span class="shot__caption">Comparador entre tiendas</span>
+
+          <!-- Mock 3: Panel con historial de precios -->
+          <figure class="shot" aria-label="Panel historial de precios en Garbarino">
+            <div class="mock-card">
+              <div class="mock-card__browser">
+                <span class="mock-browser-dot" aria-hidden="true"></span>
+                <span class="mock-browser-dot" aria-hidden="true"></span>
+                <span class="mock-browser-dot" aria-hidden="true"></span>
+                <span class="mock-browser-url">garbarino.com</span>
+              </div>
+              <div class="mock-card__body">
+                <p class="mock-product-site">Garbarino</p>
+                <p class="mock-product-title">Aire Acondicionado Frío/Calor 3000 frig BGH</p>
+                <div class="mock-bars" aria-hidden="true">
+                  <span class="mock-bar" style="height:40%"></span>
+                  <span class="mock-bar" style="height:42%"></span>
+                  <span class="mock-bar" style="height:38%"></span>
+                  <span class="mock-bar" style="height:45%"></span>
+                  <span class="mock-bar" style="height:50%"></span>
+                  <span class="mock-bar" style="height:55%"></span>
+                  <span class="mock-bar mock-bar--high" style="height:72%"></span>
+                  <span class="mock-bar mock-bar--high" style="height:80%"></span>
+                  <span class="mock-bar mock-bar--highest" style="height:100%"></span>
+                  <span class="mock-bar mock-bar--current" style="height:85%"></span>
+                </div>
+                <div class="mock-price-history">
+                  <span class="mock-ph-item"><span class="mock-ph-label">Mínimo</span><span class="mock-ph-val mock-ph-val--min">$420.000</span></span>
+                  <span class="mock-ph-item"><span class="mock-ph-label">Actual</span><span class="mock-ph-val">$612.000</span></span>
+                  <span class="mock-ph-item"><span class="mock-ph-label">Máximo</span><span class="mock-ph-val mock-ph-val--max">$648.000</span></span>
+                </div>
+                <div class="mock-badge mock-badge--inflated" role="status">
+                  <span class="mock-badge__icon" aria-hidden="true">↑</span>
+                  <div class="mock-badge__text">
+                    <strong>PRECIO INFLADO</strong>
+                    <span>45% sobre el mínimo histórico</span>
+                  </div>
+                </div>
+              </div>
             </div>
+            <figcaption class="shot__caption-real">Historial real: sabés cuánto costaba antes</figcaption>
           </figure>
         </div>
       </div>

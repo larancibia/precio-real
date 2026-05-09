@@ -560,4 +560,53 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "bicicleta fija spinning",
   "cinta de correr plegable",
   "colchoneta yoga antideslizante",
+  // Ciclo 1614 — Hot Sale mayo 2026: categorías de mayor conversión
+  // Tech — accesorios gaming y periféricos
+  "auriculares gaming usb",
+  "silla gamer ergonomica",
+  "monitor curvo",
+  "teclado gaming rgb",
+  "mouse gaming inalambrico",
+  // Ciclo 1614 — celulares: modelos nuevos alta rotación
+  "samsung galaxy a35",
+  "motorola moto g85",
+  "xiaomi redmi 13",
+  "tecno spark 20",
+  // Ciclo 1614 — TV y entretenimiento
+  "proyector laser 4k",
+  "soundbar dolby atmos",
+  "smart tv 85 pulgadas",
+  // Ciclo 1614 — electrodomésticos pequeños kitchen
+  "exprimidor electrico",
+  "maquina de pan",
+  "yogurtera electrica",
+  "desgranadora de maiz electrica",
+  // Ciclo 1614 — salud y bienestar
+  "colchon viscoelastico",
+  "almohada memory foam",
+  "puff de descanso",
+  // Ciclo 1614 — hogar conectado
+  "robot aspiradora wifi",
+  "camara seguridad interior wifi",
+  "sensor movimiento inteligente",
+  // Ciclo 1614 — indumentaria AR otoño (mayo)
+  "remera manga larga hombre",
+  "pantalon jogger hombre",
+  "zapatillas outdoor impermeables",
+  // Ciclo 1614 — energía / generadores
+  "inversor solar 1000w",
+  "bateria litio 12v",
+  "panel solar 200w",
+  // Ciclo 1614 — audio premium AR
+  "auriculares planar magneticos",
+  "amplificador de auriculares",
+  "dac usb audio",
+  // Ciclo 1614 — mascotas nuevas categorías
+  "cama para perro",
+  "arbol para gatos",
+  "bebedero automatico mascotas",
+  // Ciclo 1614 — movilidad / bicicletas
+  "bicicleta ruta carbono",
+  "bicicleta urbana aluminio",
+  "bicicleta plegable",
 ];

@@ -31,8 +31,8 @@
   const OBS_TIMEOUT_MS = 15000;
   // Retries iniciales antes de armar el MutationObserver: cubre el caso típico
   // donde el precio aparece tras un XHR <3s después de DOMContentLoaded.
-  // Ciclo 1596: +5500ms para VTEX/SAP/Shopify que hidratan tarde en conexiones lentas.
-  const INITIAL_DELAYS_MS = [0, 400, 1000, 2000, 3500, 5500];
+  // Ciclo 1601: +8000ms para VTEX Classic en conexiones lentas.
+  const INITIAL_DELAYS_MS = [0, 400, 1000, 2000, 3500, 5500, 8000];
   // Fetch del backend: timeout corto + dos reintentos suaves. Sin esto, una
   // red flakey deja el badge en "sin datos" para siempre.
   const FETCH_TIMEOUT_MS = 6000;
@@ -528,8 +528,15 @@
                 const acs = win.getComputedStyle(ancestor);
                 const backdropFilter = acs.backdropFilter || acs.webkitBackdropFilter || '';
                 const contain = acs.contain || '';
+                // Ciclo 1601: isolation:isolate (React portals, CSS-in-JS) y
+                // will-change:transform/opacity/filter también crean stacking context
+                // para position:fixed, enterrando el badge bajo otros elementos.
+                const isolation = acs.isolation || '';
+                const willChange = acs.willChange || '';
                 if ((backdropFilter && backdropFilter !== 'none') ||
-                    /strict|layout|paint/.test(contain)) {
+                    /strict|layout|paint/.test(contain) ||
+                    isolation === 'isolate' ||
+                    /transform|opacity|filter/.test(willChange)) {
                   needsHoist = true;
                   break;
                 }
@@ -712,6 +719,10 @@
           // Shopify / temas custom (Musimundo, Compumundo): option-value cambia
           // al seleccionar una variante de color o talle.
           'data-option-value', 'data-option',
+          // Ciclo 1601: VTEX Faststore (Garbarino nuevo, Jumbo) usa data-fs-sku y
+          // data-loading en el contenedor de precio al cambiar variante. WooCommerce
+          // con bulk pricing puede cambiar precio con data-quantity.
+          'data-fs-sku', 'data-loading', 'data-quantity',
         ],
       });
     } catch (_) { variantObserver = null; }
@@ -830,6 +841,9 @@
             'data-price', 'data-price-amount', 'data-internet-price', 'data-cmr-price',
             'data-event-price', 'data-value', 'data-sku', 'data-product-id',
             'data-variant-id', 'data-pricetype', 'data-price-type', 'aria-busy',
+            // Ciclo 1601: Next.js App Router señaliza transiciones con data-pending;
+            // VTEX Faststore usa data-fs-sku; data-loading marca carga de variante.
+            'data-pending', 'data-fs-sku', 'data-loading',
           ],
         });
       } else {
