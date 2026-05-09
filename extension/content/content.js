@@ -7,8 +7,8 @@
   if (window.__precioRealLoaded) return;
   window.__precioRealLoaded = true;
 
-  // Ciclo 1623: versión del content script para facilitar debugging en consola.
-  const CONTENT_VERSION = '1623';
+  // Ciclo 1625: versión del content script para facilitar debugging en consola.
+  const CONTENT_VERSION = '1625';
 
   const PR = window.PrecioReal;
   if (!PR) { console.warn('[Precio Real] helpers not loaded'); return; }
@@ -1042,6 +1042,9 @@
       '/api/pdp', '/pdp/pricing',               // SAP Hybris PDP pricing endpoints
       '/pages/product.json',                    // Shopify legacy product page data
       '/api/fulfillment', '/api/availability',  // Garmin / retailers con stock+precio combinado
+      // Ciclo 1625: SAP Commerce OCC v2 (Ripley AR y otros Hybris retailers);
+      // WooCommerce Store API v1 (Farmacity, PCBox — complementa wp-json/wc/).
+      '/occ/v2/', '/wp-json/wc/store/v1/',
     ];
     let schedTimer = null;
     try {

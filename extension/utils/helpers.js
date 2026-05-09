@@ -1008,6 +1008,21 @@
     // al mismo historial en el backend. Si el usuario ya eligió una variante,
     // el DOM actualiza #landingAsin o data-csa-c-asin con el ASIN de la variante.
     const siteKey = detectSite(location.hostname);
+    // Ciclo 1625: Ripley AR (SAP Commerce Cloud) — normalizar a /p/PRODUCTCODE
+    // para que URLs con slugs distintos (ej. tv-samsung-55-4k/p/TVSA123) apunten
+    // al mismo historial. El productCode es el identificador estable en Hybris.
+    if (siteKey === 'ripley') {
+      const urlStr = href || location.href;
+      const m = urlStr.match(/\/p\/([A-Z0-9\-_]+)/i);
+      if (m) return 'https://www.ripley.com.ar/p/' + m[1].toUpperCase();
+    }
+    // Ciclo 1625: Garmin AR — normalizar al part-number Garmin (010-NNNNN-NN)
+    // que es el identificador estable en todas las URLs de Garmin.
+    if (siteKey === 'garmin') {
+      const urlStr = href || location.href;
+      const m = urlStr.match(/(\d{3}-\d{5}-\d{2})/);
+      if (m) return 'https://www.garmin.com/es-AR/p/' + m[1];
+    }
     if (siteKey === 'amazon') {
       const urlStr = href || location.href;
       const m = urlStr.match(/\/(dp|gp\/product)\/([A-Z0-9]{10})/i);
@@ -1154,6 +1169,24 @@
     if (siteKey === 'asus') {
       if (/^\/ar\/(shop|search|brand|accessories|gaming-deals?|store\/promotion)(\/|$)/i.test(p) && !/productdetail/i.test(p)) return true;
     }
+    // Ciclo 1625: Ripley AR (SAP Commerce Cloud / Hybris).
+    // Categorías usan path con sufijo /c o segmento /c/ (ej. /electrodomesticos/c).
+    // Search usa query ?text= o ?q=. PDPs usan /p/PRODUCTCODE.
+    if (siteKey === 'ripley') {
+      if (/\/c(\/|$)/.test(p) && !/\/p\//.test(p)) return true;
+      if (/[?&](text|q|query)=/.test(location.search) && !/\/p\//.test(p)) return true;
+    }
+    // Ciclo 1625: Garmin AR (SPA React custom, garmin.com/es-AR/).
+    // Categorías bajo /es-AR/c/ o slugs de categoría conocidos sin número de parte.
+    // PDPs contienen /p/ o un part-number Garmin (010-NNNNN-NN).
+    if (siteKey === 'garmin') {
+      if (/^\/es-ar\/c\//i.test(p)) return true;
+      if (/^\/es-ar\/[^/]+(\/|$)/.test(p) && !/\/p\//.test(p) && !/\d{3}-\d{5}-\d{2}/.test(p)) return true;
+    }
+    // Ciclo 1625: WooCommerce — la página /shop/ y /shop/page/N/ son listados.
+    // Cubre retailers WooCommerce sin /product-category/ explícito (Farmacity, PCBox,
+    // Full, Olimpo, Arredondo y otros temas WC que usan /shop como raíz del catálogo).
+    if (/^\/shop(\/|$)/.test(p)) return true;
     return false;
   }
 
