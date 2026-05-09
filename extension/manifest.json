@@ -42,6 +42,11 @@
     "https://tienda.mi.com/ar/*",
     "https://*.philco.com.ar/*",
     "https://*.venex.com.ar/*",
+    "https://*.bgood.com.ar/*",
+    "https://*.hptienda.com.ar/*",
+    "https://www.lenovo.com/ar/*",
+    "https://*.alphatec.com.ar/*",
+    "https://*.exo.com.ar/*",
     "http://localhost:8787/*"
   ],
   "action": {
@@ -90,7 +95,12 @@
         "https://*.hipertehno.com.ar/*",
         "https://tienda.mi.com/ar/*",
         "https://*.philco.com.ar/*",
-        "https://*.venex.com.ar/*"
+        "https://*.venex.com.ar/*",
+        "https://*.bgood.com.ar/*",
+        "https://*.hptienda.com.ar/*",
+        "https://www.lenovo.com/ar/*",
+        "https://*.alphatec.com.ar/*",
+        "https://*.exo.com.ar/*"
       ],
       "js": ["config.js", "utils/retailers.js", "utils/helpers.js", "utils/affiliates.js", "content/content.js"],
       "css": ["content/badge.css"],

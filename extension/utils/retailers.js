@@ -865,6 +865,120 @@
         'meta[property="og:price:amount"]',
       ],
     },
+    // Ciclo 1594: nuevos retailers Hot Sale AR 2026.
+    bgood: {
+      label: 'Bgood',
+      hostnameSuffix: 'bgood.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Bgood usa Magento 2 con tema custom. El precio activo vive en
+        // .product-info-price .price-final_price o en [data-price-amount].
+        // El precio tachado (.old-price) lo filtra isStrikethroughPrice.
+        '.product-info-price .price-final_price [data-price-amount]',
+        '.product-info-price .price-final_price .price',
+        '.special-price [data-price-amount]',
+        '.special-price .price',
+        '.price-box .price-final_price [data-price-amount]',
+        '.price-box .price',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '[data-price-amount]',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    hptienda: {
+      label: 'HP Tienda',
+      hostnameSuffix: 'hptienda.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // HP Tienda AR usa Magento 2 / plataforma propia con exposición de
+        // data-price-amount (US-formatted). El precio con descuento activo
+        // vive en .special-price o en .price-final_price.
+        '.product-info-price .price-final_price [data-price-amount]',
+        '.product-info-price .price-final_price .price',
+        '.special-price [data-price-amount]',
+        '.special-price .price',
+        '.price-box .price',
+        '[data-price-amount]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.product-price',
+        '.price-current',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    lenovo: {
+      label: 'Lenovo Store',
+      hostnameSuffix: 'lenovo.com',
+      currency: 'ARS',
+      selectors: [
+        // Lenovo AR (lenovo.com/ar/) usa un stack Next.js/React propio. El precio
+        // con descuento aparece en .pricePDP__current o [data-testid="pdp-price"].
+        // El precio de lista (tachado) está en .pricePDP__original.
+        '[data-testid="pdp-price"]',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.pricePDP__current',
+        '.pricePDP__sale',
+        '.product-price__current',
+        '[class*="pricePDP" i][class*="current" i]',
+        '[class*="pricePDP" i][class*="sale" i]',
+        '[class*="CurrentPrice" i]',
+        '[class*="SalePrice" i]',
+        '[class*="FinalPrice" i]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    alphatec: {
+      label: 'Alphatec',
+      hostnameSuffix: 'alphatec.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Alphatec AR usa PrestaShop. El precio de venta activo vive en
+        // .current-price-value; el precio tachado está en .regular-price
+        // (filtrado por isStrikethroughPrice). Fallback VTEX para algunos
+        // partners que revenden con el mismo dominio.
+        '.current-price-value',
+        '.current-price .product-price',
+        '[itemprop="price"]',
+        '[data-testid="product-price"]',
+        'span[class*="current-price" i]',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    exo: {
+      label: 'EXO',
+      hostnameSuffix: 'exo.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // EXO AR (notebooks/PCs) usa WooCommerce o plataforma custom. El precio
+        // con descuento vive en .woocommerce-Price-amount dentro de <ins>, sin
+        // descuento en .woocommerce-Price-amount directamente.
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        'ins .woocommerce-Price-amount.amount bdi',
+        'ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount bdi',
+        '[data-testid="product-price"]',
+        '.product-price',
+        '.precio-actual',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
   };
 
   const GENERIC_PRICE_SELECTORS = [

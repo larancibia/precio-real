@@ -88,6 +88,13 @@
     'xiaomi',
     'philco',
     'venex',
+    // Ciclo 1594: Bgood (electrónica), HP Tienda AR, Lenovo Store AR,
+    // Alphatec (PrestaShop), EXO AR (notebooks/PCs WooCommerce).
+    'bgood',
+    'hptienda',
+    'lenovo',
+    'alphatec',
+    'exo',
   ];
 
   function detectSite(hostname) {
@@ -143,6 +150,14 @@
     if (h.endsWith('tienda.mi.com')) return 'xiaomi';
     if (h.endsWith('philco.com.ar')) return 'philco';
     if (h.endsWith('venex.com.ar')) return 'venex';
+    // Ciclo 1594: Bgood, HP Tienda AR, Lenovo Store AR, Alphatec, EXO AR.
+    // Lenovo opera lenovo.com con subdominios por país; el manifest matchea solo /ar/.
+    // HP Tienda opera hptienda.com.ar (e-commerce propio separado de hp.com).
+    if (h.endsWith('bgood.com.ar')) return 'bgood';
+    if (h.endsWith('hptienda.com.ar')) return 'hptienda';
+    if (h.endsWith('lenovo.com')) return 'lenovo';
+    if (h.endsWith('alphatec.com.ar')) return 'alphatec';
+    if (h.endsWith('exo.com.ar')) return 'exo';
     return null;
   }
 
@@ -437,6 +452,17 @@
     // Ciclo 14: precio mensual en formato slash ("/mes", "/mensual", "/cuota").
     if (/\$[\d.,]+\s*\/\s*(mes|mensual|cuota)\b/i.test(ownText)) return true;
     if (/\b\/\s*(mes|mensual)\b/i.test(ownText) && /\$/.test(ownText)) return true;
+    // Ciclo 1594: variantes adicionales de cuotas observadas en Hot Sale 2026.
+    // "Precio cuota" sin el "de" explícito.
+    if (/\bprecio\s+cuota\b/i.test(ownText)) return true;
+    // "En X pagos" (variante de "X pagos de").
+    if (/\ben\s+\d{1,2}\s+pagos?\b/i.test(ownText)) return true;
+    // "Pagá en X" (estilo Mercado Pago).
+    if (/\bpag[aá]\s+(en\s+)?\d{1,2}\b/i.test(ownText)) return true;
+    // "Precio financiado" (Bgood, Megatone).
+    if (/\bprecio\s+financiado\b/i.test(ownText)) return true;
+    // "Valor cuota" (algunos retailers usan este label).
+    if (/\bvalor\s+cuota\b/i.test(ownText)) return true;
     // 2) Ancestros: buscar contenedores marcados como cuotas/promo/instalment.
     let node = el;
     for (let i = 0; i < 4 && node; i++) {
@@ -861,14 +887,18 @@
       if (p.startsWith('/gp/browse') || p.startsWith('/gp/goldbox') || p.startsWith('/gp/deal')) return true;
       if (p.startsWith('/deals/') || p.startsWith('/stores/')) return true;
     }
-    // WooCommerce (Drean, HiperTehno): categorías y etiquetas son listados.
+    // WooCommerce (Drean, HiperTehno, EXO): categorías y etiquetas son listados.
     if (/^\/(product-category|product-tag)(\/|$)/i.test(p)) return true;
-    // PrestaShop (Todomodo): categorías tienen solo dígitos como prefijo de segmento.
-    if (siteKey === 'todomodo' && /^\/\d+[-\/]/.test(p) && !/\/[a-z0-9-]+-\d+\.html/.test(p)) return true;
+    // PrestaShop (Todomodo, Alphatec): categorías tienen solo dígitos como prefijo de segmento.
+    if ((siteKey === 'todomodo' || siteKey === 'alphatec') && /^\/\d+[-\/]/.test(p) && !/\/[a-z0-9-]+-\d+\.html/.test(p)) return true;
     // Paginación genérica: ningún PDP es paginated.
     if (/\/page\/\d+(\/|$)/.test(p)) return true;
     // Slugs con guión: /categoria-electrodomesticos, /coleccion-verano, etc.
     if (/^\/(categor[ií]a-|colecci[oó]n-)/i.test(p)) return true;
+    // Lenovo AR: /ar/laptops/, /ar/tablets/ son categorías; solo /ar/p/ o /ar/…/product es PDP.
+    if (siteKey === 'lenovo') {
+      if (/^\/ar\/(laptops?|tablets?|desktops?|workstations?|servers?|accessories|bundles?)(\/|$)/i.test(p)) return true;
+    }
     return false;
   }
 
@@ -907,13 +937,18 @@
       if (siteKey === 'amazon') {
         return /\/(dp|gp\/product)\/[A-Z0-9]{10}/i.test(location.pathname);
       }
-      // WooCommerce (Drean, HiperTehno): single-product tiene body.single-product o /product/ en la ruta.
-      if (siteKey === 'drean' || siteKey === 'hipertehno') {
+      // WooCommerce (Drean, HiperTehno, EXO): single-product tiene body.single-product o /product/ en la ruta.
+      if (siteKey === 'drean' || siteKey === 'hipertehno' || siteKey === 'exo') {
         try {
           if (document.body && document.body.classList.contains('single-product')) return true;
         } catch (_) {}
         if (/\/product\//.test(location.pathname)) return true;
         // Caer al microdata check: WooCommerce siempre emite JSON-LD de Product.
+      }
+      // Lenovo AR: PDP tiene /p/ o el pathname no es una categoría genérica.
+      if (siteKey === 'lenovo') {
+        if (/\/p\//.test(location.pathname)) return true;
+        // Lenovo emite JSON-LD de Product en todas sus PDPs.
       }
       if (hasProductMicrodata()) return true;
       // Fallback: existe nodo de precio típico en el viewport.
