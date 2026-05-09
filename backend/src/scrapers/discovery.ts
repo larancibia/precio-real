@@ -18,17 +18,16 @@
 const ML_USER_AGENT = "precio-real/0.1 (+https://precioreal.ar)";
 const ML_TIMEOUT_MS = 10_000;
 
-// Curated list of high-traffic Argentine retail categories. Hitting 25 queries
-// at limit 20 yields up to 500 candidates per discovery run. The terms span
-// the Hot Sale flagship verticals: tech, electrodomésticos, hogar, deportes.
+// Curated list of high-traffic Argentine retail categories. Each query asks ML
+// for LIMIT_PER_QUERY top results; INSERT OR IGNORE means duplicates across
+// queries don't count as new rows. The terms span the Hot Sale flagship
+// verticals: tech, electrodomésticos, hogar, deportes, moda, infantil.
 const DISCOVERY_QUERIES = [
+  // Tech / electronics
   "celular",
   "notebook",
   "televisor",
   "auriculares",
-  "heladera",
-  "lavarropas",
-  "aire acondicionado",
   "smart tv",
   "smartwatch",
   "tablet",
@@ -36,19 +35,49 @@ const DISCOVERY_QUERIES = [
   "playstation",
   "xbox",
   "consola",
-  "perfume",
-  "zapatillas",
-  "bicicleta",
+  "nintendo switch",
+  "camara",
+  "parlante bluetooth",
+  "impresora",
+  // Línea blanca / electrodomésticos
+  "heladera",
+  "lavarropas",
+  "aire acondicionado",
   "cafetera",
   "microondas",
   "freidora de aire",
   "aspiradora",
   "ventilador",
-  "colchon",
   "anafe",
   "secarropas",
+  "termotanque",
+  "horno electrico",
+  "licuadora",
+  "batidora",
+  // Hogar / muebles
+  "colchon",
+  "sillon",
+  "escritorio",
+  "silla gamer",
+  // Deportes / outdoor
+  "bicicleta",
+  "zapatillas",
+  "pelota",
+  "carpa",
+  "mochila",
+  // Moda / belleza
+  "perfume",
+  "reloj",
+  "campera",
+  // Infantil
+  "juguetes",
+  "auto a bateria",
+  // Herramientas / DIY
+  "taladro",
+  "amoladora",
 ];
 const LIMIT_PER_QUERY = 20;
+const DISCOVERY_CONCURRENCY = 5;
 
 interface MLSearchItem {
   id?: unknown;
@@ -107,44 +136,61 @@ async function fetchSearch(query: string): Promise<MLSearchItem[]> {
 /**
  * Discovers popular MLA products and INSERT-OR-IGNOREs them into `products`.
  * Idempotent: re-runs touch only newly seen URLs.
+ *
+ * Implementation:
+ *   - Search fetches run in concurrent waves of DISCOVERY_CONCURRENCY to keep
+ *     the cron well under Cloudflare's subrequest budget while still hitting
+ *     the full query list quickly (sequential was 25-45s+ wall time at peak).
+ *   - INSERT OR IGNOREs are funneled sequentially per item to keep D1 writes
+ *     deterministic and avoid contention with the cron's price-row writes
+ *     that share the same transaction-ish window.
  */
 export async function runDiscovery(env: DiscoveryEnv): Promise<DiscoveryResult> {
+  const allItems: MLSearchItem[] = [];
+
+  for (let i = 0; i < DISCOVERY_QUERIES.length; i += DISCOVERY_CONCURRENCY) {
+    const wave = DISCOVERY_QUERIES.slice(i, i + DISCOVERY_CONCURRENCY);
+    const settled = await Promise.allSettled(wave.map((q) => fetchSearch(q)));
+    for (const outcome of settled) {
+      if (outcome.status === "fulfilled") {
+        allItems.push(...outcome.value);
+      }
+    }
+  }
+
   const seen = new Set<string>();
   let candidates = 0;
   let inserted = 0;
   let failed = 0;
 
-  for (const query of DISCOVERY_QUERIES) {
-    const items = await fetchSearch(query);
-    for (const item of items) {
-      if (typeof item.permalink !== "string") continue;
-      if (typeof item.title !== "string") continue;
-      if (typeof item.price !== "number" || !Number.isFinite(item.price)) continue;
-      if (seen.has(item.permalink)) continue;
-      seen.add(item.permalink);
-      candidates++;
+  for (const item of allItems) {
+    if (typeof item.permalink !== "string") continue;
+    if (typeof item.title !== "string") continue;
+    if (typeof item.price !== "number" || !Number.isFinite(item.price)) continue;
+    if (seen.has(item.permalink)) continue;
+    seen.add(item.permalink);
+    candidates++;
 
-      const seller =
-        item.seller && typeof item.seller.nickname === "string"
-          ? item.seller.nickname
-          : null;
-      const image = typeof item.thumbnail === "string" ? item.thumbnail : null;
+    const seller =
+      item.seller && typeof item.seller.nickname === "string"
+        ? item.seller.nickname
+        : null;
+    const image = typeof item.thumbnail === "string" ? item.thumbnail : null;
 
-      try {
-        const result = await env.DB
-          .prepare(
-            "INSERT OR IGNORE INTO products (url, title, seller, image_url) VALUES (?1, ?2, ?3, ?4)",
-          )
-          .bind(item.permalink, item.title, seller, image)
-          .run();
-        // D1 returns meta.changes for affected rows.
-        const changes = result?.meta?.changes ?? 0;
-        if (changes > 0) inserted++;
-      } catch (err) {
-        failed++;
-        const message = err instanceof Error ? err.message : String(err);
-        console.warn(`[discovery] insert failed for ${item.permalink}: ${message}`);
-      }
+    try {
+      const result = await env.DB
+        .prepare(
+          "INSERT OR IGNORE INTO products (url, title, seller, image_url) VALUES (?1, ?2, ?3, ?4)",
+        )
+        .bind(item.permalink, item.title, seller, image)
+        .run();
+      // D1 returns meta.changes for affected rows.
+      const changes = result?.meta?.changes ?? 0;
+      if (changes > 0) inserted++;
+    } catch (err) {
+      failed++;
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn(`[discovery] insert failed for ${item.permalink}: ${message}`);
     }
   }
 

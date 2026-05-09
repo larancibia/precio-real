@@ -48,17 +48,15 @@ interface MLSearchResponse {
 }
 
 // Aligned with src/scrapers/discovery.ts so local dev seed mirrors the
-// production cron's product surface. Hitting 25 queries × LIMIT_PER_QUERY
-// keeps the seed under D1 local SQL execute timeouts while exercising the
-// same Hot-Sale-flagship vertical mix the Worker scrapes.
+// production cron's product surface. The seed uses LIMIT_PER_QUERY=10 (vs the
+// cron's 20) to keep the local SQL file under D1's wrangler-execute timeouts
+// while still exercising the same Hot-Sale-flagship vertical mix.
 const QUERIES = [
+  // Tech / electronics
   "celular",
   "notebook",
   "televisor",
   "auriculares",
-  "heladera",
-  "lavarropas",
-  "aire acondicionado",
   "smart tv",
   "smartwatch",
   "tablet",
@@ -66,17 +64,46 @@ const QUERIES = [
   "playstation",
   "xbox",
   "consola",
-  "perfume",
-  "zapatillas",
-  "bicicleta",
+  "nintendo switch",
+  "camara",
+  "parlante bluetooth",
+  "impresora",
+  // Línea blanca / electrodomésticos
+  "heladera",
+  "lavarropas",
+  "aire acondicionado",
   "cafetera",
   "microondas",
   "freidora de aire",
   "aspiradora",
   "ventilador",
-  "colchon",
   "anafe",
   "secarropas",
+  "termotanque",
+  "horno electrico",
+  "licuadora",
+  "batidora",
+  // Hogar / muebles
+  "colchon",
+  "sillon",
+  "escritorio",
+  "silla gamer",
+  // Deportes / outdoor
+  "bicicleta",
+  "zapatillas",
+  "pelota",
+  "carpa",
+  "mochila",
+  // Moda / belleza
+  "perfume",
+  "reloj",
+  "campera",
+  // Infantil
+  "juguetes",
+  "auto a bateria",
+  // Herramientas / DIY
+  "taladro",
+  "amoladora",
 ];
 const LIMIT_PER_QUERY = 10;
 const HISTORY_DAYS = 30;

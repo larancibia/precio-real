@@ -64,11 +64,23 @@ export async function runScheduledScrape(env: ScheduledEnv): Promise<ScheduledRe
     return { queries: 0, candidates: 0, inserted: 0, failed: 0 };
   });
 
-  // Newest-first so freshly discovered popular items get refreshed before older
-  // long-tail products. Bounded by PRODUCT_LIMIT to keep the cron under CF
-  // subrequest budgets (each fetchMLItem = 1 outbound fetch).
+  // Stale-first ordering: prefer products whose latest scraped_at is oldest
+  // (NULLS first via COALESCE → 0 for products that have no prices yet, so
+  // freshly discovered items get an initial datapoint on their first cron).
+  // Bounded by PRODUCT_LIMIT to keep the cron under CF subrequest budgets
+  // (each fetchMLItem = 1 outbound fetch).
   const result = await env.DB
-    .prepare("SELECT id, url FROM products ORDER BY id DESC LIMIT ?1")
+    .prepare(
+      `SELECT p.id AS id, p.url AS url
+       FROM products p
+       LEFT JOIN (
+         SELECT product_id, MAX(scraped_at) AS last_scraped_at
+         FROM prices
+         GROUP BY product_id
+       ) px ON px.product_id = p.id
+       ORDER BY COALESCE(px.last_scraped_at, 0) ASC, p.id DESC
+       LIMIT ?1`,
+    )
     .bind(PRODUCT_LIMIT)
     .all<ProductRow>();
 

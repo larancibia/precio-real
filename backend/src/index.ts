@@ -14,9 +14,15 @@
 
 import type { ProductRow, PriceRow } from "./types";
 import { computeStats } from "./lib/analytics";
-import { extractMLAId } from "./lib/ml-url";
+import { extractMLAId, normalizeMLUrl } from "./lib/ml-url";
 import { backfillWaybackHistory } from "./scrapers/wayback";
 import { runScheduledScrape } from "./scrapers/scheduled";
+
+// Cap history rows returned by /api/price. The extension only needs enough
+// points to render the verdict + a small chart; an unbounded history grows
+// the response payload (and DB scan cost) for nothing once the cron has been
+// running for a while.
+const PRICE_HISTORY_LIMIT = 180;
 
 export interface Env {
   DB: D1Database;
@@ -50,10 +56,30 @@ async function handlePrice(
     return json({ error: "Missing required query parameter: url" }, 400);
   }
 
-  const product = await env.DB
+  // Be tolerant of trailing-slash / case differences between the extension's
+  // canonicalUrl() and the permalink stored at discovery time. Try the
+  // exact URL first, then fall back to a normalized lookup.
+  let product = await env.DB
     .prepare("SELECT id, url, title, seller, image_url, created_at FROM products WHERE url = ?1")
     .bind(target)
     .first<ProductRow>();
+
+  if (!product) {
+    let normalized: string | null = null;
+    try {
+      normalized = normalizeMLUrl(target);
+    } catch {
+      normalized = null;
+    }
+    if (normalized && normalized !== target) {
+      product = await env.DB
+        .prepare(
+          "SELECT id, url, title, seller, image_url, created_at FROM products WHERE url = ?1",
+        )
+        .bind(normalized)
+        .first<ProductRow>();
+    }
+  }
 
   if (!product) {
     return json({ error: "Product not found", url: target }, 404);
@@ -61,9 +87,9 @@ async function handlePrice(
 
   const history = await env.DB
     .prepare(
-      "SELECT price, currency, scraped_at FROM prices WHERE product_id = ?1 ORDER BY scraped_at DESC",
+      "SELECT price, currency, scraped_at FROM prices WHERE product_id = ?1 ORDER BY scraped_at DESC LIMIT ?2",
     )
-    .bind(product.id)
+    .bind(product.id, PRICE_HISTORY_LIMIT)
     .all<PriceRow>();
 
   const rows = history.results ?? [];
