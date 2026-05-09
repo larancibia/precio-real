@@ -16,8 +16,10 @@
  *   - Prices are realistic 2026 ARS snapshots and only used as the anchor
  *     for the synthetic 60-day history pattern; they don't have to match
  *     the live price.
- *   - We bundle ~30 items: enough to fill all 4 history buckets multiple
- *     times and keep the chart rendering visually busy in dev.
+ *   - We bundle ~45 items: full coverage of every entry in
+ *     DISCOVERY_QUERIES so the fallback exercises the same vertical mix as
+ *     the live cron, and the bucket rotation still has plenty of rows to
+ *     fill the chart in dev.
  */
 
 export interface SeedFixture {
@@ -140,6 +142,42 @@ export const SEED_FIXTURES: readonly SeedFixture[] = [
     seller_nickname: "JBL OFICIAL",
     query: "parlante bluetooth",
   },
+  {
+    permalink: "https://www.mercadolibre.com.ar/smart-tv-led-50-tcl-l50p635-uhd-google-tv/p/MLA29200000",
+    title: 'Smart TV LED 50" TCL L50P635 UHD 4K Google TV',
+    price: 619000,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "TCL",
+    query: "smart tv",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/consola-microsoft-xbox-series-x-1tb/p/MLA22600000",
+    title: "Consola Microsoft Xbox Series X 1TB",
+    price: 1299000,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "MICROSOFT",
+    query: "consola",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/camara-instantanea-fujifilm-instax-mini-12/p/MLA19400000",
+    title: "Cámara Instantánea Fujifilm Instax Mini 12",
+    price: 219999,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "FUJIFILM",
+    query: "camara",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/impresora-multifuncion-epson-ecotank-l3250-wifi/p/MLA18700000",
+    title: "Impresora Multifunción Epson EcoTank L3250 Wi-Fi",
+    price: 459000,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "EPSON",
+    query: "impresora",
+  },
   // Línea blanca / electrodomésticos
   {
     permalink: "https://www.mercadolibre.com.ar/heladera-no-frost-whirlpool-wrm45-375l/p/MLA13900000",
@@ -213,6 +251,60 @@ export const SEED_FIXTURES: readonly SeedFixture[] = [
     seller_nickname: "LILIANA",
     query: "ventilador",
   },
+  {
+    permalink: "https://www.mercadolibre.com.ar/anafe-electrico-vitroceramico-atma-an4920e-2-hornallas/p/MLA11400000",
+    title: "Anafe Eléctrico Vitrocerámico Atma AN4920E 2 Hornallas",
+    price: 169000,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "ATMA",
+    query: "anafe",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/secarropas-koh-i-noor-kca6500-6-5kg-centrifugo/p/MLA12200000",
+    title: "Secarropas Koh-i-Noor KCA6500 6.5Kg Centrífugo",
+    price: 339000,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "KOH-I-NOOR",
+    query: "secarropas",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/termotanque-electrico-rheem-electrico-50l/p/MLA13100000",
+    title: "Termotanque Eléctrico Rheem 50L",
+    price: 289000,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "RHEEM",
+    query: "termotanque",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/horno-electrico-ultracomb-uc-70rcl-70l/p/MLA12600000",
+    title: "Horno Eléctrico Ultracomb UC-70RCL 70L",
+    price: 229000,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "ULTRACOMB",
+    query: "horno electrico",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/licuadora-oster-bpst02-600w-vidrio/p/MLA10100000",
+    title: "Licuadora Oster BPST02 600W Vaso de Vidrio",
+    price: 99999,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "OSTER",
+    query: "licuadora",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/batidora-de-mano-philips-hr3705-300w/p/MLA10200000",
+    title: "Batidora de Mano Philips HR3705 300W",
+    price: 79999,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "PHILIPS",
+    query: "batidora",
+  },
   // Hogar / muebles
   {
     permalink: "https://www.mercadolibre.com.ar/colchon-piero-divino-resortes-2-plazas-190x140/p/MLA13600000",
@@ -231,6 +323,24 @@ export const SEED_FIXTURES: readonly SeedFixture[] = [
     thumbnail: null,
     seller_nickname: "REDRAGON",
     query: "silla gamer",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/sillon-reclinable-de-living-3-cuerpos-eco-cuero/p/MLA13800000",
+    title: "Sillón Reclinable de Living 3 Cuerpos Eco Cuero",
+    price: 899000,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: null,
+    query: "sillon",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/escritorio-pc-melamina-120cm-con-cajon/p/MLA10800000",
+    title: "Escritorio PC Melamina 120cm con Cajón",
+    price: 159000,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: null,
+    query: "escritorio",
   },
   // Deportes / outdoor
   {
@@ -260,6 +370,24 @@ export const SEED_FIXTURES: readonly SeedFixture[] = [
     seller_nickname: "JANSPORT",
     query: "mochila",
   },
+  {
+    permalink: "https://www.mercadolibre.com.ar/pelota-futbol-adidas-tiro-league-n5/p/MLA11500000",
+    title: "Pelota de Fútbol adidas Tiro League N°5",
+    price: 49999,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "ADIDAS",
+    query: "pelota",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/carpa-iglu-doite-trekko-4-personas/p/MLA12700000",
+    title: "Carpa Iglú Doite Trekko 4 Personas",
+    price: 269000,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "DOITE",
+    query: "carpa",
+  },
   // Moda / belleza
   {
     permalink: "https://www.mercadolibre.com.ar/perfume-carolina-herrera-good-girl-edp-80ml/p/MLA9800000",
@@ -279,6 +407,15 @@ export const SEED_FIXTURES: readonly SeedFixture[] = [
     seller_nickname: "CASIO",
     query: "reloj",
   },
+  {
+    permalink: "https://www.mercadolibre.com.ar/campera-puffer-inflable-impermeable-unisex/p/MLA14400000",
+    title: "Campera Puffer Inflable Impermeable Unisex",
+    price: 79999,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: null,
+    query: "campera",
+  },
   // Infantil
   {
     permalink: "https://www.mercadolibre.com.ar/auto-a-bateria-mercedes-benz-12v-control-remoto/p/MLA13500000",
@@ -288,6 +425,15 @@ export const SEED_FIXTURES: readonly SeedFixture[] = [
     thumbnail: null,
     seller_nickname: null,
     query: "auto a bateria",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/juguete-rasti-bloques-creativos-200-piezas/p/MLA10600000",
+    title: "Rasti Bloques Creativos 200 Piezas",
+    price: 39999,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "RASTI",
+    query: "juguetes",
   },
   // Herramientas
   {
