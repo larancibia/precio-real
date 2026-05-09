@@ -22,6 +22,7 @@ import { computeStats } from "../src/lib/analytics";
 import { extractMLAId, normalizeMLUrl } from "../src/lib/ml-url";
 import { parseArgentinePrice, extractPriceFromHTML } from "../src/lib/price-parse";
 import { clampLimit, clampMinDrop, fetchMovers } from "../src/lib/movers";
+import { validateObservation } from "../src/lib/observe";
 import { isTransientHttpStatus, isRetriableError, withRetry } from "../src/lib/retry";
 import {
   formatYYYYMMDD,
@@ -457,6 +458,61 @@ function assertEq<T>(actual: T, expected: T, msg: string): void {
     extractMLAId("https://www.mercadolibre.com.ar/foo/p/Mla28066215"),
     "MLA28066215",
     "extractMLAId mixed case prefix",
+  );
+}
+
+// ── observe: extension observed price payload validation ────────────────────
+{
+  assertEq(
+    validateObservation({
+      url: "https://www.MercadoLibre.com.AR/celular/p/MLA123/?utm_source=x#frag",
+      title: "  Celular demo  ",
+      seller: "  TIENDA OFICIAL  ",
+      image_url: "https://http2.mlstatic.com/demo.jpg?x=1#frag",
+      price: "123456.789",
+      currency: "ars",
+    }),
+    {
+      url: "https://www.mercadolibre.com.ar/celular/p/MLA123",
+      title: "Celular demo",
+      seller: "TIENDA OFICIAL",
+      image_url: "https://http2.mlstatic.com/demo.jpg?x=1",
+      price: 123456.79,
+      currency: "ARS",
+    },
+    "validateObservation normalizes URL, text, price, currency",
+  );
+
+  assertEq(
+    validateObservation({ url: "https://example.com/p/MLA123", price: 10 }),
+    { error: "invalid url" },
+    "validateObservation rejects non-ML host",
+  );
+  assertEq(
+    validateObservation({ url: "https://www.mercadolibre.com.ar/p/MLA123", price: 0 }),
+    { error: "invalid price" },
+    "validateObservation rejects zero price",
+  );
+  assertEq(
+    validateObservation({ url: "https://www.mercadolibre.com.ar/p/MLA123", price: 1_500_000_000 }),
+    { error: "invalid price" },
+    "validateObservation rejects absurd price",
+  );
+  assertEq(
+    validateObservation({
+      url: "https://www.mercadolibre.com.ar/p/MLA123",
+      price: 99,
+      image_url: "javascript:alert(1)",
+    }),
+    {
+      url: "https://www.mercadolibre.com.ar/p/MLA123",
+      title: null,
+      seller: null,
+      image_url: null,
+      price: 99,
+      currency: "ARS",
+    },
+    "validateObservation drops unsafe image URL",
   );
 }
 

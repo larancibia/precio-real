@@ -30,18 +30,20 @@
  *                                  Each item carries the same fields as /api/price (minus full history).
  *                                  Useful for the extension's "comparar en otras tiendas" panel and
  *                                  for the landing page's product-vs-product widget.
+ *   POST /api/observe          → Browser-extension observed price insert.
  *   POST /api/scrape/wayback?url=<url> → { inserted, scanned, failed }
  *   POST /api/scrape/run         → manual trigger of the scheduled scraper (debug/seed)
  *   *                             → 404
  *
  * Cron:
- *   "0 *\/6 * * *" → runScheduledScrape (top 500 popular MLA products, issue #11)
+ *   "0 * * * *" → runScheduledScrape (Hot Sale mode: hourly refresh)
  */
 
 import type { ProductRow, PriceRow } from "./types";
 import { computeStats } from "./lib/analytics";
 import { extractMLAId, normalizeMLUrl } from "./lib/ml-url";
 import { fetchMovers, clampLimit, clampMinDrop } from "./lib/movers";
+import { validateObservation } from "./lib/observe";
 import { backfillWaybackHistory } from "./scrapers/wayback";
 import { runScheduledScrape } from "./scrapers/scheduled";
 
@@ -73,8 +75,8 @@ function json(body: unknown, status = 200, extraHeaders?: Record<string, string>
 }
 
 // Short-lived edge cache for read-only endpoints that are cheap to re-derive
-// but expensive to query (D1 read units). Prices change every 6h; stats and
-// movers don't need to be fresher than 5 min for the UI.
+// but expensive to query (D1 read units). During Hot Sale, observed prices can
+// change hourly; stats and movers don't need to be fresher than 5 min for the UI.
 const CACHE_PRICE = "public, max-age=900, stale-while-revalidate=3600";
 const CACHE_STATS = "public, max-age=300, stale-while-revalidate=900";
 const CACHE_MOVERS = "public, max-age=300, stale-while-revalidate=900";
@@ -418,6 +420,7 @@ const COMPARE_MAX_URLS = 5;
 // baseline for price_30d_ago (used to detect pre-event inflation during Hot Sale / CyberMonday).
 const COMPARE_HISTORY_LIMIT = 60;
 const CACHE_COMPARE = "public, max-age=300, stale-while-revalidate=900";
+const OBSERVE_DEDUPE_WINDOW_SEC = 600;
 
 interface CompareItem {
   url: string;
@@ -568,6 +571,82 @@ async function handleWaybackScrape(request: Request, env: Env): Promise<Response
   }
 }
 
+async function handleObserve(request: Request, env: Env): Promise<Response> {
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return json({ error: "Invalid JSON" }, 400);
+  }
+
+  const observation = validateObservation((body ?? {}) as Record<string, unknown>);
+  if ("error" in observation) {
+    return json({ error: observation.error }, 400);
+  }
+
+  let product = await env.DB
+    .prepare("SELECT id, url, title, seller, image_url, created_at FROM products WHERE url = ?1")
+    .bind(observation.url)
+    .first<ProductRow>();
+
+  if (!product) {
+    await env.DB
+      .prepare("INSERT INTO products (url, title, seller, image_url) VALUES (?1, ?2, ?3, ?4)")
+      .bind(observation.url, observation.title, observation.seller, observation.image_url)
+      .run();
+    product = await env.DB
+      .prepare("SELECT id, url, title, seller, image_url, created_at FROM products WHERE url = ?1")
+      .bind(observation.url)
+      .first<ProductRow>();
+  } else if (
+    (!product.title && observation.title) ||
+    (!product.seller && observation.seller) ||
+    (!product.image_url && observation.image_url)
+  ) {
+    await env.DB
+      .prepare("UPDATE products SET title = COALESCE(title, ?1), seller = COALESCE(seller, ?2), image_url = COALESCE(image_url, ?3) WHERE id = ?4")
+      .bind(observation.title, observation.seller, observation.image_url, product.id)
+      .run();
+  }
+
+  if (!product) {
+    return json({ error: "Product insert failed" }, 500);
+  }
+
+  const latest = await env.DB
+    .prepare("SELECT price, scraped_at FROM prices WHERE product_id = ?1 ORDER BY scraped_at DESC LIMIT 1")
+    .bind(product.id)
+    .first<{ price: number; scraped_at: number }>();
+  const now = Math.floor(Date.now() / 1000);
+
+  if (
+    latest &&
+    now - latest.scraped_at <= OBSERVE_DEDUPE_WINDOW_SEC &&
+    Math.abs(latest.price - observation.price) < 0.01
+  ) {
+    return json({
+      ok: true,
+      inserted: false,
+      deduped: true,
+      product_id: product.id,
+      observed_at: latest.scraped_at,
+    });
+  }
+
+  await env.DB
+    .prepare("INSERT INTO prices (product_id, price, currency, scraped_at) VALUES (?1, ?2, ?3, ?4)")
+    .bind(product.id, observation.price, observation.currency, now)
+    .run();
+
+  return json({
+    ok: true,
+    inserted: true,
+    deduped: false,
+    product_id: product.id,
+    observed_at: now,
+  });
+}
+
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
     if (request.method === "OPTIONS") {
@@ -646,6 +725,15 @@ export default {
     if (request.method === "GET" && url.pathname === "/api/compare") {
       try {
         return await handleCompare(request, env);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        return json({ error: "Internal error", detail: message }, 500);
+      }
+    }
+
+    if (request.method === "POST" && url.pathname === "/api/observe") {
+      try {
+        return await handleObserve(request, env);
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unknown error";
         return json({ error: "Internal error", detail: message }, 500);

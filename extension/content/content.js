@@ -8,7 +8,7 @@
   window.__precioRealLoaded = true;
 
   // Ciclo 1625: versión del content script para facilitar debugging en consola.
-  const CONTENT_VERSION = '1625';
+  const CONTENT_VERSION = '1626';
 
   const PR = window.PrecioReal;
   if (!PR) { console.warn('[Precio Real] helpers not loaded'); return; }
@@ -44,6 +44,7 @@
   const FETCH_TIMEOUT_MS = 6000;
   const FETCH_RETRIES = 2;
   const FETCH_RETRY_BASE_MS = 600;
+  const OBSERVE_TIMEOUT_MS = 2000;
   // Circuit breaker: si el backend falla N veces seguidas (timeout/red/5xx),
   // dejamos de pegarle por COOLDOWN_MS para no consumir batería del usuario
   // ni inundar la consola con warnings. El reset es automático al expirar el
@@ -519,6 +520,70 @@
     return { ok: false, history: [], stats: null };
   }
 
+  function metaContent(selectors) {
+    for (const sel of selectors) {
+      try {
+        const el = document.querySelector(sel);
+        const value = el && el.getAttribute && el.getAttribute('content');
+        if (value && value.trim()) return value.trim();
+      } catch (_) {}
+    }
+    return null;
+  }
+
+  function observedTitle() {
+    return metaContent([
+      'meta[property="og:title"]',
+      'meta[name="twitter:title"]',
+      'meta[itemprop="name"]',
+    ]) || (document.title || '').trim() || null;
+  }
+
+  function observedImage() {
+    return metaContent([
+      'meta[property="og:image"]',
+      'meta[name="twitter:image"]',
+      'meta[itemprop="image"]',
+    ]);
+  }
+
+  async function reportObservedPrice(siteKey, url, price) {
+    // Hot Sale critical path: Mercado Libre's public API is often blocked from
+    // datacenter/edge IPs. The browser already sees the product page, so report
+    // the DOM-observed current price to keep the backend history real.
+    if (siteKey !== 'mercadolibre') return false;
+    if (!url || !price || !Number.isFinite(price) || price <= 0) return false;
+
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => {
+      try { ctrl.abort(); } catch (_) {}
+    }, OBSERVE_TIMEOUT_MS);
+    try {
+      const res = await fetch(BACKEND + '/api/observe', {
+        method: 'POST',
+        cache: 'no-store',
+        keepalive: true,
+        signal: ctrl.signal,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url,
+          price,
+          currency: 'ARS',
+          title: observedTitle(),
+          image_url: observedImage(),
+        }),
+      });
+      clearTimeout(timer);
+      if (res.ok) return true;
+      log.debug(siteKey, 'observe skipped/fail', res.status);
+      return false;
+    } catch (e) {
+      clearTimeout(timer);
+      log.debug(siteKey, 'observe failed', e && (e.message || e));
+      return false;
+    }
+  }
+
   // Ciclo 1596: chequeo post-mount diferido para dos problemas conocidos:
   //
   // 1) CSS visibility reset: algunos retailers inyectan reglas globales que
@@ -725,6 +790,7 @@
     }
 
     log.debug(siteKey, 'tryMount', { url, key, current });
+    await reportObservedPrice(siteKey, url, current);
     const { history, stats } = await fetchHistory(url);
     // Ciclo 1619: re-verificar siteKey post-fetch. El usuario pudo navegar a otra
     // URL mientras el fetch estaba en vuelo (especialmente en conexiones lentas

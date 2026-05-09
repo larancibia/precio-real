@@ -1,5 +1,5 @@
 /**
- * Scheduled cron handler — refreshes ML prices every 6h (issue #11).
+ * Scheduled cron handler — refreshes known ML prices on the configured cron.
  *
  * Steps:
  *   1. Discovery: ensure the top popular MLA products are present in `products`
