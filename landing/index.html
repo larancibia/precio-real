@@ -393,6 +393,84 @@
   }
   </script>
 
+  <!-- Structured data: DefinedTermSet — glosario de la jerga "descuentos truchos" que usa la landing.
+       Google Knowledge Graph levanta DefinedTerm para entidades semanticas (definicion, inLanguage,
+       termCode). Refuerza la asociacion del dominio preciorreal.com con la terminologia local de
+       e-commerce argentino y mejora SERP para queries informacionales tipo "que es un descuento trucho". -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "DefinedTermSet",
+    "@id": "https://preciorreal.com/#glosario",
+    "name": "Glosario Precio Real — terminología de descuentos en e-commerce argentino",
+    "description": "Definiciones clave que usa Precio Real para hablar de aumentos disfrazados de descuentos durante el Hot Sale Argentina.",
+    "inLanguage": "es-AR",
+    "publisher": {
+      "@type": "Organization",
+      "name": "Precio Real",
+      "url": "https://preciorreal.com/"
+    },
+    "hasDefinedTerm": [
+      {
+        "@type": "DefinedTerm",
+        "@id": "https://preciorreal.com/#term-precio-real",
+        "name": "Precio real",
+        "termCode": "precio-real",
+        "description": "Precio base de un producto medido sobre su historial reciente, sin contar aumentos puntuales aplicados en la previa de un evento de descuentos. Es el numero que la extension usa como referencia para clasificar un descuento como honesto o trucho.",
+        "inDefinedTermSet": "https://preciorreal.com/#glosario",
+        "inLanguage": "es-AR"
+      },
+      {
+        "@type": "DefinedTerm",
+        "@id": "https://preciorreal.com/#term-descuento-trucho",
+        "name": "Descuento trucho",
+        "alternateName": ["Descuento falso", "Descuento maquillado"],
+        "termCode": "descuento-trucho",
+        "description": "Descuento que se anuncia sobre un precio inflado en las semanas previas al evento. Aparenta ser una rebaja pero el precio final queda igual o mas alto que el historico reciente del producto.",
+        "inDefinedTermSet": "https://preciorreal.com/#glosario",
+        "inLanguage": "es-AR"
+      },
+      {
+        "@type": "DefinedTerm",
+        "@id": "https://preciorreal.com/#term-aumento-disfrazado",
+        "name": "Aumento disfrazado",
+        "termCode": "aumento-disfrazado",
+        "description": "Suba de precio aplicada en los dias o semanas previos a un evento de descuentos (Hot Sale, CyberMonday, Black Friday) para luego mostrar una promocion que en realidad solo retrocede al precio original o lo deja por encima.",
+        "inDefinedTermSet": "https://preciorreal.com/#glosario",
+        "inLanguage": "es-AR"
+      },
+      {
+        "@type": "DefinedTerm",
+        "@id": "https://preciorreal.com/#term-historial-de-precios",
+        "name": "Historial de precios",
+        "termCode": "historial-de-precios",
+        "description": "Serie temporal del precio publicado de un producto en una tienda determinada. Precio Real lo construye scrapeando periodicamente cada ficha y guarda el dato para comparar contra el precio actual durante eventos de descuento.",
+        "inDefinedTermSet": "https://preciorreal.com/#glosario",
+        "inLanguage": "es-AR"
+      },
+      {
+        "@type": "DefinedTerm",
+        "@id": "https://preciorreal.com/#term-hot-sale",
+        "name": "Hot Sale Argentina",
+        "alternateName": ["Hot Sale AR", "Hot Sale"],
+        "termCode": "hot-sale-argentina",
+        "description": "Evento anual de descuentos online organizado por la Camara Argentina de Comercio Electronico (CACE). Concentra la mayor cantidad de aumentos disfrazados del calendario argentino segun reportes de EcoGo y consumidores.",
+        "inDefinedTermSet": "https://preciorreal.com/#glosario",
+        "inLanguage": "es-AR"
+      },
+      {
+        "@type": "DefinedTerm",
+        "@id": "https://preciorreal.com/#term-badge-precio-real",
+        "name": "Badge Precio Real",
+        "termCode": "badge-precio-real",
+        "description": "Etiqueta visual que la extension inyecta en la ficha del producto. Tres estados: precio real (descuento honesto sobre el historial), inflado (aumento disfrazado de descuento) o neutral (sin cambios significativos).",
+        "inDefinedTermSet": "https://preciorreal.com/#glosario",
+        "inLanguage": "es-AR"
+      }
+    ]
+  }
+  </script>
+
   <!-- Structured data: FAQPage (mirrors the FAQ section) -->
   <script type="application/ld+json">
   {
