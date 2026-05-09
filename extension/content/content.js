@@ -4,7 +4,8 @@
   const PR = window.PrecioReal;
   if (!PR) { console.warn('[Precio Real] helpers not loaded'); return; }
 
-  const BACKEND = 'http://localhost:8787';
+  // Usar config compartido para que el switch dev↔prod sea un solo archivo.
+  const BACKEND = (window.PrecioRealConfig && window.PrecioRealConfig.API_BASE) || 'http://localhost:8787';
 
   function isProductPage() {
     const site = PR.detectSite ? PR.detectSite(location.hostname) : null;
