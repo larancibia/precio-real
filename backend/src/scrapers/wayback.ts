@@ -27,7 +27,8 @@ export interface BackfillResult {
 const sleep = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-function formatYYYYMMDD(date: Date): string {
+// Exported for unit tests (tests/run.ts). Pure helpers, no I/O.
+export function formatYYYYMMDD(date: Date): string {
   const y = date.getUTCFullYear().toString().padStart(4, "0");
   const m = (date.getUTCMonth() + 1).toString().padStart(2, "0");
   const d = date.getUTCDate().toString().padStart(2, "0");
@@ -35,7 +36,8 @@ function formatYYYYMMDD(date: Date): string {
 }
 
 // Convert "YYYYMMDDHHMMSS" → unix seconds (UTC). Returns null if malformed.
-function wayback14ToUnix(ts14: string): number | null {
+// Exported for unit tests (tests/run.ts).
+export function wayback14ToUnix(ts14: string): number | null {
   if (!/^\d{14}$/.test(ts14)) return null;
   const year = Number(ts14.slice(0, 4));
   const month = Number(ts14.slice(4, 6));
@@ -49,7 +51,8 @@ function wayback14ToUnix(ts14: string): number | null {
 }
 
 // Evenly sample n elements down to k while preserving order; dedupe by reference index.
-function evenSample<T>(arr: T[], k: number): T[] {
+// Exported for unit tests (tests/run.ts).
+export function evenSample<T>(arr: T[], k: number): T[] {
   if (arr.length <= k || k <= 0) return arr.slice();
   if (k === 1) return [arr[0]];
   const seen = new Set<number>();
@@ -90,7 +93,8 @@ async function fetchWithTimeout(
 }
 
 // Parse CDX JSON: first row = column headers, subsequent rows = data. Returns 14-char timestamp strings.
-function parseCdxResponse(payload: unknown): string[] {
+// Exported for unit tests (tests/run.ts).
+export function parseCdxResponse(payload: unknown): string[] {
   if (!Array.isArray(payload) || payload.length === 0) return [];
   const out: string[] = [];
   // Skip header row at index 0.

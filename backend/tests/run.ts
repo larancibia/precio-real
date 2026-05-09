@@ -22,6 +22,12 @@ import { computeStats } from "../src/lib/analytics";
 import { extractMLAId, normalizeMLUrl } from "../src/lib/ml-url";
 import { parseArgentinePrice, extractPriceFromHTML } from "../src/lib/price-parse";
 import { clampLimit, clampMinDrop, fetchMovers } from "../src/lib/movers";
+import {
+  formatYYYYMMDD,
+  wayback14ToUnix,
+  evenSample,
+  parseCdxResponse,
+} from "../src/scrapers/wayback";
 
 let passed = 0;
 let failed = 0;
@@ -184,6 +190,144 @@ function assertEq<T>(actual: T, expected: T, msg: string): void {
   assertEq(clampMinDrop("0"), 0, "clampMinDrop explicit 0 string → 0 (caller asked)");
   assertEq(clampMinDrop("99"), 99, "clampMinDrop 99 boundary → 99");
   assertEq(clampMinDrop("99.5"), 99, "clampMinDrop above 99 → caps at 99");
+}
+
+// ── wayback: formatYYYYMMDD ─────────────────────────────────────────────────
+{
+  // 2024-01-05 13:45:00 UTC
+  assertEq(
+    formatYYYYMMDD(new Date(Date.UTC(2024, 0, 5, 13, 45, 0))),
+    "20240105",
+    "formatYYYYMMDD pads month/day to 2 digits",
+  );
+  // 1999-12-31 23:59:59 UTC
+  assertEq(
+    formatYYYYMMDD(new Date(Date.UTC(1999, 11, 31, 23, 59, 59))),
+    "19991231",
+    "formatYYYYMMDD year=1999 boundary",
+  );
+  // Year 2000 — pads correctly, no Y2K weirdness.
+  assertEq(
+    formatYYYYMMDD(new Date(Date.UTC(2000, 0, 1, 0, 0, 0))),
+    "20000101",
+    "formatYYYYMMDD Y2K boundary",
+  );
+  // Date constructed via UTC — uses UTC fields, not local.
+  assertEq(
+    formatYYYYMMDD(new Date(Date.UTC(2026, 4, 9, 0, 0, 0))),
+    "20260509",
+    "formatYYYYMMDD uses UTC fields",
+  );
+}
+
+// ── wayback: wayback14ToUnix ────────────────────────────────────────────────
+{
+  // 2024-01-05 13:45:30 UTC → 1704462330
+  assertEq(
+    wayback14ToUnix("20240105134530"),
+    Math.floor(Date.UTC(2024, 0, 5, 13, 45, 30) / 1000),
+    "wayback14ToUnix valid timestamp",
+  );
+  // Round-trip with formatYYYYMMDD style prefix
+  assertEq(
+    wayback14ToUnix("20000101000000"),
+    946684800,
+    "wayback14ToUnix Y2K epoch boundary",
+  );
+  // Garbage / wrong length → null
+  assertEq(wayback14ToUnix(""), null, "wayback14ToUnix empty → null");
+  assertEq(wayback14ToUnix("2024010512345"), null, "wayback14ToUnix 13 digits → null");
+  assertEq(wayback14ToUnix("202401051234567"), null, "wayback14ToUnix 15 digits → null");
+  assertEq(wayback14ToUnix("2024010X134530"), null, "wayback14ToUnix non-digit → null");
+  assertEq(wayback14ToUnix("ABCDEFGHIJKLMN"), null, "wayback14ToUnix all letters → null");
+}
+
+// ── wayback: evenSample ─────────────────────────────────────────────────────
+{
+  // arr.length <= k → returns shallow copy of arr (full set)
+  assertEq(evenSample([1, 2, 3], 5), [1, 2, 3], "evenSample short array returns full copy");
+  assertEq(evenSample([], 3), [], "evenSample empty array");
+
+  // k <= 0 → returns shallow copy too
+  assertEq(evenSample([1, 2, 3], 0), [1, 2, 3], "evenSample k=0 returns copy");
+  assertEq(evenSample([1, 2, 3], -1), [1, 2, 3], "evenSample negative k returns copy");
+
+  // k=1 always picks first element
+  assertEq(evenSample([10, 20, 30, 40, 50], 1), [10], "evenSample k=1 → first");
+
+  // Standard downsample: evenly distributed, includes both endpoints
+  assertEq(
+    evenSample([0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 5),
+    [0, 2, 4, 6, 9],
+    "evenSample 10→5 even distribution",
+  );
+
+  // k = arr.length → full copy
+  assertEq(evenSample([1, 2, 3], 3), [1, 2, 3], "evenSample k===len returns copy");
+
+  // k=2 picks first + last
+  assertEq(evenSample([1, 2, 3, 4, 5], 2), [1, 5], "evenSample k=2 picks endpoints");
+
+  // Dedupe: small arr where index calc would repeat
+  assertEq(evenSample([1, 2], 5), [1, 2], "evenSample arr<k → preserves arr");
+
+  // Result is a new array (not aliased)
+  const original = [1, 2, 3];
+  const sampled = evenSample(original, 100);
+  assertEq(sampled === original, false, "evenSample returns a copy, not alias");
+}
+
+// ── wayback: parseCdxResponse ───────────────────────────────────────────────
+{
+  // Standard CDX response: header row + data rows
+  assertEq(
+    parseCdxResponse([["timestamp"], ["20240101000000"], ["20240602120000"]]),
+    ["20240101000000", "20240602120000"],
+    "parseCdxResponse skips header row",
+  );
+
+  // Empty array → empty
+  assertEq(parseCdxResponse([]), [], "parseCdxResponse empty array");
+  // Header-only payload (no data rows) → empty
+  assertEq(parseCdxResponse([["timestamp"]]), [], "parseCdxResponse header-only");
+
+  // Non-array payload → empty (defensive)
+  assertEq(parseCdxResponse(null), [], "parseCdxResponse null payload");
+  assertEq(parseCdxResponse({ x: 1 }), [], "parseCdxResponse object payload");
+  assertEq(parseCdxResponse("malformed"), [], "parseCdxResponse string payload");
+
+  // Skips malformed inner rows (missing/wrong shape)
+  assertEq(
+    parseCdxResponse([["h"], ["20240101000000"], [], "garbage", ["abcdefghij1234"]]),
+    ["20240101000000"],
+    "parseCdxResponse drops bad rows",
+  );
+
+  // Skips ts that aren't 14 digits
+  assertEq(
+    parseCdxResponse([["h"], ["202401010"], ["20240101000000"], ["202401010000000"]]),
+    ["20240101000000"],
+    "parseCdxResponse 14-digit guard",
+  );
+}
+
+// ── ml-url: extractMLAId additional edge cases ──────────────────────────────
+{
+  // Empty / malformed
+  assertEq(extractMLAId(""), null, "extractMLAId empty string → null");
+  assertEq(extractMLAId("https://www.mercadolibre.com.ar/"), null, "extractMLAId no id at all");
+  // Extra trailing chars in compact form: only consumes leading digits
+  assertEq(
+    extractMLAId("https://www.mercadolibre.com.ar/p/MLA999abc"),
+    "MLA999",
+    "extractMLAId stops at non-digit boundary",
+  );
+  // Mixed case / no separator
+  assertEq(
+    extractMLAId("https://www.mercadolibre.com.ar/foo/p/Mla28066215"),
+    "MLA28066215",
+    "extractMLAId mixed case prefix",
+  );
 }
 
 // ── movers: fetchMovers (in-memory D1 stub) ─────────────────────────────────
