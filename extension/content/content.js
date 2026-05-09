@@ -7,6 +7,9 @@
   if (window.__precioRealLoaded) return;
   window.__precioRealLoaded = true;
 
+  // Ciclo 1602: versión del content script para facilitar debugging en consola.
+  const CONTENT_VERSION = '1602';
+
   const PR = window.PrecioReal;
   if (!PR) { console.warn('[Precio Real] helpers not loaded'); return; }
 
@@ -61,11 +64,16 @@
     if (typeof PR.isProductPageStrict === 'function') {
       try {
         const site = PR.detectSite ? PR.detectSite(location.hostname) : null;
+        // Ciclo 1602: bail-out temprano si el sitio no está soportado. Evita
+        // DOM queries costosas en retailers no cubiertos.
+        if (site === null) return false;
         return PR.isProductPageStrict(site);
       } catch (_) { /* caer al legacy */ }
     }
     try {
       const site = PR.detectSite ? PR.detectSite(location.hostname) : null;
+      // Ciclo 1602: bail-out temprano para sitios no soportados en el camino legacy.
+      if (site === null) return false;
       if (site === 'mercadolibre') {
         if (location.hostname.startsWith('articulo.')) return true;
         if (/\/p\//.test(location.pathname)) return true;
@@ -108,6 +116,14 @@
        verdict.kind === 'inflated' ? 'precio-real-badge--fake' :
        'precio-real-badge--neutral');
     wrap.setAttribute('role', 'status');
+    // Ciclo 1602: data-version para facilitar debugging ("¿qué versión del
+    // content script está corriendo?") sin abrir el panel de extensiones.
+    wrap.setAttribute('data-pr-version', CONTENT_VERSION);
+    // Tooltip: repite el subtítulo para usuarios que hacen hover y quieren
+    // copiar el texto, y para lectores de pantalla que no leen el badge abierto.
+    if (verdict.label || verdict.sub) {
+      wrap.setAttribute('title', [verdict.label, verdict.sub].filter(Boolean).join(' — '));
+    }
 
     const close = document.createElement('button');
     close.className = 'precio-real-badge__close';
@@ -747,6 +763,35 @@
       setTimeout(tick, BADGE_HEALTH_CHECK_MS);
     }
     setTimeout(tick, BADGE_HEALTH_CHECK_MS);
+
+    // Ciclo 1602: observar el <html> element para detectar swap del <body>.
+    // Algunos SPAs (Next.js App Router con React Server Components, Nuxt 3)
+    // reemplazan el body entero como childList mutation en documentElement.
+    // El variant observer solo mira document.body, que queda desconectado tras
+    // el swap, y el health-watch de arriba lo rescata en BADGE_HEALTH_CHECK_MS
+    // (30s) — demasiado tarde. Con este observer lo detectamos inmediatamente.
+    // Cap conservador (10 fires): si el sitio swappea el body en bucle, algo
+    // está muy mal; cortamos para no gastar ciclos en un loop infinito.
+    let bodySwapFires = 0;
+    const BODY_SWAP_MAX_FIRES = 10;
+    if (typeof MutationObserver === 'function' && document.documentElement) {
+      try {
+        const bodySwapObs = new MutationObserver(() => {
+          if (myToken !== runToken) { bodySwapObs.disconnect(); return; }
+          if (++bodySwapFires > BODY_SWAP_MAX_FIRES) { bodySwapObs.disconnect(); return; }
+          if (!mounted) return;
+          const root = document.getElementById('precio-real-badge-root');
+          if (!root || !root.isConnected || !root.hasChildNodes()) {
+            mounted = false;
+            log.debug(siteKey, 'body swap detected, re-mounting badge');
+            tryMount(siteKey, myToken).then((didMount) => {
+              if (didMount) schedulePostMountCheck(siteKey);
+            }).catch(() => {});
+          }
+        });
+        bodySwapObs.observe(document.documentElement, { childList: true });
+      } catch (_) { /* entorno sin MutationObserver: health tick lo cubre */ }
+    }
   }
 
   async function run() {
