@@ -25,6 +25,18 @@
         '.ui-pdp-price__second-line .andes-money-amount[data-testid="price-part"] .andes-money-amount__fraction',
         '.ui-pdp-price__second-line .andes-money-amount__fraction',
         '.ui-pdp-price__main-container .andes-money-amount__fraction',
+        // Ciclo 13: PDP de productos catálogo (/p/MLA…) tienen otra envoltura que
+        // expone andes-money-amount con role="img" (lectores de pantalla). Como
+        // primer pase también permite atrapar el precio cuando .ui-pdp-price__second-line
+        // no apareció todavía (hidratación parcial). readMlPrice() reconstruye
+        // desde aria-label, así que es seguro como ancestor selector.
+        '.ui-pdp-price__second-line .andes-money-amount[role="img"]',
+        '.ui-pdp-price__main-container .andes-money-amount[role="img"]',
+        // Variante "buy box" del listado oficial (catálogo) cuando el comprador
+        // ya seleccionó un seller específico — el precio activo aparece en
+        // .ui-pdp-buybox.
+        '.ui-pdp-buybox .andes-money-amount[data-testid="price-part"] .andes-money-amount__fraction',
+        '.ui-pdp-buybox .andes-money-amount__fraction',
         // Meta tags como último recurso (suelen estar en formato US):
         'meta[itemprop="price"]',
         'meta[property="product:price:amount"]',
@@ -41,11 +53,22 @@
         '[data-test-id="product-price"]',
         '[data-test-id="product-price-current"]',
         '[data-test-id="product-pdp-price"]',
+        // Ciclo 13: variantes adicionales del PDP de Frávega, todas observadas
+        // en la app router de Next 14 cuando hay descuento promocional. El
+        // "current" es el precio efectivo final, "selling" es el SAP-style.
+        '[data-test-id="product-current-price"]',
+        '[data-test-id="product-selling-price"]',
+        '[data-testid="product-price"]',
+        '[data-testid="product-current-price"]',
         // Styled-components con hash variable: matchear prefijos.
         'span[class*="sc-" i][class*="Price" i]',
         'span[class*="sale-price" i]',
         'span[class*="OfferPrice" i]',
         'span[class*="Price-sc" i]',
+        // Ciclo 13: PDP móvil de Frávega y página de checkout exponen el precio
+        // dentro de un contenedor PriceWrapper / PriceContainer styled.
+        'div[class*="PriceWrapper" i] span[class*="Price" i]',
+        'div[class*="PriceContainer" i] span[class*="Price" i]',
         'meta[itemprop="price"]',
         'meta[property="product:price:amount"]',
         'meta[property="og:price:amount"]',
@@ -61,8 +84,20 @@
         '[data-test-id="price"]',
         '[data-testid="product-price"]',
         '[data-test-id="product-price"]',
+        // Ciclo 13: Garbarino también expone "selling-price" y "best-price"
+        // en su rediseño 2025 (post-migración VTEX). El "best" representa el
+        // precio efectivo con cualquier promo de medio de pago automática
+        // (sin filtros bancarios, son el "neto" que nos interesa).
+        '[data-testid="product-selling-price"]',
+        '[data-testid="product-best-price"]',
+        '[data-test-id="product-selling-price"]',
+        '[data-test-id="product-best-price"]',
         '.vtex-product-price-1-x-sellingPriceValue',
+        '.vtex-product-price-1-x-currencyContainer',
         '[class*="sellingPrice" i]',
+        // Styled-components Next.js (Garbarino tiene un stack mixto Next+VTEX).
+        'span[class*="sc-" i][class*="Price" i]',
+        'span[class*="ProductPrice" i]',
         '.price-label',
         '.product-price',
         'meta[itemprop="price"]',
@@ -132,9 +167,20 @@
         '[data-testid="product-price"]',
         '[data-test-id="product-price"]',
         '[data-testid="pdp-price-value"]',
+        // Ciclo 13: Naldo también usa "current-price" / "final-price" en el
+        // PDP cuando hay precio promocional. Confirmado en Hot Sale 2025.
+        '[data-testid="product-current-price"]',
+        '[data-testid="product-final-price"]',
+        '[data-test-id="product-current-price"]',
+        '[data-test-id="product-final-price"]',
+        '[data-testid="pdp-current-price"]',
         'span[class*="sc-" i][class*="Price" i]',
         '.product-price',
+        '.precio-actual',
+        '.precio-final',
         'span[class*="Price-sc" i]',
+        'span[class*="CurrentPrice" i]',
+        'span[class*="FinalPrice" i]',
         'meta[itemprop="price"]',
         'meta[property="product:price:amount"]',
         'meta[property="og:price:amount"]',
@@ -147,10 +193,20 @@
       selectors: [
         // Musimundo (VTEX): el sellingPrice es el del producto seleccionado.
         '[data-testid="price-value"]',
+        '[data-testid="product-price"]',
+        '[data-test-id="product-price"]',
         '.vtex-product-price-1-x-sellingPriceValue',
+        // Ciclo 13: Musimundo expone también currencyContainer / sellingPrice
+        // (sin "Value") en su Casper 2024. Y .product-pdp-price es legacy
+        // pre-migración VTEX que aún aparece en algunos PDPs viejos.
+        '.vtex-product-price-1-x-currencyContainer',
+        '.vtex-product-price-1-x-sellingPrice',
+        '.product-pdp-price',
         '[class*="sellingPriceValue" i]',
         '[class*="sellingPrice" i]',
+        '[class*="currentPrice" i]',
         '.price-value',
+        '.price-best-price',
         '.product-price',
         'span[class*="price" i]',
         'meta[itemprop="price"]',
