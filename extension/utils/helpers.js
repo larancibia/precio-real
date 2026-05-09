@@ -194,7 +194,11 @@
         } catch (e) {
           continue;
         }
-        const found = walkLdJson(parsed);
+        // Algunos retailers (VTEX, Shopify) emiten ld+json envuelto en @graph
+        // (un array de nodos hermanos). walkLdJson ya recurse por keys, pero
+        // promovemos @graph al toplevel para asegurar el find del Product.
+        const root = (parsed && parsed['@graph']) ? parsed['@graph'] : parsed;
+        const found = walkLdJson(root);
         if (found != null) {
           const n = Number(found);
           if (Number.isFinite(n) && n > 0) return n;
@@ -203,6 +207,35 @@
     } catch (e) {
       // ignore
     }
+    return null;
+  }
+
+  // Devuelve true si el offer está OutOfStock/Discontinued/SoldOut según
+  // schema.org availability. Cualquier otro valor (InStock, PreOrder, ausente)
+  // se considera vendible y por lo tanto se acepta su precio.
+  function isOfferOutOfStock(offer) {
+    if (!offer || typeof offer !== 'object') return false;
+    const av = offer.availability;
+    if (!av) return false;
+    const s = String(av).toLowerCase();
+    return /outofstock|discontinued|soldout/.test(s);
+  }
+
+  function pickOfferPrice(offer) {
+    if (!offer || typeof offer !== 'object') return null;
+    if (isOfferOutOfStock(offer)) return null;
+    // Preferencia: price > priceSpecification.price > lowPrice. lowPrice/highPrice
+    // son del AggregateOffer y suelen ser el rango de listado, no el precio
+    // del producto seleccionado en la PDP. Sólo usamos lowPrice como último
+    // recurso (cuando no hay price visible).
+    if (offer.price != null) return offer.price;
+    if (offer.priceSpecification && typeof offer.priceSpecification === 'object') {
+      const ps = offer.priceSpecification;
+      if (ps.price != null) return ps.price;
+      // priceSpecification también puede ser array (rare).
+      if (Array.isArray(ps) && ps[0] && ps[0].price != null) return ps[0].price;
+    }
+    if (offer.lowPrice != null) return offer.lowPrice;
     return null;
   }
 
@@ -222,13 +255,16 @@
     if (isProduct && node.offers) {
       const offers = node.offers;
       if (Array.isArray(offers)) {
-        const first = offers[0];
-        if (first && (first.price != null || first.lowPrice != null)) {
-          return first.price != null ? first.price : first.lowPrice;
+        // Recorrer todos los offers y devolver el primero con precio válido
+        // y stock disponible. Esto evita devolver lowPrice de un offer
+        // OutOfStock cuando hay otro offer con stock más arriba en la PDP.
+        for (const o of offers) {
+          const p = pickOfferPrice(o);
+          if (p != null) return p;
         }
       } else if (typeof offers === 'object') {
-        if (offers.price != null) return offers.price;
-        if (offers.lowPrice != null) return offers.lowPrice;
+        const p = pickOfferPrice(offers);
+        if (p != null) return p;
       }
     }
 
@@ -251,7 +287,11 @@
       const tag = (node.tagName || '').toLowerCase();
       if (tag === 's' || tag === 'del' || tag === 'strike') return true;
       const cls = ((node.className && node.className.baseVal) || node.className || '') + '';
-      if (/line-through|strike|crossed|old[-_]?price|previous[-_]?price|prev[-_]?price|list[-_]?price|regular[-_]?price|was[-_]?price|antes|tachad/i.test(cls)) {
+      // Patrones AR (antes, tachado), EN (line-through, strike, crossed), VTEX
+      // camelCase (oldPrice, originalPrice, listPrice, regularPrice, wasPrice,
+      // productPriceOld), Magento (old-price, special-price-from), Shopify
+      // (price--compare-at, price__compare-at), txt-strike, sale-price-from.
+      if (/line-through|strike|crossed|old[-_]?price|oldprice|previous[-_]?price|prev[-_]?price|list[-_]?price|listprice|regular[-_]?price|regularprice|was[-_]?price|wasprice|antes|tachad|original[-_]?price|originalprice|compare[-_]?at|compareat|product[-_]?price[-_]?old|priceold|txt[-_]?strike|crossed[-_]?out|crossedout|from[-_]?price|fromprice|reference[-_]?price|referenceprice|previousprice|preciotachado|precio[-_]?anterior/i.test(cls)) {
         return true;
       }
       // Inline style (algunos retailers usan style="text-decoration: line-through")
@@ -282,9 +322,13 @@
     // 1) Inspección directa del texto del elemento (más rápido y certero).
     let ownText = '';
     try { ownText = (el.textContent || '').trim(); } catch (_) {}
-    if (/\bcuotas?\s+(de|sin|fijas|con)\b/i.test(ownText)) return true;
+    if (/\bcuotas?\s+(de|sin|fijas|con|mensuales)\b/i.test(ownText)) return true;
     if (/\bx\s+\d{1,2}\s+cuotas?\b/i.test(ownText)) return true;
+    if (/\b\d{1,2}\s*x\s*\$/i.test(ownText)) return true; // "12x $1.234"
     if (/\bpor\s+mes\b/i.test(ownText)) return true; // "$1.234 por mes"
+    if (/\bal\s+mes\b/i.test(ownText)) return true; // "$1.234 al mes"
+    if (/\bmensuales?\b/i.test(ownText) && /\$/.test(ownText)) return true;
+    if (/\bhasta\s+(en\s+)?\d{1,2}\s+cuotas?\b/i.test(ownText)) return true;
     // 2) Ancestros: buscar contenedores marcados como cuotas/promo/instalment.
     let node = el;
     for (let i = 0; i < 4 && node; i++) {
@@ -292,9 +336,34 @@
       const id = (node.id || '') + '';
       const dataTest = (node.getAttribute && (node.getAttribute('data-testid') || node.getAttribute('data-test-id'))) || '';
       const blob = `${cls} ${id} ${dataTest}`;
-      if (/installment|cuota|finance|finan|monthly|per[-_]?month|promo[-_]?banc/i.test(blob)) return true;
+      if (/installment|cuota|finance|finan|monthly|per[-_]?month|permonth|promo[-_]?banc|promobanc|mensual|ahora[-_]?12|ahora12|ahora-?\d{1,2}|nowx\d/i.test(blob)) return true;
       node = node.parentElement;
     }
+    return false;
+  }
+
+  // Detecta nodos visualmente ocultos. Algunos retailers conservan en el DOM
+  // un precio "anterior" con display:none / visibility:hidden / aria-hidden=true
+  // que tiene mejor markup que el visible (data-price-amount, content="…"),
+  // así que un parser ingenuo lo agarra primero. Filtrarlo evita falsos
+  // descuentos. Sólo aplica a elementos no-meta (un meta itemprop="price"
+  // legítimamente nunca está visible).
+  function isHiddenNode(el) {
+    if (!el || !el.tagName) return false;
+    const tag = el.tagName.toLowerCase();
+    if (tag === 'meta' || tag === 'link' || tag === 'script') return false;
+    try {
+      if (el.getAttribute && el.getAttribute('aria-hidden') === 'true') return true;
+      const inline = (el.getAttribute && el.getAttribute('style')) || '';
+      if (/display\s*:\s*none/i.test(inline)) return true;
+      if (/visibility\s*:\s*hidden/i.test(inline)) return true;
+      const cs = el.ownerDocument && el.ownerDocument.defaultView
+        ? el.ownerDocument.defaultView.getComputedStyle(el) : null;
+      if (cs) {
+        if (cs.display === 'none') return true;
+        if (cs.visibility === 'hidden' || cs.visibility === 'collapse') return true;
+      }
+    } catch (_) { /* ignore */ }
     return false;
   }
 
@@ -371,6 +440,9 @@
         continue;
       }
       for (const el of nodes) {
+        // Saltar nodos ocultos (display:none / visibility:hidden / aria-hidden).
+        // Excepto meta tags, que siempre son "ocultos" pero válidos.
+        if (isHiddenNode(el)) continue;
         // Saltar precios visiblemente tachados (precio anterior, "antes").
         if (isStrikethroughPrice(el)) continue;
         // Saltar precios que en realidad son cuotas mensuales o promos
@@ -564,6 +636,7 @@
   ns.isProductPageStrict = isProductPageStrict;
   ns.isStrikethroughPrice = isStrikethroughPrice;
   ns.isInstallmentPrice = isInstallmentPrice;
+  ns.isHiddenNode = isHiddenNode;
   ns.isPriceSane = isPriceSane;
   ns.log = log;
   ns.DEBUG = DEBUG;
