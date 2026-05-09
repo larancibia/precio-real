@@ -7,8 +7,8 @@
   if (window.__precioRealLoaded) return;
   window.__precioRealLoaded = true;
 
-  // Ciclo 1607: versión del content script para facilitar debugging en consola.
-  const CONTENT_VERSION = '1607';
+  // Ciclo 1608: versión del content script para facilitar debugging en consola.
+  const CONTENT_VERSION = '1608';
 
   const PR = window.PrecioReal;
   if (!PR) { console.warn('[Precio Real] helpers not loaded'); return; }
@@ -30,8 +30,11 @@
   const OBS_DEBOUNCE_MS = 250;
   // Cap defensivo: si el sitio jamás estabiliza el DOM, no nos quedamos
   // observando indefinidamente disparando tryMount.
-  const OBS_MAX_FIRES = 60;
-  const OBS_TIMEOUT_MS = 15000;
+  // Ciclo 1608: 60→120 para SPAs pesados (Next.js App Router, VTEX IO) que
+  // necesitan más tiempo para hidratar el precio en conexiones lentas o con CDN
+  // throttling. 15s→25s por la misma razón (hot sale: tráfico alto + servidores lentos).
+  const OBS_MAX_FIRES = 120;
+  const OBS_TIMEOUT_MS = 25000;
   // Retries iniciales antes de armar el MutationObserver: cubre el caso típico
   // donde el precio aparece tras un XHR <3s después de DOMContentLoaded.
   // Ciclo 1601: +8000ms para VTEX Classic en conexiones lentas.
@@ -46,7 +49,10 @@
   // ni inundar la consola con warnings. El reset es automático al expirar el
   // cooldown o ante el primer 200 después de eso.
   const CIRCUIT_FAIL_THRESHOLD = 3;
-  const CIRCUIT_COOLDOWN_MS = 60_000;
+  // Ciclo 1608: 60s→30s. Durante Hot Sale los backends tienen picos de tráfico
+  // que generan 503s transitorios de <30s. Con 60s de cooldown el badge queda
+  // en "sin datos" mucho más de lo necesario.
+  const CIRCUIT_COOLDOWN_MS = 30_000;
   // Cap defensivo del variant observer: algunos sitios re-renderean atributos
   // ARIA cada segundo sin que la variante cambie de verdad. Sin cap, el observer
   // se mantiene activo toda la sesión disparando schedule() en bucle.
@@ -56,7 +62,10 @@
   // nuestro root silenciosamente entre renders sin cambiar URL ni precio, lo que
   // el variant observer no detecta porque no hay mutación de atributos.
   const BADGE_HEALTH_CHECK_MS = 30_000;
-  const BADGE_HEALTH_MAX_CHECKS = 10;
+  // Ciclo 1608: 10→20 checks (5 min→10 min). Usuarios que comparan precios
+  // durante Hot Sale pasan >5 min en la misma PDP; el badge desaparecía en
+  // SPAs con virtual-DOM sin que nadie lo note.
+  const BADGE_HEALTH_MAX_CHECKS = 20;
 
   function isProductPage() {
     // Si helpers expone la versión strict (incluye filtro de URLs de listado),

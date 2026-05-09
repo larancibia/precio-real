@@ -117,6 +117,11 @@
     'dexter',
     'tgc',
     'maxiconsumo',
+    // Ciclo 1608: FullH4rd AR (Shopify gaming/periféricos), StartTech AR (Magento 2
+    // gaming/PC), PC House AR (WooCommerce hardware).
+    'fullh4rd',
+    'starttech',
+    'pchouse',
   ];
 
   function detectSite(hostname) {
@@ -205,6 +210,11 @@
     if (h.endsWith('dexter.com.ar')) return 'dexter';
     if (h.endsWith('tgc.com.ar')) return 'tgc';
     if (h.endsWith('maxiconsumo.com')) return 'maxiconsumo';
+    // Ciclo 1608: FullH4rd AR (Shopify gaming/periféricos), StartTech AR (Magento 2
+    // gaming/PC), PC House AR (WooCommerce hardware).
+    if (h.endsWith('fullh4rd.com.ar')) return 'fullh4rd';
+    if (h.endsWith('startechpc.com.ar')) return 'starttech';
+    if (h.endsWith('phouse.com.ar')) return 'pchouse';
     return null;
   }
 
@@ -1032,35 +1042,37 @@
         if (/\/(ProductDetail|product|item)\//.test(location.pathname)) return true;
         // Caer al microdata check: Asus emite JSON-LD de Product en sus PDPs.
       }
-      // Magento 2 (Cetrogar, Rodo, Noblex, Venex, BGood, HP Tienda, Pycca, Acer, TGC):
+      // Magento 2 (Cetrogar, Rodo, Noblex, Venex, BGood, HP Tienda, Pycca, Acer, TGC, StartTech):
       // body tiene la clase catalog-product-view en todas las PDPs de Magento 2.
       // Es el identificador más confiable: Magento lo agrega server-side antes de
       // que JS hidrate, por lo que está disponible en document_idle.
       // Ciclo 1607: TGC AR también usa Magento 2.
+      // Ciclo 1608: StartTech AR también usa Magento 2.
       if (siteKey === 'cetrogar' || siteKey === 'rodo' || siteKey === 'noblex' ||
           siteKey === 'venex' || siteKey === 'bgood' || siteKey === 'hptienda' || siteKey === 'pycca' ||
-          siteKey === 'microcenter' || siteKey === 'acer' || siteKey === 'tgc') {
+          siteKey === 'microcenter' || siteKey === 'acer' || siteKey === 'tgc' || siteKey === 'starttech') {
         try {
           if (document.body && document.body.classList.contains('catalog-product-view')) return true;
         } catch (_) {}
         // Magento 2 emite JSON-LD de Product: caer al microdata check.
       }
-      // Shopify (TCL AR, iPoint AR, Musimundo, Compumundo, Coolbox AR, Dexter AR): PDPs tienen /products/ en la
-      // ruta y/o body.template-product. Musimundo/Compumundo usan Shopify custom theme.
-      // Ciclo 1606: Coolbox AR también usa Shopify (Debut/Dawn theme con /products/ en ruta).
+      // Shopify (TCL AR, iPoint AR, Musimundo, Compumundo, Coolbox AR, Dexter AR, FullH4rd AR):
+      // PDPs tienen /products/ en la ruta y/o body.template-product.
+      // Ciclo 1606: Coolbox AR también usa Shopify.
       // Ciclo 1607: Dexter AR también usa Shopify.
+      // Ciclo 1608: FullH4rd AR también usa Shopify (gaming/periféricos).
       if (siteKey === 'tcl' || siteKey === 'ipoint' || siteKey === 'musimundo' || siteKey === 'compumundo' ||
-          siteKey === 'coolbox' || siteKey === 'dexter') {
+          siteKey === 'coolbox' || siteKey === 'dexter' || siteKey === 'fullh4rd') {
         if (/\/products\//.test(location.pathname)) return true;
         try {
           if (document.body && document.body.classList.contains('template-product')) return true;
         } catch (_) {}
         // Shopify emite JSON-LD de Product en PDPs: caer al microdata check.
       }
-      // WooCommerce (Olimpo AR, Drean, HiperTehno, EXO, Mac Center, Full, Exo):
-      // single-product tiene body.single-product o /product/ en la ruta.
-      // Ciclo 1606: Olimpo AR usa WooCommerce, misma detección que Drean/HiperTehno/EXO.
-      if (siteKey === 'olimpo') {
+      // WooCommerce (Olimpo AR, PC House AR): single-product tiene body.single-product o /product/ en la ruta.
+      // Ciclo 1606: Olimpo AR usa WooCommerce.
+      // Ciclo 1608: PC House AR también usa WooCommerce (hardware).
+      if (siteKey === 'olimpo' || siteKey === 'pchouse') {
         try {
           if (document.body && document.body.classList.contains('single-product')) return true;
         } catch (_) {}

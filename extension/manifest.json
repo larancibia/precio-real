@@ -62,6 +62,9 @@
     "https://*.dexter.com.ar/*",
     "https://*.tgc.com.ar/*",
     "https://*.maxiconsumo.com/*",
+    "https://*.fullh4rd.com.ar/*",
+    "https://*.startechpc.com.ar/*",
+    "https://*.phouse.com.ar/*",
     "http://localhost:8787/*"
   ],
   "action": {
@@ -130,7 +133,10 @@
         "https://*.olimpo.com.ar/*",
         "https://*.dexter.com.ar/*",
         "https://*.tgc.com.ar/*",
-        "https://*.maxiconsumo.com/*"
+        "https://*.maxiconsumo.com/*",
+        "https://*.fullh4rd.com.ar/*",
+        "https://*.startechpc.com.ar/*",
+        "https://*.phouse.com.ar/*"
       ],
       "js": ["config.js", "utils/retailers.js", "utils/helpers.js", "utils/affiliates.js", "content/content.js"],
       "css": ["content/badge.css"],

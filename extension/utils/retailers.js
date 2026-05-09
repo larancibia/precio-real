@@ -1339,6 +1339,81 @@
     },
   };
 
+    // Ciclo 1608: FullH4rd AR (Shopify gaming/periféricos), StartTech AR (Magento 2
+    // gaming/PC), PC House AR (WooCommerce hardware).
+    fullh4rd: {
+      label: 'FullH4rd',
+      hostnameSuffix: 'fullh4rd.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Shopify con tema custom gaming. El precio principal en PDPs Shopify suele
+        // estar en .product__price o .price__current; el data-product-price expone
+        // el valor en centavos como integer. data-price-value cubre temas modernos.
+        '[data-price-value]',
+        '.product__price .price__current',
+        '.product__price .price--on-sale .price__regular',
+        '.product-single__price',
+        '.product__price',
+        '.price__current',
+        '.price--sale',
+        '[data-testid="product-price"]',
+        '[data-testid="price-value"]',
+        '.price-item--sale',
+        '.price-item--regular',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    starttech: {
+      label: 'StartTech',
+      hostnameSuffix: 'startechpc.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // StartTech AR usa Magento 2. Mismos selectores estándar Magento 2 que
+        // otros retailers de gaming/hardware (Venex, TGC, Microcenter AR).
+        '[data-price-amount]',
+        '.price-box .price',
+        '.price-box .special-price .price',
+        '.price-box .price-wrapper .price',
+        '.price-wrapper[data-price-type="finalPrice"] .price',
+        '.price-wrapper[data-price-type="minPrice"] .price',
+        '[data-price-type="finalPrice"] .price',
+        '[data-price-type="minPrice"] .price',
+        '.product-info-price .price',
+        '.special-price .price',
+        '.regular-price .price',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    pchouse: {
+      label: 'PC House',
+      hostnameSuffix: 'phouse.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // PC House AR usa WooCommerce. Mismo patrón que Mac Center, Full AR,
+        // Olimpo AR: precio con descuento en .price ins, sin descuento directo.
+        '.price ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount',
+        '.price .amount',
+        'ins .woocommerce-Price-amount.amount bdi',
+        'ins .woocommerce-Price-amount.amount',
+        '.woocommerce-Price-amount.amount bdi',
+        '[data-testid="product-price"]',
+        '.product-price',
+        '.precio-actual',
+        '[itemprop="price"]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+  };
+
   const GENERIC_PRICE_SELECTORS = [
     'meta[itemprop="price"]',
     '[itemprop="price"]',
