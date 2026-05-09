@@ -309,4 +309,53 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "maleta de viaje",
   "candado tsa",
   "almohada de viaje",
+  // Ciclo 1607 — categorías faltantes y alta rotación 2026
+  // Carga portátil / powerbank
+  "powerbank",
+  "cargador portatil",
+  "bateria portatil celular",
+  // Streaming / dispositivos TV
+  "fire tv stick",
+  "apple tv",
+  "proyector portatil",
+  "smart tv 4k uhd",
+  // Impresión 3D / maker
+  "impresora 3d",
+  "filamento pla impresora",
+  // Conectividad / redes
+  "repetidor wifi",
+  "access point wifi",
+  // Videojuegos físicos — alta rotación post-lanzamiento
+  "juego ps5",
+  "juego nintendo switch",
+  // Moda / indumentaria específica
+  "remera deportiva",
+  "ropa termica",
+  "buzo hoodie",
+  // Cámara / creación de contenido
+  "camara instantanea",
+  "gimbal estabilizador celular",
+  // Auto adicional
+  "dashcam auto",
+  "soporte celular auto",
+  // Salud / bienestar adicional
+  "glucometro",
+  "nebulizador",
+  "humidificador ultrasonico",
+  // Gaming periféricos
+  "capturadora hdmi",
+  "pad mouse gamer xl",
+  // Trabajo remoto / oficina adicional
+  "standing desk",
+  "soporte monitor brazo",
+  // Fitness adicional
+  "smartwatch amazfit",
+  "pesa rusa",
+  "rueda abdominales",
+  // Almacenamiento / computación específico
+  "disco nvme m2",
+  "memoria micro sd",
+  // Accesorios celular marca
+  "auriculares samsung galaxy buds",
+  "cargador inalambrico samsung",
 ];
