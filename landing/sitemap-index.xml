@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Sitemap index — agrupa el sitemap principal y el de Google News.
+  Spec: https://www.sitemaps.org/protocol.html#index
+  Cuando agreguemos mas verticales (sitemap-images, sitemap-products) van aca.
+-->
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://preciorreal.com/sitemap.xml</loc>
+    <lastmod>2026-05-09</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://preciorreal.com/sitemap-news.xml</loc>
+    <lastmod>2026-05-09</lastmod>
+  </sitemap>
+</sitemapindex>

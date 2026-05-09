@@ -58,18 +58,31 @@
   <!-- OpenSearch — el descriptor vive en /opensearch.xml para que el navegador detecte el motor de busqueda desde cualquier pagina -->
   <link rel="search" type="application/opensearchdescription+xml" title="Precio Real" href="/opensearch.xml">
 
-  <!-- Structured data: Article -->
+  <!-- Structured data: NewsArticle — upgraded de Article generico a NewsArticle para
+       elegibilidad en Google News / Discover. La guia Hot Sale es una pieza editorial
+       periodica (anual) y tiene el angulo "consumer protection" que el algoritmo de News
+       valora. Mantenemos los campos enriquecidos (audience, about, speakable) y agregamos
+       lastReviewed + reviewedBy para reforzar E-E-A-T. -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Article",
+    "@type": "NewsArticle",
+    "@id": "https://preciorreal.com/guia-hot-sale.html#newsarticle",
     "headline": "Guía Hot Sale Argentina 2026 — Cómo detectar aumentos disfrazados de descuentos",
+    "alternativeHeadline": "Hot Sale 2026: cómo leer el precio real y no comprar descuentos truchos",
     "description": "Cómo identificar descuentos truchos durante Hot Sale Argentina leyendo el historial real de precios en Mercado Libre, Frávega, Carrefour, Coto y otros e-commerce.",
-    "image": "https://preciorreal.com/og-image.png",
+    "image": {
+      "@type": "ImageObject",
+      "url": "https://preciorreal.com/og-image.png",
+      "width": 1200,
+      "height": 630,
+      "caption": "Precio Real — guía Hot Sale Argentina 2026"
+    },
     "author": {
       "@type": "Organization",
       "name": "Precio Real",
-      "url": "https://preciorreal.com/"
+      "url": "https://preciorreal.com/",
+      "sameAs": ["https://github.com/larancibia/precio-real"]
     },
     "publisher": {
       "@type": "Organization",
@@ -77,18 +90,27 @@
       "url": "https://preciorreal.com/",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://preciorreal.com/og-image.png"
+        "url": "https://preciorreal.com/og-image.png",
+        "width": 1200,
+        "height": 630
       }
     },
-    "datePublished": "2026-05-09",
-    "dateModified": "2026-05-09",
+    "datePublished": "2026-05-09T10:00:00-03:00",
+    "dateModified": "2026-05-09T10:00:00-03:00",
+    "lastReviewed": "2026-05-09",
+    "reviewedBy": {
+      "@type": "Organization",
+      "name": "Precio Real",
+      "url": "https://preciorreal.com/"
+    },
     "inLanguage": "es-AR",
+    "isFamilyFriendly": true,
     "mainEntityOfPage": {
       "@type": "WebPage",
       "@id": "https://preciorreal.com/guia-hot-sale.html"
     },
     "articleSection": "Guías de consumo",
-    "keywords": "hot sale argentina, descuentos truchos, historial de precios, aumentos disfrazados",
+    "keywords": "hot sale argentina, descuentos truchos, historial de precios, aumentos disfrazados, defensa del consumidor, hot sale 2026",
     "wordCount": 1200,
     "timeRequired": "PT6M",
     "audience": {
@@ -102,9 +124,23 @@
     "about": [
       { "@type": "Thing", "name": "Hot Sale Argentina" },
       { "@type": "Thing", "name": "Historial de precios" },
-      { "@type": "Thing", "name": "Descuentos en e-commerce" }
+      { "@type": "Thing", "name": "Descuentos en e-commerce" },
+      { "@type": "Thing", "name": "Defensa del consumidor" }
+    ],
+    "mentions": [
+      { "@type": "Organization", "name": "Cámara Argentina de Comercio Electrónico (CACE)", "url": "https://www.cace.org.ar/" },
+      { "@type": "Organization", "name": "Mercado Libre Argentina", "url": "https://www.mercadolibre.com.ar/" },
+      { "@type": "Organization", "name": "Frávega", "url": "https://www.fravega.com/" }
     ],
     "isAccessibleForFree": true,
+    "isBasedOn": "https://preciorreal.com/",
+    "citation": [
+      {
+        "@type": "CreativeWork",
+        "name": "Calendario Hot Sale Argentina",
+        "url": "https://www.hotsale.com.ar/"
+      }
+    ],
     "speakable": {
       "@type": "SpeakableSpecification",
       "cssSelector": ["article h1", "#por-que", "#senales", "#metodo"]

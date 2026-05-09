@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Google News sitemap (publicaciones <= 2 dias).
+  Spec: https://developers.google.com/search/docs/crawling-indexing/sitemaps/news-sitemap
+  Las URLs deben renderizarse rapido (< 2s) y devolver HTML estatico — Cloudflare Pages
+  cumple ambos requisitos para preciorreal.com. La fecha publication_date es ISO 8601
+  con offset; mantenerla actualizada cuando salga una nueva guia (Hot Sale, CyberMonday,
+  Black Friday, post-mortems anuales).
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">
+  <url>
+    <loc>https://preciorreal.com/guia-hot-sale.html</loc>
+    <news:news>
+      <news:publication>
+        <news:name>Precio Real</news:name>
+        <news:language>es</news:language>
+      </news:publication>
+      <news:publication_date>2026-05-09T10:00:00-03:00</news:publication_date>
+      <news:title>Guía Hot Sale Argentina 2026 — Cómo detectar aumentos disfrazados de descuentos</news:title>
+      <news:keywords>hot sale argentina, descuentos truchos, historial de precios, aumentos disfrazados, defensa del consumidor</news:keywords>
+    </news:news>
+  </url>
+</urlset>

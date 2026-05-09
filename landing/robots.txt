@@ -1,7 +1,9 @@
 User-agent: *
 Allow: /
 
+Sitemap: https://preciorreal.com/sitemap-index.xml
 Sitemap: https://preciorreal.com/sitemap.xml
+Sitemap: https://preciorreal.com/sitemap-news.xml
 
 # Humans:     https://preciorreal.com/humans.txt
 # Security:   https://preciorreal.com/.well-known/security.txt
