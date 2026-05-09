@@ -232,4 +232,46 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "lampara de pie",
   "ventilador de techo",
   "cortina roller",
+  // CyberMonday Argentina Nov 2026 — electrónica de alta rotación
+  "iphone 17",
+  "samsung galaxy s25",
+  "samsung galaxy a56",
+  "motorola edge 60",
+  "xiaomi 15",
+  "tablet samsung",
+  "ipad pro",
+  // CyberMonday Nov 2026 — gaming (temporada fuerte post-Hot-Sale)
+  "playstation 5",
+  "ps5 consola",
+  "xbox series x",
+  "nintendo switch oled",
+  "joystick ps5",
+  "silla gamer rgb",
+  // CyberMonday Nov 2026 — audio / entretenimiento
+  "soundbar samsung",
+  "airpods",
+  "jbl parlante",
+  "headset gamer",
+  // CyberMonday Nov 2026 — computación
+  "notebook acer",
+  "computadora de escritorio",
+  "monitor 4k",
+  "teclado gaming",
+  "mouse inalambrico",
+  // CyberMonday Nov 2026 — electro / línea blanca (verano austral)
+  "ventilador split",
+  "aire portatil",
+  "heladera no frost",
+  "lavarropas inverter",
+  "microondas con grill",
+  // CyberMonday Nov 2026 — movilidad y outdoor
+  "bicicleta mtb",
+  "monopatin xiaomi",
+  "mochila notebook",
+  "cámara acción",
+  // CyberMonday Nov 2026 — smart home / IoT
+  "smart speaker alexa",
+  "chromecast",
+  "strip led inteligente",
+  "termostato inteligente",
 ];

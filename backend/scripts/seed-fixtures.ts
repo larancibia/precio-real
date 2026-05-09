@@ -16,7 +16,7 @@
  *   - Prices are realistic 2026 ARS snapshots and only used as the anchor
  *     for the synthetic 60-day history pattern; they don't have to match
  *     the live price.
- *   - We bundle ~55 items: full coverage of every entry in
+ *   - We bundle ~143 items: full coverage of every entry in
  *     DISCOVERY_QUERIES so the fallback exercises the same vertical mix as
  *     the live cron, and the bucket rotation still has plenty of rows to
  *     fill the chart in dev.
@@ -1249,5 +1249,100 @@ export const SEED_FIXTURES: readonly SeedFixture[] = [
     thumbnail: null,
     seller_nickname: "SONY ARGENTINA",
     query: "auriculares sony",
+  },
+  // CyberMonday Nov 2026 — gaming
+  {
+    permalink: "https://www.mercadolibre.com.ar/consola-playstation-5-slim-1tb/p/MLA34200001",
+    title: "Consola PlayStation 5 Slim 1TB",
+    price: 1199000,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "SONY ARGENTINA",
+    query: "ps5 consola",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/consola-xbox-series-x-1tb/p/MLA34200002",
+    title: "Consola Xbox Series X 1TB",
+    price: 1099000,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "MICROSOFT",
+    query: "xbox series x",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/nintendo-switch-oled-blanco-64gb/p/MLA34200003",
+    title: "Nintendo Switch OLED Blanco 64GB",
+    price: 699000,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "NINTENDO",
+    query: "nintendo switch oled",
+  },
+  // CyberMonday Nov 2026 — audio
+  {
+    permalink: "https://www.mercadolibre.com.ar/soundbar-samsung-hw-b550-2-1-canales/p/MLA34200004",
+    title: "Soundbar Samsung HW-B550 2.1 Canales 410W",
+    price: 249000,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "SAMSUNG ARGENTINA",
+    query: "soundbar samsung",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/apple-airpods-pro-2da-generacion-usb-c/p/MLA34200005",
+    title: "Apple AirPods Pro 2da Generación USB-C",
+    price: 419000,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "APPLE",
+    query: "airpods",
+  },
+  // CyberMonday Nov 2026 — computación
+  {
+    permalink: "https://www.mercadolibre.com.ar/monitor-lg-ultragear-27-4k-144hz/p/MLA34200006",
+    title: "Monitor LG UltraGear 27\" 4K 144Hz",
+    price: 549000,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "LG ARGENTINA",
+    query: "monitor 4k",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/notebook-acer-aspire-5-core-i5-8gb-512ssd/p/MLA34200007",
+    title: "Notebook Acer Aspire 5 Core i5 8GB 512GB SSD",
+    price: 849000,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "ACER",
+    query: "notebook acer",
+  },
+  // CyberMonday Nov 2026 — smart home
+  {
+    permalink: "https://www.mercadolibre.com.ar/amazon-echo-dot-5ta-generacion/p/MLA34200008",
+    title: "Amazon Echo Dot 5ta Generación con Alexa",
+    price: 49999,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: null,
+    query: "smart speaker alexa",
+  },
+  {
+    permalink: "https://www.mercadolibre.com.ar/google-chromecast-4k-con-google-tv/p/MLA34200009",
+    title: "Google Chromecast 4K con Google TV",
+    price: 59999,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: null,
+    query: "chromecast",
+  },
+  // CyberMonday Nov 2026 — movilidad
+  {
+    permalink: "https://www.mercadolibre.com.ar/monopatin-xiaomi-electric-scooter-4-lite/p/MLA34200010",
+    title: "Monopatín Eléctrico Xiaomi Electric Scooter 4 Lite",
+    price: 549000,
+    currency_id: "ARS",
+    thumbnail: null,
+    seller_nickname: "XIAOMI",
+    query: "monopatin xiaomi",
   },
 ];

@@ -433,6 +433,17 @@ ol, ul { margin: 0; padding: 0; list-style: none; }
 .faq__answer a { color: var(--accent); }
 
 /* ---------- Trending products ---------- */
+/* ---------- Compare section ---------- */
+.section--compare { background: var(--bg); }
+.steps--compare .step__number {
+  font-size: 1.75rem;
+  line-height: 1;
+  width: auto;
+  height: auto;
+  background: none;
+  color: inherit;
+}
+
 .section--trending { background: var(--bg-elev); }
 
 .trending-grid {

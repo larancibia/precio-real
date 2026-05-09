@@ -514,7 +514,10 @@
 
   function extractPrice(siteKey) {
     const info = extractPriceInfo(siteKey);
-    return info ? info.price : null;
+    if (!info) return null;
+    const price = info.price;
+    if (price == null || isNaN(price) || price <= 0 || price > 50_000_000) return null;
+    return price;
   }
 
   // Detecta nodos cuyo textContent es un placeholder no-numérico ("Consultar
@@ -861,6 +864,8 @@
     if (siteKey === 'todomodo' && /^\/\d+[-\/]/.test(p) && !/\/[a-z0-9-]+-\d+\.html/.test(p)) return true;
     // Paginación genérica: ningún PDP es paginated.
     if (/\/page\/\d+(\/|$)/.test(p)) return true;
+    // Slugs con guión: /categoria-electrodomesticos, /coleccion-verano, etc.
+    if (/^\/(categor[ií]a-|colecci[oó]n-)/i.test(p)) return true;
     return false;
   }
 

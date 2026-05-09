@@ -39,8 +39,8 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Precio Real — extensión que muestra el precio histórico real de cada producto">
-  <meta property="og:updated_time" content="2026-05-09T10:00:00-03:00">
-  <meta property="article:modified_time" content="2026-05-09T10:00:00-03:00">
+  <meta property="og:updated_time" content="2026-05-09T20:00:00-03:00">
+  <meta property="article:modified_time" content="2026-05-09T20:00:00-03:00">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
@@ -271,11 +271,12 @@
       { "@type": "SiteNavigationElement", "position": 1, "name": "Cómo funciona", "url": "https://preciorreal.com/#como-funciona" },
       { "@type": "SiteNavigationElement", "position": 2, "name": "Tiendas soportadas", "url": "https://preciorreal.com/#tiendas" },
       { "@type": "SiteNavigationElement", "position": 3, "name": "Más consultados", "url": "https://preciorreal.com/#trending" },
-      { "@type": "SiteNavigationElement", "position": 4, "name": "Preguntas frecuentes", "url": "https://preciorreal.com/#faq" },
-      { "@type": "SiteNavigationElement", "position": 5, "name": "Instalar gratis", "url": "https://preciorreal.com/#instalar" },
-      { "@type": "SiteNavigationElement", "position": 6, "name": "Guía Hot Sale 2026", "url": "https://preciorreal.com/guia-hot-sale.html" },
-      { "@type": "SiteNavigationElement", "position": 7, "name": "Privacidad", "url": "https://preciorreal.com/privacidad.html" },
-      { "@type": "SiteNavigationElement", "position": 8, "name": "Términos", "url": "https://preciorreal.com/terminos.html" }
+      { "@type": "SiteNavigationElement", "position": 4, "name": "Comparar precios entre tiendas", "url": "https://preciorreal.com/#comparar" },
+      { "@type": "SiteNavigationElement", "position": 5, "name": "Preguntas frecuentes", "url": "https://preciorreal.com/#faq" },
+      { "@type": "SiteNavigationElement", "position": 6, "name": "Instalar gratis", "url": "https://preciorreal.com/#instalar" },
+      { "@type": "SiteNavigationElement", "position": 7, "name": "Guía Hot Sale 2026", "url": "https://preciorreal.com/guia-hot-sale.html" },
+      { "@type": "SiteNavigationElement", "position": 8, "name": "Privacidad", "url": "https://preciorreal.com/privacidad.html" },
+      { "@type": "SiteNavigationElement", "position": 9, "name": "Términos", "url": "https://preciorreal.com/terminos.html" }
     ]
   }
   </script>
@@ -564,6 +565,22 @@
           "@type": "Answer",
           "text": "Sí. Precio Real funciona todo el año, no solo en Hot Sale. El historial de precios que guarda cubre los períodos anteriores a CyberMonday (octubre), Black Friday (noviembre) y cualquier otra campaña de descuentos donde los retailers suelen inflar precios previamente."
         }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Puedo ver el precio del mismo producto en distintas tiendas?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sí. Precio Real muestra el historial real de precios en cada tienda soportada y el mínimo histórico registrado. Con la función de comparación podés ver lado a lado el veredicto de un mismo producto en Frávega, Garbarino, Falabella y otras tiendas, para elegir dónde comprarlo realmente más barato y no solo donde dice que hay más descuento."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "¿Qué pasa si instalo Precio Real el mismo día del Hot Sale?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Seguís teniendo acceso al historial acumulado por otros usuarios. El backend registra precios de todos los productos consultados, así que aunque acabes de instalar ya vas a ver el historial de semanas o meses atrás en los productos más buscados. Para productos más nicho, cuanto antes instalés mejor: más datos previos hay disponibles cuando empezás a navegar."
+        }
       }
     ]
   }
@@ -619,7 +636,7 @@
 
   <header class="hero">
     <nav class="nav" aria-label="Navegación principal">
-      <a href="#" class="nav__brand" aria-label="Precio Real — inicio">
+      <a href="/" class="nav__brand" aria-label="Precio Real — inicio">
         <span class="nav__logo" aria-hidden="true">$</span>
         <span class="nav__name">Precio Real</span>
       </a>
@@ -794,6 +811,14 @@
             <dd class="stats__value" data-stat="prices">—</dd>
           </div>
           <div class="stats__item">
+            <dt class="stats__label">Precio mínimo histórico</dt>
+            <dd class="stats__value" data-stat="price_min">—</dd>
+          </div>
+          <div class="stats__item">
+            <dt class="stats__label">Precio máximo histórico</dt>
+            <dd class="stats__value" data-stat="price_max">—</dd>
+          </div>
+          <div class="stats__item">
             <dt class="stats__label">Última actualización</dt>
             <dd class="stats__value" data-stat="last">—</dd>
           </div>
@@ -823,6 +848,39 @@
         <noscript>
           <p class="stats__note">Activá JavaScript para ver los productos en tendencia.</p>
         </noscript>
+      </div>
+    </section>
+
+    <section id="comparar" class="section section--compare" aria-labelledby="compare-title">
+      <div class="section__inner">
+        <h2 id="compare-title" class="section__title">Compará el mismo producto entre tiendas</h2>
+        <p class="section__lead">
+          ¿El televisor en Frávega cuesta lo mismo que en Garbarino? Precio Real compara el historial real
+          de precios del mismo producto en múltiples tiendas para que elijas dónde comprarlo realmente más barato.
+        </p>
+
+        <ol class="steps steps--compare">
+          <li class="step">
+            <span class="step__number" aria-hidden="true">📊</span>
+            <h3 class="step__title">Historial por tienda</h3>
+            <p class="step__text">Vé cómo evolucionó el precio semana a semana en cada retailer. Sin estimaciones, con datos reales.</p>
+          </li>
+          <li class="step">
+            <span class="step__number" aria-hidden="true">🏆</span>
+            <h3 class="step__title">Veredicto por tienda</h3>
+            <p class="step__text">Precio real, inflado o neutral: el badge aparece en cada tienda soportada al mismo tiempo que navegás.</p>
+          </li>
+          <li class="step">
+            <span class="step__number" aria-hidden="true">💰</span>
+            <h3 class="step__title">Mínimo histórico</h3>
+            <p class="step__text">Sabé cuál fue el precio más bajo registrado y si hoy, con el "descuento" del Hot Sale, estás pagando más o menos.</p>
+          </li>
+        </ol>
+
+        <p class="retailers__note">
+          API pública en <code>preciorreal.com/api/compare?urls=url1,url2</code> para integraciones.
+          <a href="https://github.com/larancibia/precio-real" target="_blank" rel="noopener noreferrer">Documentación en GitHub.</a>
+        </p>
       </div>
     </section>
 
@@ -885,6 +943,20 @@
             <summary class="faq__question">¿Funciona también para CyberMonday y Black Friday Argentina?</summary>
             <div class="faq__answer">
               <p>Sí. Precio Real funciona todo el año, no solo en Hot Sale. El historial de precios que guarda cubre los períodos anteriores a CyberMonday (octubre), Black Friday (noviembre) y cualquier otra campaña donde los retailers suelen inflar precios previamente. Cuanto antes lo instalás, más historial acumulamos para ayudarte.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">¿Puedo ver el precio del mismo producto en distintas tiendas?</summary>
+            <div class="faq__answer">
+              <p>Sí. Precio Real te muestra el historial real de precios en cada tienda soportada y el mínimo histórico registrado. Con la sección <strong>Comparar precios</strong> podés ver lado a lado el veredicto de un mismo producto en Frávega, Garbarino, Falabella y otras tiendas para elegir dónde comprarlo realmente más barato, y no solo donde dice que hay más descuento.</p>
+            </div>
+          </details>
+
+          <details class="faq__item">
+            <summary class="faq__question">¿Qué pasa si instalo Precio Real el mismo día del Hot Sale?</summary>
+            <div class="faq__answer">
+              <p>Seguís teniendo acceso al historial acumulado por otros usuarios: el backend registra precios de todos los productos consultados, así que aunque acabes de instalar la extensión ya vas a ver el historial de semanas o meses atrás en los productos más buscados. Para los productos más nicho, cuanto antes instalés mejor — más datos previos hay disponibles cuando empezás a navegar.</p>
             </div>
           </details>
         </div>
@@ -979,11 +1051,17 @@
       var d = Math.round(hr / 24);
       return 'hace ' + d + ' días';
     }
+    function fmtARS(n) {
+      if (!n && n !== 0) return '—';
+      return '$' + nf.format(Math.round(n));
+    }
     fetch('https://preciorreal.com/api/stats', { headers: { 'accept': 'application/json' } })
       .then(function (r) { return r.ok ? r.json() : Promise.reject(new Error('http ' + r.status)); })
       .then(function (s) {
         set('products', nf.format(s.products || 0));
         set('prices', nf.format(s.prices || 0));
+        set('price_min', fmtARS(s.price_min));
+        set('price_max', fmtARS(s.price_max));
         set('last', relTime(s.last_scraped_at));
         root.setAttribute('data-state', 'ready');
       })
@@ -991,6 +1069,8 @@
         root.setAttribute('data-state', 'error');
         set('products', '—');
         set('prices', '—');
+        set('price_min', '—');
+        set('price_max', '—');
         set('last', 'sin conexión');
       });
   })();
