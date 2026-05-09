@@ -17,7 +17,10 @@
     'megatone',
     'dia',
     'jumbo',
-    'disco'
+    'disco',
+    'sodimac',
+    'easy',
+    'hendel'
   ];
 
   function detectSite(hostname) {
@@ -36,18 +39,65 @@
     if (h.endsWith('diaonline.supermercadosdia.com.ar')) return 'dia';
     if (h.endsWith('jumbo.com.ar')) return 'jumbo';
     if (h.endsWith('disco.com.ar')) return 'disco';
+    if (h.endsWith('sodimac.com.ar')) return 'sodimac';
+    if (h.endsWith('easy.com.ar')) return 'easy';
+    if (h.endsWith('hendel.com.ar')) return 'hendel';
     return null;
   }
 
-  // Formato AR: "$ 1.234.567,89" → 1234567.89
-  function normalizePrice(rawString) {
+  // Acepta múltiples formatos:
+  //   "$ 1.234.567,89" (AR) → 1234567.89
+  //   "1,234,567.89"   (US) → 1234567.89
+  //   "1234.56"        (schema.org / meta itemprop="price") → 1234.56
+  //   "1234,56"        (AR sin separador de miles) → 1234.56
+  // Heurística: si aparecen los dos separadores, el último es el decimal.
+  // Si aparece uno solo, es decimal sólo si quedan 1–2 dígitos detrás.
+  // Si rawString viene de un meta/attribute (forceUSDecimal=true), forzamos
+  // formato US porque schema.org lo exige así.
+  function normalizePrice(rawString, opts) {
     if (rawString == null) return null;
+    const forceUSDecimal = !!(opts && opts.forceUSDecimal);
     const s = String(rawString).trim();
     if (!s) return null;
-    const cleaned = s
-      .replace(/[^\d.,-]/g, '')
-      .replace(/\./g, '')
-      .replace(',', '.');
+    let cleaned = s.replace(/[^\d.,-]/g, '');
+    if (!cleaned || cleaned === '-' || cleaned === '.' || cleaned === ',') return null;
+
+    if (forceUSDecimal) {
+      // Formato schema.org: "1234.56" o "1,234.56" — coma siempre miles.
+      cleaned = cleaned.replace(/,/g, '');
+    } else {
+      const hasDot = cleaned.includes('.');
+      const hasComma = cleaned.includes(',');
+      if (hasDot && hasComma) {
+        // El separador más a la derecha es el decimal.
+        const lastDot = cleaned.lastIndexOf('.');
+        const lastComma = cleaned.lastIndexOf(',');
+        if (lastComma > lastDot) {
+          // AR clásico: "1.234.567,89"
+          cleaned = cleaned.replace(/\./g, '').replace(',', '.');
+        } else {
+          // US clásico: "1,234,567.89"
+          cleaned = cleaned.replace(/,/g, '');
+        }
+      } else if (hasComma) {
+        // Sólo coma: decimal si quedan 1–2 dígitos detrás, miles si más.
+        const after = cleaned.length - cleaned.lastIndexOf(',') - 1;
+        if (after === 1 || after === 2) {
+          cleaned = cleaned.replace(',', '.');
+        } else {
+          cleaned = cleaned.replace(/,/g, '');
+        }
+      } else if (hasDot) {
+        // Sólo punto: decimal si quedan 1–2 dígitos detrás, miles si más.
+        const after = cleaned.length - cleaned.lastIndexOf('.') - 1;
+        if (after === 1 || after === 2) {
+          // ya está bien
+        } else {
+          cleaned = cleaned.replace(/\./g, '');
+        }
+      }
+    }
+
     if (!cleaned || cleaned === '-' || cleaned === '.') return null;
     const n = Number(cleaned);
     return Number.isFinite(n) ? n : null;
@@ -68,18 +118,26 @@
     '[data-testid*="price" i]',
   ];
 
+  // Devuelve { raw, fromAttribute }. fromAttribute=true significa que el valor
+  // viene de un atributo (meta content / data-* / itemprop content) y por lo
+  // tanto debe parsearse como formato US (schema.org).
   function readPriceFromElement(el) {
-    if (!el) return null;
+    if (!el) return { raw: null, fromAttribute: false };
     const tag = (el.tagName || '').toLowerCase();
     if (tag === 'meta') {
-      return el.getAttribute('content');
+      return { raw: el.getAttribute('content'), fromAttribute: true };
     }
     if (el.getAttribute && el.getAttribute('itemprop') === 'price') {
       const c = el.getAttribute('content');
-      if (c) return c;
-      return el.textContent;
+      if (c) return { raw: c, fromAttribute: true };
+      return { raw: el.textContent, fromAttribute: false };
     }
-    return el.textContent;
+    // Algunos retailers exponen el precio como data-price="1234.56" en formato US.
+    if (el.dataset) {
+      const dp = el.dataset.price || el.dataset.value || el.dataset.amount;
+      if (dp) return { raw: dp, fromAttribute: true };
+    }
+    return { raw: el.textContent, fromAttribute: false };
   }
 
   function tryLdJsonPrice() {
@@ -138,6 +196,29 @@
     return null;
   }
 
+  // Detecta precios "antes" tachados (line-through) para ignorarlos.
+  // Mira el elemento y hasta 3 ancestros: si el style computado o cualquier
+  // clase contiene line-through / "old"/"previous"/"antes"/"strike" lo skip.
+  function isStrikethroughPrice(el) {
+    if (!el || typeof el.closest !== 'function') return false;
+    let node = el;
+    for (let i = 0; i < 4 && node; i++) {
+      const cls = ((node.className && node.className.baseVal) || node.className || '') + '';
+      if (/line-through|strike|crossed|old[-_]?price|previous[-_]?price|prev[-_]?price|antes|tachad/i.test(cls)) {
+        return true;
+      }
+      try {
+        const cs = node.ownerDocument && node.ownerDocument.defaultView
+          ? node.ownerDocument.defaultView.getComputedStyle(node) : null;
+        if (cs && (cs.textDecorationLine || cs.textDecoration || '').includes('line-through')) {
+          return true;
+        }
+      } catch (_) { /* ignore */ }
+      node = node.parentElement;
+    }
+    return false;
+  }
+
   function extractPrice(siteKey) {
     const info = extractPriceInfo(siteKey);
     return info ? info.price : null;
@@ -157,8 +238,10 @@
         continue;
       }
       for (const el of nodes) {
-        const raw = readPriceFromElement(el);
-        const n = normalizePrice(raw);
+        // Saltar precios visiblemente tachados (precio anterior, "antes").
+        if (isStrikethroughPrice(el)) continue;
+        const { raw, fromAttribute } = readPriceFromElement(el);
+        const n = normalizePrice(raw, { forceUSDecimal: fromAttribute });
         if (Number.isFinite(n) && n > 0) {
           return { price: n, currency: 'ARS', retailer };
         }
