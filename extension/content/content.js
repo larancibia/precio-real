@@ -509,6 +509,15 @@
           root.style.setProperty('z-index', '2147483647', 'important');
           log.debug(siteKey, 'badge CSS self-heal: z-index restored');
         }
+        // Ciclo 1602: position self-heal. Algunos themes globales (Magento 2 con
+        // normalize.css custom, Jumbo rebranding) aplican `position: relative !important`
+        // a todos los div[id] o al body, lo que convierte nuestro position:fixed
+        // en relative y colapsa el badge al final del DOM (fuera del viewport).
+        // Si el position computado no es "fixed", lo restauramos.
+        if (cs.position && cs.position !== 'fixed') {
+          root.style.setProperty('position', 'fixed', 'important');
+          log.debug(siteKey, 'badge CSS self-heal: position restored from ' + cs.position + ' to fixed');
+        }
         // 2) Stacking context fix: si rect.right < vw/2, un ancestro tiene
         //    un nuevo stacking context (transform, filter, perspective, will-change,
         //    backdrop-filter, contain:layout/paint/strict).
@@ -910,6 +919,9 @@
     try { newUrl = PR.canonicalUrl(location.href); } catch (_) { return; }
     if (newUrl !== lastUrl) {
       // URL cambió → resetear estado de "cerrado manualmente" y re-correr.
+      // Ciclo 1602: también reseteamos si el productKey cambió (variante
+      // diferente con misma URL canónica pero query param distinto, como
+      // ML ?variation=... que canonicalUrl descarta pero es un producto distinto).
       userClosedForKey = null;
       mounted = false;
       run();
