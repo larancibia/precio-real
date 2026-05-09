@@ -1,6 +1,12 @@
 (function () {
   'use strict';
 
+  // Guard contra doble-inyección: algunos retailers (SPAs agresivos) pueden
+  // hacer que el content script se evalúe más de una vez en la misma página,
+  // lo que duplicaba listeners de history y wrappers de pushState/replaceState.
+  if (window.__precioRealLoaded) return;
+  window.__precioRealLoaded = true;
+
   const PR = window.PrecioReal;
   if (!PR) { console.warn('[Precio Real] helpers not loaded'); return; }
 
@@ -100,6 +106,14 @@
   let observerTimeout = null;
   let runToken = 0;
 
+  function unmountBadge() {
+    const root = document.getElementById('precio-real-badge-root');
+    if (root) root.remove();
+    mounted = false;
+    lastUrl = null;
+    lastPrice = null;
+  }
+
   async function tryMount(siteKey, myToken) {
     if (myToken !== runToken) return false;
     if (PR.detectSite(location.hostname) !== siteKey) return false;
@@ -133,9 +147,11 @@
     const myToken = runToken;
     if (observer) { observer.disconnect(); observer = null; }
     if (observerTimeout) { clearTimeout(observerTimeout); observerTimeout = null; }
-    if (!isProductPage()) return;
+    // Si dejamos de estar en una página de producto (nav SPA a categoría/home),
+    // tenemos que sacar el badge viejo para no mostrar info stale.
+    if (!isProductPage()) { unmountBadge(); return; }
     const siteKey = PR.detectSite(location.hostname);
-    if (!siteKey) return;
+    if (!siteKey) { unmountBadge(); return; }
 
     const delays = [0, 500, 1500, 3000];
     for (const d of delays) {
