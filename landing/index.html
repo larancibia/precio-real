@@ -55,6 +55,10 @@
   <link rel="alternate icon" href="/favicon.ico">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
+  <!-- OpenSearch — permite a Chrome/Edge/Brave/Firefox detectar el sitio como motor de busqueda
+       y agregarlo desde la URL bar. Refuerza el SearchAction del WebSite JSON-LD. -->
+  <link rel="search" type="application/opensearchdescription+xml" title="Precio Real" href="/opensearch.xml">
+
   <!-- Structured data: SoftwareApplication -->
   <script type="application/ld+json">
   {
@@ -346,6 +350,46 @@
       { "@type": "ListItem", "position": 15, "item": { "@type": "Organization", "name": "Easy Argentina",         "url": "https://www.easy.com.ar/" } },
       { "@type": "ListItem", "position": 16, "item": { "@type": "Organization", "name": "Hendel",                 "url": "https://www.hendel.com.ar/" } }
     ]
+  }
+  </script>
+
+  <!-- Structured data: SoftwareSourceCode — declara el repo open source asociado a la extension
+       Ayuda a Google Knowledge Graph a vincular preciorreal.com con github.com/larancibia/precio-real
+       y refuerza la senal de auditabilidad (importante para Chrome Web Store trust signals). -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareSourceCode",
+    "name": "precio-real",
+    "headline": "Codigo fuente de la extension Precio Real",
+    "description": "Codigo fuente open source de la extension Precio Real, el backend de historial de precios y la landing preciorreal.com.",
+    "codeRepository": "https://github.com/larancibia/precio-real",
+    "url": "https://github.com/larancibia/precio-real",
+    "programmingLanguage": ["JavaScript", "Python", "HTML", "CSS"],
+    "runtimePlatform": ["Chrome", "Edge", "Brave"],
+    "license": "https://opensource.org/licenses/MIT",
+    "inLanguage": "es-AR",
+    "author": {
+      "@type": "Organization",
+      "name": "Precio Real",
+      "url": "https://preciorreal.com/"
+    },
+    "maintainer": {
+      "@type": "Organization",
+      "name": "Precio Real",
+      "url": "https://preciorreal.com/"
+    },
+    "isPartOf": {
+      "@type": "SoftwareApplication",
+      "name": "Precio Real",
+      "url": "https://preciorreal.com/"
+    },
+    "targetProduct": {
+      "@type": "SoftwareApplication",
+      "name": "Precio Real",
+      "applicationCategory": "BrowserApplication",
+      "operatingSystem": "Chrome, Edge, Brave (Manifest V3)"
+    }
   }
   </script>
 

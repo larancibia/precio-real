@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  OpenSearch description for Precio Real.
+
+  Permite a Chrome/Edge/Brave/Firefox detectar preciorreal.com como motor de
+  busqueda y agregarlo desde la URL bar. Complementa el SearchAction declarado
+  en el WebSite JSON-LD (sitelinks searchbox de Google) y refuerza la senal
+  de identidad/marca al crawler.
+
+  Spec: https://github.com/dewitt/opensearch
+-->
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/"
+                       xmlns:moz="http://www.mozilla.org/2006/browser/search/">
+  <ShortName>Precio Real</ShortName>
+  <LongName>Precio Real — Historial real de precios</LongName>
+  <Description>Buscar productos en Precio Real para ver el precio histórico real en e-commerce argentinos.</Description>
+  <Tags>precio real historial precios hot sale argentina mercado libre fravega carrefour coto</Tags>
+  <Contact>contacto@preciorreal.com</Contact>
+  <InputEncoding>UTF-8</InputEncoding>
+  <OutputEncoding>UTF-8</OutputEncoding>
+  <Language>es-AR</Language>
+  <Image height="16" width="16" type="image/x-icon">https://preciorreal.com/favicon.ico</Image>
+  <Image height="180" width="180" type="image/png">https://preciorreal.com/apple-touch-icon.png</Image>
+  <Url type="text/html"
+       method="get"
+       template="https://preciorreal.com/?q={searchTerms}"/>
+  <Url type="application/opensearchdescription+xml"
+       rel="self"
+       template="https://preciorreal.com/opensearch.xml"/>
+  <moz:SearchForm>https://preciorreal.com/</moz:SearchForm>
+</OpenSearchDescription>
