@@ -244,15 +244,30 @@ Tildar también los tres certifications obligatorias:
 
 Chrome Web Store acepta entre 1 y 5 screenshots. **Tamaño obligatorio: 1280×800 px** (o 640×400 px). PNG o JPEG. El primer screenshot es el más importante porque sale en el grid de búsqueda.
 
-### Lista a producir (orden de prioridad)
+### Assets generados (orden de subida)
 
 | # | Filename sugerido | Contenido | Caption (overlay opcional) |
 |---|-------------------|-----------|----------------------------|
-| 1 | `cws-01-badge-inflated.png` | Captura real de una ficha de producto en Mercado Libre con el badge de Precio Real activo, mostrando "PRECIO INFLADO" sobre un producto de Hot Sale. | "Detectá descuentos truchos en Hot Sale" |
-| 2 | `cws-02-popup-history.png` | Popup de la extensión abierto sobre una pestaña de Mercado Libre, mostrando el gráfico de evolución del precio y el veredicto. | "Historial real de precios, sin vueltas" |
-| 3 | `cws-03-badge-real.png` | Ficha de producto con badge "PRECIO REAL" en verde — un caso donde el descuento sí es genuino. | "También te decimos cuando el precio sí es real" |
-| 4 | `cws-04-multi-sites.png` | Mosaico/collage con badges en Frávega, Carrefour y Falabella simultáneamente. | "Funciona en los principales e-commerce argentinos" |
-| 5 | `cws-05-privacy.png` | Captura del popup + texto destacando "Sin cuenta, sin tracking, open source". | "Sin registro. Sin datos personales. Open source." |
+| 1 | `docs/assets/cws/cws-01-badge-inflated.png` | Mock representativo de una ficha de producto con badge "PRECIO INFLADO". | "Detectá descuentos truchos antes de pagar" |
+| 2 | `docs/assets/cws/cws-02-popup-history.png` | Popup de la extensión con gráfico, mínimo reciente y veredicto. | "Historial claro en un click" |
+| 3 | `docs/assets/cws/cws-03-supported-retailers.png` | Mosaico de retailers soportados. | "101 e-commerce argentinos soportados" |
+| 4 | `docs/assets/cws/cws-04-privacy-open-source.png` | Privacidad, permisos mínimos y repo abierto. | "Gratis, open source y sin datos personales" |
+
+Los PNG se generan desde `docs/assets/cws/screenshots.html` con Chrome headless. Comando:
+
+```bash
+CHROME='/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
+HTML="file://$(pwd)/docs/assets/cws/screenshots.html"
+for shot in 1 2 3 4; do
+  case "$shot" in
+    1) out=docs/assets/cws/cws-01-badge-inflated.png ;;
+    2) out=docs/assets/cws/cws-02-popup-history.png ;;
+    3) out=docs/assets/cws/cws-03-supported-retailers.png ;;
+    4) out=docs/assets/cws/cws-04-privacy-open-source.png ;;
+  esac
+  "$CHROME" --headless=new --disable-gpu --hide-scrollbars --window-size=1280,800 --screenshot="$out" "$HTML?shot=$shot"
+done
+```
 
 ### Reglas de producción
 - Resolución: **1280×800 px** estricta (no 1280×720, no 1366×768).
@@ -281,12 +296,12 @@ Verificar que `icon128.png` se ve nítido en el preview de la store antes de sub
 
 ## 6. Checklist pre-submit
 
-- [ ] `manifest.json` con `version: "0.2.0"` (o bump si corresponde).
+- [x] `manifest.json` con `version: "0.2.2"`.
 - [ ] `manifest.json` apunta a producción (`config.js` con `API_BASE = "https://precio-real-api.arancibialuisalejandro.workers.dev"`, **no** localhost).
 - [ ] Privacy policy publicada en `https://precio-real.firemandeveloper.com/privacidad.html` y accesible.
 - [ ] Footer del landing linkea a `/privacidad.html`.
-- [ ] Build del .zip excluye `node_modules`, `.git`, `.DS_Store`, archivos de test.
-- [ ] 5 screenshots a 1280×800 listos.
+- [x] Build del .zip excluye `node_modules`, `.git`, `.DS_Store`, archivos de test.
+- [x] 4 screenshots a 1280×800 listos en `docs/assets/cws/`.
 - [ ] icon128.png revisado.
 - [ ] Cuenta de developer de Google Chrome Web Store activa (USD 5 one-time fee pagado).
 - [ ] Justificaciones de permisos pegadas.

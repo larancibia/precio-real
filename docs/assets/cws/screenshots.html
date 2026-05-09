@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Precio Real — CWS screenshots</title>
+  <style>
+    :root {
+      --ink: #13211c;
+      --muted: #587066;
+      --line: #d7e3de;
+      --paper: #f6fbf8;
+      --green: #15a36f;
+      --red: #db3b3b;
+      --amber: #f0a92e;
+      --blue: #2563eb;
+    }
+
+    * { box-sizing: border-box; }
+
+    html,
+    body {
+      margin: 0;
+      width: 1280px;
+      height: 800px;
+      overflow: hidden;
+      background: #edf8f3;
+    }
+
+    body {
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: radial-gradient(circle at 15% 10%, #d8f5e8, transparent 32%),
+                  linear-gradient(135deg, #fbfefc 0%, #edf8f3 54%, #e2f3ec 100%);
+    }
+
+    .shot { display: none; width: 1280px; height: 800px; padding: 30px 70px; }
+    body[data-shot="1"] .shot--1,
+    body[data-shot="2"] .shot--2,
+    body[data-shot="3"] .shot--3,
+    body[data-shot="4"] .shot--4 { display: block; }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 800;
+      font-size: 28px;
+      margin-bottom: 18px;
+    }
+
+    .logo {
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      background: var(--green);
+      color: white;
+      font-size: 28px;
+      box-shadow: 0 16px 36px rgb(21 163 111 / 25%);
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 760px;
+      font-size: 42px;
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 760px;
+      margin: 14px 0 24px;
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1.35;
+    }
+
+    .browser {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: white;
+      box-shadow: 0 24px 70px rgb(28 74 54 / 16%);
+      overflow: hidden;
+    }
+
+    .bar {
+      height: 48px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 18px;
+      background: #eff6f3;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .dot { width: 12px; height: 12px; border-radius: 50%; background: #c9d5d0; }
+    .url {
+      margin-left: 10px;
+      height: 28px;
+      flex: 1;
+      border-radius: 7px;
+      background: white;
+      color: #61796e;
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      font-size: 14px;
+    }
+
+    .product {
+      height: 390px;
+      display: grid;
+      grid-template-columns: 1fr 430px;
+      gap: 34px;
+      padding: 30px;
+    }
+
+    .photo {
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f3f7f5, #dfeae5);
+      position: relative;
+      display: grid;
+      place-items: center;
+    }
+
+    .device {
+      width: 270px;
+      height: 180px;
+      border-radius: 16px;
+      background: linear-gradient(145deg, #2f3f39, #151d1a);
+      box-shadow: 0 30px 70px rgb(0 0 0 / 22%);
+      position: relative;
+    }
+
+    .device::after {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #75d7b0, #2d87f0);
+    }
+
+    .badge {
+      position: absolute;
+      right: 24px;
+      bottom: 18px;
+      width: 340px;
+      border: 2px solid #ffb4b4;
+      border-radius: 12px;
+      background: white;
+      box-shadow: 0 18px 42px rgb(219 59 59 / 26%);
+      padding: 18px;
+    }
+
+    .badge strong { display: block; color: var(--red); font-size: 22px; }
+    .badge span { display: block; margin-top: 8px; color: #5f2f2f; font-size: 16px; line-height: 1.35; }
+
+    .buybox h2 { margin: 0 0 14px; font-size: 28px; line-height: 1.15; }
+    .price { font-size: 40px; font-weight: 800; margin: 10px 0 4px; }
+    .off { color: var(--green); font-weight: 800; font-size: 22px; }
+    .small { color: var(--muted); font-size: 16px; line-height: 1.4; }
+
+    .chart {
+      margin-top: 28px;
+      height: 112px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: repeating-linear-gradient(to bottom, #f8fbf9, #f8fbf9 34px, #e9f1ed 35px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .line {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      top: 35px;
+      height: 70px;
+      border-bottom: 5px solid var(--red);
+      transform: skewY(-5deg);
+    }
+
+    .popup-wrap {
+      display: grid;
+      grid-template-columns: 560px 1fr;
+      gap: 54px;
+      align-items: center;
+      margin-top: 28px;
+    }
+
+    .popup {
+      width: 430px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 28px 80px rgb(28 74 54 / 20%);
+      padding: 24px;
+    }
+
+    .popup-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .pill { border-radius: 999px; padding: 7px 12px; font-weight: 800; font-size: 13px; background: #ffe9e9; color: var(--red); }
+    .metric { display: flex; justify-content: space-between; padding: 13px 0; border-bottom: 1px solid #edf3f0; font-size: 18px; }
+    .metric b { font-size: 20px; }
+    .spark { height: 130px; margin: 18px 0; border-radius: 12px; background: linear-gradient(180deg, #f8fbf9, #eef7f2); position: relative; overflow: hidden; }
+    .spark::after { content: ""; position: absolute; left: 20px; right: 20px; bottom: 34px; height: 70px; border-bottom: 7px solid var(--green); transform: skewY(-12deg); }
+
+    .tiles {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 32px;
+    }
+
+    .tile {
+      min-height: 94px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: white;
+      padding: 18px;
+      box-shadow: 0 10px 26px rgb(28 74 54 / 8%);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .privacy-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-top: 46px;
+    }
+
+    .privacy {
+      min-height: 260px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 28px;
+      box-shadow: 0 18px 44px rgb(28 74 54 / 12%);
+    }
+
+    .privacy .icon { font-size: 42px; margin-bottom: 18px; }
+    .privacy h2 { margin: 0 0 12px; font-size: 24px; }
+    .privacy p { margin: 0; color: var(--muted); font-size: 18px; line-height: 1.35; }
+  </style>
+</head>
+<body>
+  <section class="shot shot--1">
+    <div class="brand"><span class="logo">$</span> Precio Real</div>
+    <h1>Detectá descuentos truchos antes de pagar</h1>
+    <p class="lead">El badge aparece sobre la ficha del producto y compara el precio actual contra el historial real.</p>
+    <div class="browser">
+      <div class="bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><div class="url">mercadolibre.com.ar/producto/hot-sale</div></div>
+      <div class="product">
+        <div class="photo">
+          <div class="device"></div>
+          <div class="badge"><strong>PRECIO INFLADO</strong><span>No mejora el mínimo reciente. Revisá el historial antes de comprar.</span></div>
+        </div>
+        <div class="buybox">
+          <h2>Smart TV 55" 4K Ultra HD</h2>
+          <div class="off">30% OFF</div>
+          <div class="price">$1.199.999</div>
+          <p class="small">Precio Real muestra si la oferta supera el precio histórico o si solo volvió al valor anterior.</p>
+          <div class="chart"><div class="line"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="shot shot--2">
+    <div class="brand"><span class="logo">$</span> Precio Real</div>
+    <div class="popup-wrap">
+      <div>
+        <h1>Historial claro en un click</h1>
+        <p class="lead">Abrí el popup para ver precio actual, mínimo reciente, variación y veredicto.</p>
+      </div>
+      <div class="popup">
+        <div class="popup-head"><strong>Precio Real</strong><span class="pill">ALERTA</span></div>
+        <div class="metric"><span>Precio actual</span><b>$1.199.999</b></div>
+        <div class="metric"><span>Mínimo 30 días</span><b>$1.049.999</b></div>
+        <div class="metric"><span>Variación</span><b style="color: var(--red)">+14%</b></div>
+        <div class="spark"></div>
+        <p class="small">Sin cuenta, sin email y sin tracking de terceros.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="shot shot--3">
+    <div class="brand"><span class="logo">$</span> Precio Real</div>
+    <h1>101 e-commerce argentinos soportados</h1>
+    <p class="lead">Mercado Libre, supermercados, electro, tecnología, hogar, gaming y tiendas especializadas.</p>
+    <div class="tiles">
+      <div class="tile">Mercado Libre</div><div class="tile">Frávega</div><div class="tile">Carrefour</div><div class="tile">Coto</div>
+      <div class="tile">Garbarino</div><div class="tile">Falabella</div><div class="tile">Naldo</div><div class="tile">Musimundo</div>
+      <div class="tile">Amazon Argentina</div><div class="tile">Samsung</div><div class="tile">Lenovo</div><div class="tile">CompraGamer</div>
+      <div class="tile">FullH4rd</div><div class="tile">PC Factory</div><div class="tile">Jumbo</div><div class="tile">+85 más</div>
+    </div>
+  </section>
+
+  <section class="shot shot--4">
+    <div class="brand"><span class="logo">$</span> Precio Real</div>
+    <h1>Gratis, open source y sin datos personales</h1>
+    <p class="lead">Pensada para Hot Sale Argentina: transparencia de precios sin pedirte cuenta.</p>
+    <div class="privacy-grid">
+      <div class="privacy"><div class="icon">✓</div><h2>Sin registro</h2><p>No pide email, teléfono, tarjeta ni login.</p></div>
+      <div class="privacy"><div class="icon">#</div><h2>Open source</h2><p>El código está público y se puede auditar en GitHub.</p></div>
+      <div class="privacy"><div class="icon">•</div><h2>Permisos mínimos</h2><p>Solo storage y activeTab, más dominios de tiendas soportadas.</p></div>
+      <div class="privacy"><div class="icon">$</div><h2>Hecha en Argentina</h2><p>Diseñada para precios, inflación y eventos locales.</p></div>
+    </div>
+  </section>
+
+  <script>
+    const shot = new URLSearchParams(location.search).get("shot") || "1";
+    document.body.dataset.shot = shot;
+  </script>
+</body>
+</html>
