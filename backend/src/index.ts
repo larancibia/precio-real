@@ -22,6 +22,9 @@
  *   GET  /api/trending?limit=<n> → { generated_at, count, results: [{ id, url, title, seller, image_url, price_count, last_scraped_at }] }
  *                                  Most-tracked products by price observation count (highest data density first).
  *                                  Useful for surfacing products with the richest price history.
+ *   GET  /api/sellers?limit=<n>  → { count, results: [{ seller, product_count, price_count, last_scraped_at }] }
+ *                                  Top sellers ranked by number of tracked products.
+ *                                  Useful for the landing page "vendedores más seguidos" widget.
  *   POST /api/scrape/wayback?url=<url> → { inserted, scanned, failed }
  *   POST /api/scrape/run         → manual trigger of the scheduled scraper (debug/seed)
  *   *                             → 404
@@ -365,6 +368,43 @@ async function handleMovers(request: Request, env: Env): Promise<Response> {
   );
 }
 
+const SELLERS_MAX_LIMIT = 100;
+const CACHE_SELLERS = "public, max-age=600, stale-while-revalidate=1800";
+
+async function handleSellers(request: Request, env: Env): Promise<Response> {
+  const url = new URL(request.url);
+  const rawLimit = Number(url.searchParams.get("limit") ?? "20");
+  const limit = Number.isFinite(rawLimit) && rawLimit > 0
+    ? Math.min(SELLERS_MAX_LIMIT, Math.floor(rawLimit))
+    : 20;
+
+  // Join products + prices to surface seller activity metrics. NULL seller
+  // rows are excluded — they come from old discovery inserts that didn't
+  // capture the seller nickname and would produce a meaningless null entry.
+  const rows = await env.DB
+    .prepare(
+      `SELECT p.seller,
+              COUNT(DISTINCT p.id)  AS product_count,
+              COUNT(po.id)          AS price_count,
+              MAX(po.scraped_at)    AS last_scraped_at
+       FROM products p
+       LEFT JOIN prices po ON po.product_id = p.id
+       WHERE p.seller IS NOT NULL AND p.seller != ''
+       GROUP BY p.seller
+       ORDER BY product_count DESC, price_count DESC
+       LIMIT ?1`,
+    )
+    .bind(limit)
+    .all<{ seller: string; product_count: number; price_count: number; last_scraped_at: number | null }>();
+
+  const results = rows.results ?? [];
+  return json(
+    { count: results.length, results },
+    200,
+    { "Cache-Control": CACHE_SELLERS },
+  );
+}
+
 async function handleWaybackScrape(request: Request, env: Env): Promise<Response> {
   const url = new URL(request.url);
   const target = url.searchParams.get("url");
@@ -472,6 +512,15 @@ export default {
     if (request.method === "GET" && url.pathname === "/api/trending") {
       try {
         return await handleTrending(request, env);
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Unknown error";
+        return json({ error: "Internal error", detail: message }, 500);
+      }
+    }
+
+    if (request.method === "GET" && url.pathname === "/api/sellers") {
+      try {
+        return await handleSellers(request, env);
       } catch (err) {
         const message = err instanceof Error ? err.message : "Unknown error";
         return json({ error: "Internal error", detail: message }, 500);

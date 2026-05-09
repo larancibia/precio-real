@@ -199,4 +199,37 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "zapatillas puma",
   "zapatillas under armour",
   "ropa deportiva",
+  // Hot Sale 2026 — modelos específicos phones (alta conversión en búsquedas directas)
+  "iphone 16",
+  "iphone 15",
+  "samsung galaxy s24",
+  "samsung galaxy a55",
+  "motorola edge 50",
+  "xiaomi redmi note",
+  // Hot Sale 2026 — TVs por pulgadas (categoría top HS)
+  "smart tv 55 pulgadas",
+  "smart tv 65 pulgadas",
+  "smart tv 43 pulgadas",
+  // Hot Sale 2026 — notebooks gamer por marca
+  "lenovo legion",
+  "asus rog",
+  "msi notebook",
+  // Hot Sale 2026 — accesorios tech de alta rotación
+  "cargador inalambrico",
+  "cable usb c",
+  "funda celular",
+  "vidrio templado celular",
+  // Hot Sale 2026 — electrodomésticos de cocina premium
+  "cafetera nespresso",
+  "cafetera dolce gusto",
+  "licuadora oster",
+  "olla arrocera",
+  // Hot Sale 2026 — climatización residencial
+  "aire acondicionado split",
+  "ventilador de torre",
+  "purificador de aire hepa",
+  // Hot Sale 2026 — hogar / decoración
+  "lampara de pie",
+  "ventilador de techo",
+  "cortina roller",
 ];
