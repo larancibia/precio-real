@@ -1,9 +1,9 @@
 # Chrome Web Store — Listing pack (ES-AR)
 
 Material listo para pegar en el formulario de submission de la Chrome Web Store
-para Precio Real v0.1.0. Idioma principal: español (Argentina).
+para Precio Real v0.2.0. Idioma principal: español (Argentina).
 
-> Última revisión: 2026-05-09 (v5 — sincronizado con manifest v0.2.0 de 36 retailers, ciclo 1610).
+> Última revisión: 2026-05-09 (v6 — sincronizado con manifest v0.2.0 de 47 retailers, ciclo 1614).
 > Mantener sincronizado con `extension/manifest.json`, `landing/index.html` y
 > `landing/privacidad.html`. Si se agregan retailers en el manifest, actualizar acá
 > y en privacidad.html antes de re-submit.
@@ -15,7 +15,7 @@ para Precio Real v0.1.0. Idioma principal: español (Argentina).
 | Campo | Valor |
 |-------|-------|
 | Name (max 75 chars) | `Precio Real — historial real de precios en Argentina` |
-| Short summary (max 132 chars) | `Detectá descuentos truchos en Hot Sale: historial real de precios en 36 e-commerce argentinos. Sin cuenta, sin tracking.` |
+| Short summary (max 132 chars) | `Detectá descuentos truchos en Hot Sale: historial real de precios en 47 e-commerce argentinos. Sin cuenta, sin tracking.` |
 | Category | Shopping |
 | Language | Spanish (Argentina) — `es-AR` |
 | Website / Homepage URL | `https://preciorreal.com` |
@@ -44,7 +44,7 @@ CÓMO FUNCIONA
 QUÉ INCLUYE
 - Historial de precios real por producto.
 - Alertas de aumentos disfrazados de descuento.
-- 36 sitios soportados v0.2.0: Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Argentina, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store, LG Argentina, Sony Store, Philips Argentina, BGH, Noblex, Whirlpool, Changomás, Electrolux Argentina, Drean, Motorola Store, Todomodo, Amazon Argentina, HiperTehno, Xiaomi Mi Store Argentina, Philco Argentina y Venex.
+- 47 sitios soportados v0.2.0: Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Argentina, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store, LG Argentina, Sony Store, Philips Argentina, BGH, Noblex, Whirlpool, Changomás, Electrolux Argentina, Drean, Motorola Store, Todomodo, Amazon Argentina, HiperTehno, Xiaomi Mi Store Argentina, Philco Argentina, Venex, BGood, HP Tienda, Lenovo Argentina, Alphatec, Exo Computación, Hisense Argentina, TCL Argentina, Pycca, Newsan, Asus Store Argentina y Mac Center.
 - Datos de inflación de EcoGo para contextualizar los precios.
 
 PRIVACIDAD
@@ -72,14 +72,14 @@ According to EcoGo, prices in Argentina rise 4%–6% in the weeks before Hot Sal
 
 HOW IT WORKS
 - Install in one click. No account, no personal data.
-- Browse Mercado Libre, Frávega, Garbarino, Falabella, Carrefour, Amazon Argentina, or any of the 36 supported sites.
+- Browse Mercado Libre, Frávega, Garbarino, Falabella, Carrefour, Amazon Argentina, or any of the 47 supported sites.
 - When you open a product page, a badge shows the verdict: real price, inflated, or neutral.
 - If the "discount" hides a prior price hike, we tell you.
 
 WHAT'S INCLUDED
 - Real price history per product.
 - Alerts for fake discounts (price-hike-then-markdown tactics).
-- 36 supported Argentine e-commerce sites (v0.2.0): Mercado Libre, Frávega, Garbarino, Falabella, Carrefour, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store, LG Argentina, Sony Store, Philips Argentina, BGH, Noblex, Whirlpool, Changomás, Electrolux Argentina, Drean, Motorola Store, Todomodo, Amazon Argentina, HiperTehno, Xiaomi Mi Store Argentina, Philco Argentina, and Venex.
+- 47 supported Argentine e-commerce sites (v0.2.0): Mercado Libre, Frávega, Garbarino, Falabella, Carrefour, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store, LG Argentina, Sony Store, Philips Argentina, BGH, Noblex, Whirlpool, Changomás, Electrolux Argentina, Drean, Motorola Store, Todomodo, Amazon Argentina, HiperTehno, Xiaomi Mi Store Argentina, Philco Argentina, Venex, BGood, HP Tienda, Lenovo Argentina, Alphatec, Exo Computación, Hisense Argentina, TCL Argentina, Pycca, Newsan, Asus Store Argentina, and Mac Center.
 - EcoGo inflation data to contextualize prices.
 
 PRIVACY
@@ -115,13 +115,14 @@ Se usa para leer la pestaña activa cuando el usuario navega un sitio soportado,
 La extensión inyecta un content script en estos sitios de e-commerce argentinos para detectar la ficha de producto, leer el precio publicado y mostrar el historial real. No se accede a otros sitios fuera de esta lista.
 ```
 
-Dominios solicitados (36 retailers de e-commerce argentino):
+Dominios solicitados (47 retailers de e-commerce argentino):
 - `https://*.mercadolibre.com.ar/*`
 - `https://*.fravega.com/*`
 - `https://*.garbarino.com/*`
 - `https://*.falabella.com.ar/*`
 - `https://*.carrefour.com.ar/*`
 - `https://*.cotodigital3.com.ar/*`
+- `https://*.coto.com.ar/*`
 - `https://*.naldo.com.ar/*`
 - `https://*.musimundo.com/*`
 - `https://*.cetrogar.com.ar/*`
@@ -152,6 +153,17 @@ Dominios solicitados (36 retailers de e-commerce argentino):
 - `https://tienda.mi.com/ar/*`
 - `https://*.philco.com.ar/*`
 - `https://*.venex.com.ar/*`
+- `https://*.bgood.com.ar/*`
+- `https://*.hptienda.com.ar/*`
+- `https://www.lenovo.com/ar/*`
+- `https://*.alphatec.com.ar/*`
+- `https://*.exo.com.ar/*`
+- `https://*.hisense.com.ar/*`
+- `https://*.tcl.com.ar/*`
+- `https://*.pycca.com.ar/*`
+- `https://*.newsan.com.ar/*`
+- `https://store.asus.com/ar/*`
+- `https://*.maccenter.com.ar/*`
 
 ### Remote code use
 ```
