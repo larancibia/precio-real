@@ -446,4 +446,40 @@ export const DISCOVERY_QUERIES: readonly string[] = [
   "colcha nordica",
   "sabanas 300 hilos",
   "purificador de agua osmosis",
+  // Ciclo 1612 — nuevos retailers: Hisense AR, TCL AR, Pycca
+  // Hisense AR (VTEX): aires acondicionados, TVs, heladeras
+  "hisense aire acondicionado",
+  "hisense smart tv",
+  "hisense heladera",
+  "hisense lavarropas",
+  // TCL AR (Shopify): TVs, tablets, auriculares
+  "tcl smart tv 4k",
+  "tcl qled televisor",
+  "tcl tab tablet",
+  // Pycca (Magento 2, Tucumán/nationwide): electrónica general
+  "celular samsung tucuman",
+  "notebook hp tucuman",
+  // Ciclo 1612 — electrónica de alta conversión sin cobertura previa
+  "tablet lenovo tab",
+  "auriculares apple airpods pro",
+  "cargador macbook",
+  "apple pencil 2",
+  // Ciclo 1612 — línea blanca marcas faltantes
+  "heladera drean",
+  "lavarropas drean",
+  "heladera mabe",
+  "lavarropas mabe",
+  // Ciclo 1612 — gaming periféricos adicionales
+  "tarjeta grafica rtx 4060",
+  "tarjeta grafica rx 7600",
+  "ram ddr5 16gb",
+  "fuente de poder 750w",
+  // Ciclo 1612 — outdoor / camping (temporada otoño AR)
+  "bolsa de dormir",
+  "carpa camping 4 personas",
+  "linterna recargable",
+  // Ciclo 1612 — movilidad urbana
+  "casco bicicleta",
+  "luz bicicleta led",
+  "candado bicicleta",
 ];
