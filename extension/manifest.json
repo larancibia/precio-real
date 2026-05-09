@@ -25,6 +25,12 @@
     "https://*.ribeiro.com.ar/*",
     "https://*.compumundo.com.ar/*",
     "https://*.samsung.com.ar/*",
+    "https://www.lg.com/ar/*",
+    "https://*.sony.com.ar/*",
+    "https://*.philips.com.ar/*",
+    "https://*.bgh.com.ar/*",
+    "https://*.noblex.com.ar/*",
+    "https://*.whirlpool.com.ar/*",
     "http://localhost:8787/*"
   ],
   "action": {
@@ -56,7 +62,13 @@
         "https://*.rodo.com.ar/*",
         "https://*.ribeiro.com.ar/*",
         "https://*.compumundo.com.ar/*",
-        "https://*.samsung.com.ar/*"
+        "https://*.samsung.com.ar/*",
+        "https://www.lg.com/ar/*",
+        "https://*.sony.com.ar/*",
+        "https://*.philips.com.ar/*",
+        "https://*.bgh.com.ar/*",
+        "https://*.noblex.com.ar/*",
+        "https://*.whirlpool.com.ar/*"
       ],
       "js": ["config.js", "utils/retailers.js", "utils/helpers.js", "utils/affiliates.js", "content/content.js"],
       "css": ["content/badge.css"],

@@ -66,7 +66,15 @@
     'rodo',
     'ribeiro',
     'compumundo',
-    'samsung'
+    'samsung',
+    // Ciclo 14: marcas con tienda oficial argentina (electrónicos / electrodomésticos)
+    // que aparecen en Hot Sale 2026 con campañas propias.
+    'lg',
+    'sony',
+    'philips',
+    'bgh',
+    'noblex',
+    'whirlpool',
   ];
 
   function detectSite(hostname) {
@@ -94,6 +102,16 @@
     // Samsung opera shop.samsung.com.ar (Hybris) y, ocasionalmente, samsung.com/ar.
     // Solo nos interesa el e-commerce AR, no la home global.
     if (h.endsWith('samsung.com.ar')) return 'samsung';
+    // Ciclo 14: marcas con tiendas oficiales AR. LG opera lg.com con subdominios
+    // por país; el manifest matchea solo las rutas /ar/. Sony usa sony.com.ar
+    // (e-commerce propio). Philips, BGH, Noblex, Whirlpool tienen TLD .com.ar
+    // dedicado para AR.
+    if (h.endsWith('lg.com')) return 'lg';
+    if (h.endsWith('sony.com.ar')) return 'sony';
+    if (h.endsWith('philips.com.ar')) return 'philips';
+    if (h.endsWith('bgh.com.ar')) return 'bgh';
+    if (h.endsWith('noblex.com.ar')) return 'noblex';
+    if (h.endsWith('whirlpool.com.ar')) return 'whirlpool';
     return null;
   }
 
@@ -299,7 +317,7 @@
       // camelCase (oldPrice, originalPrice, listPrice, regularPrice, wasPrice,
       // productPriceOld), Magento (old-price, special-price-from), Shopify
       // (price--compare-at, price__compare-at), txt-strike, sale-price-from.
-      if (/line-through|strike|crossed|old[-_]?price|oldprice|previous[-_]?price|prev[-_]?price|list[-_]?price|listprice|regular[-_]?price|regularprice|was[-_]?price|wasprice|antes|tachad|original[-_]?price|originalprice|compare[-_]?at|compareat|product[-_]?price[-_]?old|priceold|txt[-_]?strike|crossed[-_]?out|crossedout|from[-_]?price|fromprice|reference[-_]?price|referenceprice|previousprice|preciotachado|precio[-_]?anterior|sale[-_]?off|saleoff|msrp|retail[-_]?price|retailprice|before[-_]?price|beforeprice|pretty[-_]?strike|pre[-_]?discount|prediscount|de\s*\$|wasamount|was[-_]?amount|viejo[-_]?precio|viejoprecio|precio[-_]?lista|preciolista|precio[-_]?viejo|precioviejo|crossed[-_]?price|crossedprice|was__|de[-_]?price|deprice|recommended[-_]?retail|recommendedretail|rrp|pvp|catalog[-_]?price|catalogprice|standard[-_]?price|standardprice|undiscounted|non[-_]?sale|nonsale|price__was|price--was|price-was|wasvalue|was[-_]?value/i.test(cls)) {
+      if (/line-through|strike|crossed|old[-_]?price|oldprice|previous[-_]?price|prev[-_]?price|list[-_]?price|listprice|regular[-_]?price|regularprice|was[-_]?price|wasprice|antes|tachad|original[-_]?price|originalprice|compare[-_]?at|compareat|product[-_]?price[-_]?old|priceold|txt[-_]?strike|crossed[-_]?out|crossedout|from[-_]?price|fromprice|reference[-_]?price|referenceprice|previousprice|preciotachado|precio[-_]?anterior|sale[-_]?off|saleoff|msrp|retail[-_]?price|retailprice|before[-_]?price|beforeprice|pretty[-_]?strike|pre[-_]?discount|prediscount|de\s*\$|wasamount|was[-_]?amount|viejo[-_]?precio|viejoprecio|precio[-_]?lista|preciolista|precio[-_]?viejo|precioviejo|crossed[-_]?price|crossedprice|was__|de[-_]?price|deprice|recommended[-_]?retail|recommendedretail|rrp|pvp|catalog[-_]?price|catalogprice|standard[-_]?price|standardprice|undiscounted|non[-_]?sale|nonsale|price__was|price--was|price-was|wasvalue|was[-_]?value|precio[-_]?de[-_]?lista|preciodelista|precio[-_]?full|preciofull|full[-_]?price|fullprice|slashed[-_]?price|slashedprice|striked[-_]?price|strikedprice|prevprice|pvp[-_]?anterior|pvpanterior|tachado[-_]?precio|tachadoprecio|sin[-_]?descuento|sindescuento/i.test(cls)) {
         return true;
       }
       // Atributos data-* específicos de algunos retailers AR (Samsung Hybris,
@@ -371,6 +389,15 @@
     if (/\bplan\s+(ahora|cuotas|z|sueldo)\b/i.test(ownText)) return true;
     // "Promoción bancaria" / "promo banco" textuales.
     if (/\bpromo(?:ci[oó]n)?\s+(banc[oa]ria|banco|tarjeta)\b/i.test(ownText)) return true;
+    // Ciclo 14: "Hasta X sin interés" sin la palabra "cuotas" (común en banners
+    // promo de Frávega/Garbarino donde el contador implícito son cuotas).
+    if (/\bhasta\s+(en\s+)?\d{1,2}\s+sin\s+inter[eé]s\b/i.test(ownText)) return true;
+    // Ciclo 14: "X sin interés" textual al lado de un precio (típico cuando el
+    // banner publica solo "12 sin interés" como tag al lado del valor).
+    if (/^\s*\d{1,2}\s+sin\s+inter[eé]s\s*$/i.test(ownText)) return true;
+    // Ciclo 14: precio mensual en formato slash ("/mes", "/mensual", "/cuota").
+    if (/\$[\d.,]+\s*\/\s*(mes|mensual|cuota)\b/i.test(ownText)) return true;
+    if (/\b\/\s*(mes|mensual)\b/i.test(ownText) && /\$/.test(ownText)) return true;
     // 2) Ancestros: buscar contenedores marcados como cuotas/promo/instalment.
     let node = el;
     for (let i = 0; i < 4 && node; i++) {
@@ -518,6 +545,32 @@
     return true;
   }
 
+  // Ciclo 14: detección de currency en el nodo de precio mismo. Algunos
+  // retailers AR (LG, Sony, marcas premium) listan electrónicos importados
+  // con su precio en USD aunque el documento declare ARS en og:price:currency
+  // (porque el meta refleja el precio "general" pero el visible en la PDP
+  // es la conversión USD). Si el textContent del nodo seleccionado contiene
+  // "U$S", "USD", "US$", "U$D" como prefijo/sufijo del número, es señal de
+  // que el valor no es ARS aunque el meta diga lo contrario. Devolver true
+  // hace que extractPriceInfo descarte ese nodo y siga con el siguiente.
+  function isPriceTextUSD(el) {
+    if (!el || !el.tagName) return false;
+    const tag = el.tagName.toLowerCase();
+    // Los meta tags no tienen textContent visible: confiamos en el atributo.
+    if (tag === 'meta') return false;
+    let txt = '';
+    try { txt = (el.textContent || '').trim(); } catch (_) { return false; }
+    if (!txt) return false;
+    // Patrones AR para "Dólar estadounidense": U$S, U$D, US$, USD (palabra suelta).
+    // No matcheamos el símbolo "$" solo (es tanto USD como ARS en AR).
+    if (/\bU\$\s?[SD]\b/i.test(txt)) return true;
+    if (/\bUS\s?\$/i.test(txt)) return true;
+    if (/\bUSD\b/.test(txt)) return true;
+    // "Dólares" / "dólares" textuales.
+    if (/\bd[oó]lar(es)?\b/i.test(txt)) return true;
+    return false;
+  }
+
   // Para Mercado Libre: el `.andes-money-amount__fraction` contiene solo la
   // parte entera ("1.234"). Para precios con cents no triviales (raro en ARS
   // pero ocurre), preferimos leer el ancestro `.andes-money-amount` que tiene
@@ -597,6 +650,10 @@
         if (isInstallmentPrice(el)) continue;
         // Saltar placeholders textuales tipo "Consultar precio" / "Sin stock".
         if (isPlaceholderPriceText(el)) continue;
+        // Ciclo 14: defensa adicional contra precios USD visibles aunque el
+        // documento declare ARS. Si el textContent del nodo contiene "U$S",
+        // "USD", "US$", saltamos — el histórico backend está siempre en ARS.
+        if (isPriceTextUSD(el)) continue;
 
         // Camino especializado para Mercado Libre: reconstruir desde el
         // contenedor `.andes-money-amount` para no perder los cents.
@@ -789,6 +846,7 @@
   ns.isLoadingSkeleton = isLoadingSkeleton;
   ns.isPriceSane = isPriceSane;
   ns.isPlaceholderPriceText = isPlaceholderPriceText;
+  ns.isPriceTextUSD = isPriceTextUSD;
   ns.detectDocumentCurrency = detectDocumentCurrency;
   ns.log = log;
   ns.DEBUG = DEBUG;

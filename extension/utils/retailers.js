@@ -440,6 +440,129 @@
         'meta[property="og:price:amount"]',
       ],
     },
+    // Ciclo 14: marcas con tienda oficial AR. Casi todas usan VTEX (LG, Philips,
+    // BGH, Whirlpool, Electrolux) o Magento 2 (Noblex). Sony AR vive en su own
+    // SPA con Adobe AEM. Varias listan precios USD con disclaimer "se cobra al
+    // cambio del día" — la detección de currency en helpers.js debería frenar
+    // eso, pero como red de seguridad isPriceTextUSD() valida también el texto
+    // del nodo seleccionado.
+    lg: {
+      label: 'LG Argentina',
+      hostnameSuffix: 'lg.com',
+      currency: 'ARS',
+      selectors: [
+        // LG.com/ar usa stack mixto: Adobe AEM + componentes propios. El
+        // precio promocional vive en .price-info__pricing__sale o .price__final.
+        '.price-info__pricing__sale .price-info__pricing__price',
+        '.price-info__pricing__price',
+        '.price__final',
+        '.product-price__final',
+        '.product-price-current',
+        '[data-testid="product-price"]',
+        '[data-test-id="product-price"]',
+        'span[class*="finalPrice" i]',
+        'span[class*="currentPrice" i]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    sony: {
+      label: 'Sony Store',
+      hostnameSuffix: 'sony.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Sony AR (Adobe AEM): la PDP tiene un componente .price-display con
+        // currentPrice y wasPrice como hijos. El currentPrice es siempre el
+        // precio activo final.
+        '.price-display .currentPrice',
+        '.price-current',
+        '.product-price__current',
+        '[data-testid="product-price"]',
+        'span[class*="CurrentPrice" i]',
+        'span[class*="ProductPrice" i]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    philips: {
+      label: 'Philips Argentina',
+      hostnameSuffix: 'philips.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Philips AR usa VTEX-classic + un theme custom en algunos masters.
+        // .pdp-price-current es el final-price; .pdp-price-list es el tachado.
+        '.pdp-price-current',
+        '.product-detail-price__current',
+        '[data-testid="product-price"]',
+        '.vtex-product-price-1-x-sellingPriceValue',
+        '.vtex-product-price-1-x-sellingPrice',
+        '[class*="sellingPriceValue" i]',
+        '[class*="sellingPrice" i]',
+        '[class*="currentPrice" i]',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    bgh: {
+      label: 'BGH',
+      hostnameSuffix: 'bgh.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // BGH usa VTEX. El precio principal vive en sellingPrice + container.
+        '.vtex-product-price-1-x-sellingPriceValue',
+        '.vtex-product-price-1-x-sellingPrice',
+        '.vtex-product-price-1-x-currencyContainer',
+        '[class*="sellingPriceValue" i]',
+        '[class*="sellingPrice" i]',
+        '[data-testid="product-price"]',
+        '.product-price__current',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    noblex: {
+      label: 'Noblex',
+      hostnameSuffix: 'noblex.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Noblex está en Magento 2 (similar a Cetrogar/Rodo). Precio activo en
+        // .price-final_price [data-price-amount].
+        '.product-info-price .price-final_price [data-price-amount]',
+        '.product-info-price .price-final_price .price',
+        '.special-price [data-price-amount]',
+        '.special-price .price',
+        '.price-box .price-final_price [data-price-amount]',
+        '.price-box .price',
+        '[data-price-amount]',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
+    whirlpool: {
+      label: 'Whirlpool',
+      hostnameSuffix: 'whirlpool.com.ar',
+      currency: 'ARS',
+      selectors: [
+        // Whirlpool AR (VTEX): mismos selectores estándar, expone también
+        // .product-pdp-price en algunos masters viejos.
+        '.vtex-product-price-1-x-sellingPriceValue',
+        '.vtex-product-price-1-x-sellingPrice',
+        '[class*="sellingPriceValue" i]',
+        '[class*="sellingPrice" i]',
+        '[data-testid="product-price"]',
+        '.product-pdp-price',
+        '.product-price',
+        'meta[itemprop="price"]',
+        'meta[property="product:price:amount"]',
+        'meta[property="og:price:amount"]',
+      ],
+    },
   };
 
   const GENERIC_PRICE_SELECTORS = [

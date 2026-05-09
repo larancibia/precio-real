@@ -132,6 +132,13 @@ console.log('[precio-real tests] starting…');
     ['www.ribeiro.com.ar', 'ribeiro'],
     ['www.compumundo.com.ar', 'compumundo'],
     ['shop.samsung.com.ar', 'samsung'],
+    // Ciclo 14: marcas con tienda oficial AR.
+    ['www.lg.com', 'lg'],
+    ['www.sony.com.ar', 'sony'],
+    ['www.philips.com.ar', 'philips'],
+    ['www.bgh.com.ar', 'bgh'],
+    ['www.noblex.com.ar', 'noblex'],
+    ['www.whirlpool.com.ar', 'whirlpool'],
     ['www.amazon.com', null],
     ['', null],
   ];
@@ -277,6 +284,8 @@ console.log('[precio-real tests] starting…');
     // Ciclo 12: Ribeiro (SAP Commerce), Compumundo (sister Garbarino, VTEX),
     // Samsung Argentina (Hybris).
     'ribeiro', 'compumundo', 'samsung',
+    // Ciclo 14: marcas con tienda oficial AR.
+    'lg', 'sony', 'philips', 'bgh', 'noblex', 'whirlpool',
   ];
   for (const k of expected) {
     assert(PR.RETAILERS && PR.RETAILERS[k], `RETAILERS["${k}"] exists`);
@@ -285,10 +294,13 @@ console.log('[precio-real tests] starting…');
       `RETAILERS["${k}"].selectors not empty`
     );
   }
-  // SUPPORTED_SITES debe incluir los 3 nuevos.
+  // SUPPORTED_SITES debe incluir los 3 nuevos del ciclo 12 + 6 del ciclo 14.
   assert(PR.SUPPORTED_SITES.includes('ribeiro'), 'SUPPORTED_SITES includes ribeiro');
   assert(PR.SUPPORTED_SITES.includes('compumundo'), 'SUPPORTED_SITES includes compumundo');
   assert(PR.SUPPORTED_SITES.includes('samsung'), 'SUPPORTED_SITES includes samsung');
+  for (const k of ['lg', 'sony', 'philips', 'bgh', 'noblex', 'whirlpool']) {
+    assert(PR.SUPPORTED_SITES.includes(k), `SUPPORTED_SITES includes ${k}`);
+  }
 }
 
 // ── Mini-DOM nodos sintéticos para testear helpers que esperan elementos ────
@@ -368,6 +380,22 @@ function fakeEl({ tag = 'span', className = '', text = '', attrs = {}, parent = 
       PR.isStrikethroughPrice(fakeEl({ tag: 'span', className: c })),
       true,
       `isStrikethroughPrice class "${c}" (ciclo 12)`
+    );
+  }
+  // Ciclo 14: precio-de-lista, precio-full, full-price, slashed-price,
+  // striked-price, prevprice, pvp-anterior, tachado-precio, sin-descuento.
+  const cicl14Cases = [
+    'precio-de-lista', 'precioDeLista', 'precio-full', 'precioFull',
+    'full-price', 'fullPrice', 'slashed-price', 'slashedPrice',
+    'striked-price', 'strikedPrice', 'prevprice', 'pvp-anterior',
+    'pvpAnterior', 'tachado-precio', 'tachadoPrecio', 'sin-descuento',
+    'sinDescuento',
+  ];
+  for (const c of cicl14Cases) {
+    assertEq(
+      PR.isStrikethroughPrice(fakeEl({ tag: 'span', className: c })),
+      true,
+      `isStrikethroughPrice class "${c}" (ciclo 14)`
     );
   }
   // data-pricetype="WAS" (Samsung Hybris) y similares.
@@ -555,6 +583,90 @@ function fakeEl({ tag = 'span', className = '', text = '', attrs = {}, parent = 
   const subscription = fakeEl({ tag: 'div', className: 'subscription-price' });
   const priceSub = fakeEl({ tag: 'span', text: '$1.234', parent: subscription });
   assertEq(PR.isInstallmentPrice(priceSub), true, 'isInstallmentPrice ancestor subscription-price');
+
+  // Ciclo 14: "Hasta X sin interés" sin "cuotas", "X sin interés" suelto,
+  // "$X / mes" slash format.
+  assertEq(
+    PR.isInstallmentPrice(fakeEl({ tag: 'span', text: 'Hasta 12 sin interés' })),
+    true,
+    'isInstallmentPrice "Hasta 12 sin interés"'
+  );
+  assertEq(
+    PR.isInstallmentPrice(fakeEl({ tag: 'span', text: 'Hasta en 6 sin interés' })),
+    true,
+    'isInstallmentPrice "Hasta en 6 sin interés"'
+  );
+  assertEq(
+    PR.isInstallmentPrice(fakeEl({ tag: 'span', text: '12 sin interés' })),
+    true,
+    'isInstallmentPrice "12 sin interés" suelto'
+  );
+  assertEq(
+    PR.isInstallmentPrice(fakeEl({ tag: 'span', text: '$1.234 / mes' })),
+    true,
+    'isInstallmentPrice "$X / mes"'
+  );
+  assertEq(
+    PR.isInstallmentPrice(fakeEl({ tag: 'span', text: '$1.234/mensual' })),
+    true,
+    'isInstallmentPrice "$X/mensual"'
+  );
+  assertEq(
+    PR.isInstallmentPrice(fakeEl({ tag: 'span', text: '$1.234,56 /cuota' })),
+    true,
+    'isInstallmentPrice "$X /cuota"'
+  );
+}
+
+// isPriceTextUSD (ciclo 14) — defensa contra precios USD visibles aunque
+// el documento declare ARS.
+{
+  const PR = freshNs();
+  assertEq(
+    PR.isPriceTextUSD(fakeEl({ tag: 'span', text: 'U$S 1.299' })),
+    true,
+    'isPriceTextUSD "U$S 1.299"'
+  );
+  assertEq(
+    PR.isPriceTextUSD(fakeEl({ tag: 'span', text: 'U$D 999' })),
+    true,
+    'isPriceTextUSD "U$D 999"'
+  );
+  assertEq(
+    PR.isPriceTextUSD(fakeEl({ tag: 'span', text: 'US$ 1299' })),
+    true,
+    'isPriceTextUSD "US$ 1299"'
+  );
+  assertEq(
+    PR.isPriceTextUSD(fakeEl({ tag: 'span', text: '1299 USD' })),
+    true,
+    'isPriceTextUSD "1299 USD"'
+  );
+  assertEq(
+    PR.isPriceTextUSD(fakeEl({ tag: 'span', text: '1299 dólares' })),
+    true,
+    'isPriceTextUSD "1299 dólares"'
+  );
+  // Plain ARS price (default $) no debería matchear — $ solo es ambiguo en AR.
+  assertEq(
+    PR.isPriceTextUSD(fakeEl({ tag: 'span', text: '$ 1.299.000' })),
+    false,
+    'isPriceTextUSD "$ 1.299.000" (ARS, no match)'
+  );
+  // Texto vacío.
+  assertEq(
+    PR.isPriceTextUSD(fakeEl({ tag: 'span', text: '' })),
+    false,
+    'isPriceTextUSD empty text'
+  );
+  // meta tag siempre falso (el atributo se valida via detectDocumentCurrency).
+  assertEq(
+    PR.isPriceTextUSD(fakeEl({ tag: 'meta', text: 'USD' })),
+    false,
+    'isPriceTextUSD meta tag always false'
+  );
+  // Defensivo.
+  assertEq(PR.isPriceTextUSD(null), false, 'isPriceTextUSD null');
 }
 
 // isLoadingSkeleton (ciclo 12) — descarta nodos shimmer/skeleton/loading.
