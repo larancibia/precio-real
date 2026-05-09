@@ -7,8 +7,8 @@
   if (window.__precioRealLoaded) return;
   window.__precioRealLoaded = true;
 
-  // Ciclo 1619: versión del content script para facilitar debugging en consola.
-  const CONTENT_VERSION = '1619';
+  // Ciclo 1620: versión del content script para facilitar debugging en consola.
+  const CONTENT_VERSION = '1620';
 
   const PR = window.PrecioReal;
   if (!PR) { console.warn('[Precio Real] helpers not loaded'); return; }
@@ -1001,6 +1001,53 @@
     } catch (_) { /* entorno sin addEventListener: el variant observer MutationObserver lo cubre */ }
   }
 
+  // Ciclo 1620: PerformanceObserver para detectar llamadas a APIs de precio.
+  // Muchas PDPs modernas (VTEX Faststore v3, Shopify headless, WooCommerce AJAX)
+  // cargan el precio vía fetch/XHR después del DOMContentLoaded. El MutationObserver
+  // captura el cambio DOM resultante, pero en retailers con skeleton loaders o
+  // hidratación diferida el texto del precio se reemplaza in-place (characterData)
+  // sin generar mutaciones childList/attributes que watched en el observer de montaje.
+  // Con PerformanceObserver detectamos cuando la llamada API completó y agendamos
+  // un tryMount inmediato, sin esperar al próximo debounce del MutationObserver.
+  function startPerfApiWatch(siteKey, myToken) {
+    if (typeof PerformanceObserver !== 'function') return;
+    const PRICE_API_FRAGS = [
+      '/_v/api/', '/api/io/', '/_v/public/',   // VTEX IO / Faststore
+      '/products.json', '/cart.js',             // Shopify product/cart
+      '?wc-ajax=', '/wp-json/wc/',              // WooCommerce AJAX
+      '/rest/v1/products', '/rest/v2/',         // Magento 2 REST
+      '/api/price', '/api/product', '/graphql', // Genérico + GraphQL headless
+    ];
+    let schedTimer = null;
+    try {
+      const obs = new PerformanceObserver((list) => {
+        if (myToken !== runToken || mounted) { obs.disconnect(); return; }
+        for (const entry of list.getEntries()) {
+          const url = (entry.name || '').toLowerCase();
+          for (let i = 0; i < PRICE_API_FRAGS.length; i++) {
+            if (url.includes(PRICE_API_FRAGS[i])) {
+              if (!schedTimer) {
+                schedTimer = setTimeout(() => {
+                  schedTimer = null;
+                  if (myToken !== runToken || mounted) return;
+                  tryMount(siteKey, myToken).then((didMount) => {
+                    if (!didMount) return;
+                    obs.disconnect();
+                    startVariantObserver(siteKey, myToken);
+                    startEventBasedVariantDetection(siteKey, myToken);
+                    startBadgeHealthWatch(siteKey, myToken);
+                  }).catch(() => {});
+                }, 250);
+              }
+              break;
+            }
+          }
+        }
+      });
+      obs.observe({ type: 'resource', buffered: false });
+    } catch (_) {}
+  }
+
   async function run() {
     runToken++;
     const myToken = runToken;
@@ -1138,6 +1185,9 @@
         log.info('no price after retries+observer', siteKey, location.href);
       }
     }, OBS_TIMEOUT_MS);
+    // Ciclo 1620: arrancar en paralelo al MutationObserver para capturar retailers
+    // que cargan precio vía API (VTEX Faststore v3 GraphQL, Shopify AJAX, WooCommerce REST).
+    startPerfApiWatch(siteKey, myToken);
   }
 
   function maybeRunOnLocationChange() {

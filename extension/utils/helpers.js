@@ -1099,6 +1099,11 @@
     if (/^\/(categor[ií]a|categorias|seccion|secciones|listado|listing|search|busqueda|buscar|ofertas|outlet|marca|marcas|departamento|colecci[oó]n|colecciones)(\/|$)/i.test(p)) {
       return true;
     }
+    // Ciclo 1620: cart, checkout, account y login nunca son PDPs. Sin este guard,
+    // un /cart con producto único (Shopify quick-add) podía disparar el badge.
+    if (/^\/(cart|checkout|checkouts|account|accounts|login|register|mi-cuenta|mi-perfil|orders?)(\/|$)/i.test(p)) {
+      return true;
+    }
     // ML: /listado, /listings, /jm/search
     if (siteKey === 'mercadolibre') {
       if (p.startsWith('/listado') || p.includes('/jm/search') || p.startsWith('/c/')) return true;
@@ -1192,12 +1197,13 @@
       // Ciclo 1607: TGC AR también usa Magento 2.
       // Ciclo 1608: StartTech AR también usa Magento 2.
       // Ciclo 1609: PC Factory AR también usa Magento 2.
+      // Ciclo 1614: InStore AR también usa Magento 2 (audio/video hifi).
       // Ciclo 1618: GrupoDIN AR y Megatronics AR también usan Magento 2.
       if (siteKey === 'cetrogar' || siteKey === 'rodo' || siteKey === 'noblex' ||
           siteKey === 'venex' || siteKey === 'bgood' || siteKey === 'hptienda' || siteKey === 'pycca' ||
           siteKey === 'microcenter' || siteKey === 'acer' || siteKey === 'tgc' || siteKey === 'starttech' ||
           siteKey === 'pcfactory' || siteKey === 'nexstore' || siteKey === 'netizar' || siteKey === 'centurytech' ||
-          siteKey === 'grupodin' || siteKey === 'megatronics') {
+          siteKey === 'instore' || siteKey === 'grupodin' || siteKey === 'megatronics') {
         try {
           if (document.body && document.body.classList.contains('catalog-product-view')) return true;
         } catch (_) {}
@@ -1209,14 +1215,16 @@
       // Ciclo 1607: Dexter AR también usa Shopify.
       // Ciclo 1608: FullH4rd AR también usa Shopify (gaming/periféricos).
       // Ciclo 1609: Golden Shop AR también usa Shopify (accesorios/electrónica).
+      // Ciclo 1614: Bit AR también usa Shopify (gaming/hardware).
       // Ciclo 1615: I-Gaming Store AR también usa Shopify (gaming/hardware).
       // Ciclo 1616: Klibr AR y Lazer AR también usan Shopify (gaming periféricos/sillas).
       // Ciclo 1617: GearZone AR también usa Shopify (gaming bundles/periféricos).
       // Ciclo 1618: Mac Station AR, Megatrix AR y Pixelstore AR también usan Shopify.
       if (siteKey === 'tcl' || siteKey === 'ipoint' || siteKey === 'musimundo' || siteKey === 'compumundo' ||
           siteKey === 'coolbox' || siteKey === 'dexter' || siteKey === 'fullh4rd' || siteKey === 'goldenshop' ||
-          siteKey === 'ithink' || siteKey === 'igaming' || siteKey === 'klibr' || siteKey === 'lazer' ||
-          siteKey === 'gearzone' || siteKey === 'macstation' || siteKey === 'megatrix' || siteKey === 'pixelstore') {
+          siteKey === 'bit' || siteKey === 'ithink' || siteKey === 'igaming' || siteKey === 'klibr' ||
+          siteKey === 'lazer' || siteKey === 'gearzone' || siteKey === 'macstation' || siteKey === 'megatrix' ||
+          siteKey === 'pixelstore') {
         if (/\/products\//.test(location.pathname)) return true;
         try {
           if (document.body && document.body.classList.contains('template-product')) return true;
@@ -1228,12 +1236,14 @@
       // Ciclo 1608: PC House AR también usa WooCommerce (hardware).
       // Ciclo 1609: Soluciones AR también usa WooCommerce (informática/gaming).
       // Ciclo 1610: Zetta AR también usa WooCommerce (electrónica/computing).
+      // Ciclo 1614: Digital Haus AR (electrónica), Staples AR (oficina) y Gotta AR (gaming) también usan WooCommerce.
       // Ciclo 1615: Powerplanet AR y Megastore AR también usan WooCommerce.
       // Ciclo 1616: PcArg AR también usa WooCommerce (componentes/hardware/gaming).
       // Ciclo 1617: Binario AR y CompuPC AR también usan WooCommerce (componentes/gaming).
       // Ciclo 1618: Carsa AR (electrodomésticos regional) y Autronic AR también usan WooCommerce.
       if (siteKey === 'olimpo' || siteKey === 'pchouse' || siteKey === 'zetta' || siteKey === 'soluciones' ||
-          siteKey === 'cablehogar' || siteKey === 'powerplanet' || siteKey === 'megastore' || siteKey === 'pcarg' ||
+          siteKey === 'cablehogar' || siteKey === 'digitalhaus' || siteKey === 'staples' || siteKey === 'gotta' ||
+          siteKey === 'powerplanet' || siteKey === 'megastore' || siteKey === 'pcarg' ||
           siteKey === 'binario' || siteKey === 'compupc' || siteKey === 'carsa' || siteKey === 'autronic') {
         try {
           if (document.body && document.body.classList.contains('single-product')) return true;
