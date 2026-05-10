@@ -43,6 +43,7 @@ import type { ProductRow, PriceRow } from "./types";
 import { computeStats } from "./lib/analytics";
 import { extractMLAId, normalizeMLUrl } from "./lib/ml-url";
 import { fetchMovers, clampLimit, clampMinDrop } from "./lib/movers";
+import { isSyntheticPublicProduct, publicProductWhere } from "./lib/public-catalog";
 import { validateObservation } from "./lib/observe";
 import { backfillWaybackHistory } from "./scrapers/wayback";
 import { runScheduledScrape } from "./scrapers/scheduled";
@@ -123,6 +124,10 @@ async function handlePrice(
     return json({ error: "Product not found", url: target }, 404);
   }
 
+  if (isSyntheticPublicProduct(product)) {
+    return json({ error: "Product not found", url: target }, 404);
+  }
+
   const history = await env.DB
     .prepare(
       "SELECT price, currency, scraped_at FROM prices WHERE product_id = ?1 ORDER BY scraped_at DESC LIMIT ?2",
@@ -179,12 +184,15 @@ async function handleStats(env: Env): Promise<Response> {
   // productos / última actualización: hace X horas") without giving callers a
   // way to enumerate the tables.
   const products = await env.DB
-    .prepare("SELECT COUNT(*) AS n FROM products")
+    .prepare(`SELECT COUNT(*) AS n FROM products WHERE ${publicProductWhere()}`)
     .first<{ n: number }>();
   const priceAgg = await env.DB
     .prepare(
-      "SELECT COUNT(*) AS n, MIN(scraped_at) AS oldest, MAX(scraped_at) AS newest, " +
-        "COUNT(DISTINCT product_id) AS unique_products FROM prices",
+      "SELECT COUNT(*) AS n, MIN(po.scraped_at) AS oldest, MAX(po.scraped_at) AS newest, " +
+        "COUNT(DISTINCT po.product_id) AS unique_products " +
+        "FROM prices po " +
+        "JOIN products p ON p.id = po.product_id " +
+        `WHERE ${publicProductWhere("p")}`,
     )
     .first<{ n: number; oldest: number | null; newest: number | null; unique_products: number }>();
 
@@ -228,13 +236,16 @@ async function handleSearch(request: Request, env: Env): Promise<Response> {
   const [countRow, rows] = await Promise.all([
     env.DB
       .prepare(
-        "SELECT COUNT(*) AS n FROM products WHERE LOWER(title) LIKE ?1 ESCAPE '\\'",
+        "SELECT COUNT(*) AS n FROM products WHERE LOWER(title) LIKE ?1 ESCAPE '\\' AND " +
+          publicProductWhere(),
       )
       .bind(pattern)
       .first<{ n: number }>(),
     env.DB
       .prepare(
-        "SELECT id, url, title, seller, image_url FROM products WHERE LOWER(title) LIKE ?1 ESCAPE '\\' ORDER BY id DESC LIMIT ?2 OFFSET ?3",
+        "SELECT id, url, title, seller, image_url FROM products WHERE LOWER(title) LIKE ?1 ESCAPE '\\' AND " +
+          publicProductWhere() +
+          " ORDER BY id DESC LIMIT ?2 OFFSET ?3",
       )
       .bind(pattern, limit, offset)
       .all<Pick<ProductRow, "id" | "url" | "title" | "seller" | "image_url">>(),
@@ -268,12 +279,17 @@ async function handleProducts(request: Request, env: Env): Promise<Response> {
     const sellerPattern = `%${seller.toLowerCase().replace(/%/g, "\\%").replace(/_/g, "\\_")}%`;
     const [countRow, rows] = await Promise.all([
       env.DB
-        .prepare("SELECT COUNT(*) AS n FROM products WHERE LOWER(seller) LIKE ?1 ESCAPE '\\'")
+        .prepare(
+          "SELECT COUNT(*) AS n FROM products WHERE LOWER(seller) LIKE ?1 ESCAPE '\\' AND " +
+            publicProductWhere(),
+        )
         .bind(sellerPattern)
         .first<{ n: number }>(),
       env.DB
         .prepare(
-          "SELECT id, url, title, seller, image_url FROM products WHERE LOWER(seller) LIKE ?1 ESCAPE '\\' ORDER BY id DESC LIMIT ?2 OFFSET ?3",
+          "SELECT id, url, title, seller, image_url FROM products WHERE LOWER(seller) LIKE ?1 ESCAPE '\\' AND " +
+            publicProductWhere() +
+            " ORDER BY id DESC LIMIT ?2 OFFSET ?3",
         )
         .bind(sellerPattern, limit, offset)
         .all<Pick<ProductRow, "id" | "url" | "title" | "seller" | "image_url">>(),
@@ -290,11 +306,13 @@ async function handleProducts(request: Request, env: Env): Promise<Response> {
   // No seller filter: return full paginated catalog.
   const [countRow, rows] = await Promise.all([
     env.DB
-      .prepare("SELECT COUNT(*) AS n FROM products")
+      .prepare(`SELECT COUNT(*) AS n FROM products WHERE ${publicProductWhere()}`)
       .first<{ n: number }>(),
     env.DB
       .prepare(
-        "SELECT id, url, title, seller, image_url FROM products ORDER BY id DESC LIMIT ?1 OFFSET ?2",
+        "SELECT id, url, title, seller, image_url FROM products WHERE " +
+          publicProductWhere() +
+          " ORDER BY id DESC LIMIT ?1 OFFSET ?2",
       )
       .bind(limit, offset)
       .all<Pick<ProductRow, "id" | "url" | "title" | "seller" | "image_url">>(),
@@ -327,6 +345,7 @@ async function handleTrending(request: Request, env: Env): Promise<Response> {
               MAX(po.scraped_at) AS last_scraped_at
        FROM products p
        JOIN prices po ON po.product_id = p.id
+       WHERE ${publicProductWhere("p")}
        GROUP BY p.id
        ORDER BY price_count DESC
        LIMIT ?1`,
@@ -396,7 +415,7 @@ async function handleSellers(request: Request, env: Env): Promise<Response> {
               MAX(po.scraped_at)    AS last_scraped_at
        FROM products p
        LEFT JOIN prices po ON po.product_id = p.id
-       WHERE p.seller IS NOT NULL AND p.seller != ''
+       WHERE p.seller IS NOT NULL AND p.seller != '' AND ${publicProductWhere("p")}
        GROUP BY p.seller
        ORDER BY product_count DESC, price_count DESC
        LIMIT ?1`,
@@ -456,6 +475,10 @@ async function lookupOne(target: string, env: Env): Promise<CompareItem> {
   }
 
   if (!product) {
+    return { url: target, found: false };
+  }
+
+  if (isSyntheticPublicProduct(product)) {
     return { url: target, found: false };
   }
 
