@@ -147,7 +147,7 @@
     <h2>Quick summary</h2>
     <ul>
       <li><strong>We do not collect personally identifiable information.</strong> We never ask for your email, name, phone number, or account credentials.</li>
-      <li><strong>We do not sell data to third parties.</strong> Ever. There is no way to — we simply don't have it.</li>
+      <li><strong>We do not sell data to third parties.</strong> Ever. We do not sell URLs, prices, histories, or user data.</li>
       <li><strong>We do not use analytics inside the extension.</strong> The public website (precio-real.firemandeveloper.com) uses Cloudflare Web Analytics, which is aggregate and cookie-free.</li>
       <li><strong>The code is auditable</strong> on <a href="https://github.com/larancibia/precio-real" target="_blank" rel="noopener noreferrer">GitHub</a>.</li>
     </ul>
@@ -157,8 +157,9 @@
       When you visit a supported site and open a product page, the extension:
     </p>
     <ul>
-      <li>Reads the <strong>public HTML of the product page</strong> (URL, title, and current price) using a content script.</li>
-      <li>Sends the <strong>canonical URL of the product</strong> to our backend (<code>precio-real.firemandeveloper.com</code>) to fetch its price history.</li>
+      <li>Reads the <strong>public HTML of the product page</strong> (URL, title, current price, currency when available, and public image when exposed by the page) using a content script.</li>
+      <li>Sends the <strong>canonical URL of the product</strong> to our backend (<code>GET /api/price</code> on <code>precio-real.firemandeveloper.com</code>) to fetch its price history.</li>
+      <li>On Mercado Libre product pages, it may also send an observation to <code>POST /api/observe</code> with the canonical URL, current price, currency (<code>ARS</code>), title, and public image when available. This keeps the product history fresh without associating it with a person.</li>
       <li>Receives the price history and displays a badge on the page with a verdict (real price / inflated / neutral).</li>
     </ul>
     <p>
@@ -179,8 +180,8 @@
     </p>
     <ul>
       <li>The <strong>canonical URL</strong> of the product.</li>
-      <li>The <strong>observed price</strong> and the date of the observation.</li>
-      <li>Public product metadata (title, site name).</li>
+      <li>The <strong>observed price</strong>, currency, and observation date.</li>
+      <li>Public product metadata when available (title, site/seller, and public image).</li>
     </ul>
     <p>
       <strong>We do not persistently store your IP address</strong>, any user identifier,
@@ -195,8 +196,8 @@
       <li><strong>Host permissions</strong> for the 101 supported e-commerce domains (full list below) — Required for the content script to run only on those sites. The extension is inactive outside that list.</li>
     </ul>
 
-    <h3>Supported sites (96 Argentine e-commerce retailers)</h3>
-    <p>Extension v0.2.2 is active on the following platforms:</p>
+    <h3>Supported sites (101 Argentine e-commerce retailers)</h3>
+    <p>Extension v0.2.4 is active on the following platforms:</p>
     <ul>
       <li>Mercado Libre Argentina (<em>mercadolibre.com.ar</em>)</li>
       <li>Frávega (<em>fravega.com</em>)</li>

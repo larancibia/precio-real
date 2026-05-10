@@ -15,12 +15,13 @@ El consumidor argentino, que ya navega una distorsión de precios permanente, qu
 Precio Real corre como extensión de Chrome (Manifest V3) y trabaja en segundo plano mientras navegás. Cuando entrás a una ficha de producto en un sitio soportado, la extensión:
 
 1. Detecta el producto y su precio actual mediante un *content script*.
-2. Cruza ese precio contra el historial almacenado.
-3. Muestra un badge en la página con el precio histórico real, alertas si el "descuento" oculta un aumento previo, y comparativos entre tiendas.
+2. Consulta el backend con la URL pública del producto (`GET /api/price`) para traer el historial almacenado.
+3. En Mercado Libre, puede enviar una observación (`POST /api/observe`) con URL, precio, moneda, título e imagen pública cuando están disponibles.
+4. Muestra un badge en la página con el precio histórico real, alertas si el "descuento" oculta un aumento previo, y comparativos entre tiendas.
 
 No requiere cuenta, login ni envía datos personales. Los permisos solicitados son los mínimos necesarios: `storage` y `activeTab`.
 
-**Sitios soportados (v0.2.2) — 101 e-commerce argentinos:**
+**Sitios soportados (v0.2.4) — 101 e-commerce argentinos:**
 
 Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Argentina, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store, LG Argentina, Sony Store, Philips Argentina, BGH, Noblex, Whirlpool, Changomás, Electrolux, Drean, Motorola Store, Todomodo, Amazon Argentina, HiperTehno, Xiaomi Mi Store, Philco Argentina, Venex, BGood, HP Tienda, Lenovo Argentina, Alphatec, Exo, Hisense Argentina, TCL Argentina, Pycca, Newsan, Asus Store Argentina, Mac Center, Full, Micro Center, iPoint, Acer Store, Coolbox, Olimpo, Dexter, TGC, Maxiconsumo, FullH4rd, Start Tech PC, PC House, Zetta, Geek Store, Computodo, MaxiHogar, PC Factory, CompraGamer, Golden Shop, Soluciones, Arredondo, iThink, Nexstore, Cable Hogar, Bit, Digital Haus, InStore, Staples, Gotta, Power Planet, iGaming Store, Netizar, MegaStore, Century Tech, Klibr, Lazer, PC Arg, Carsa, GrupoDIN, Coppel, Megatronics, Mac Station, Winpy, GearZone, Binario, CompuPC, Autronic, Megatrix y Pixelstore.
 
@@ -38,7 +39,7 @@ Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Arg
 ## Descargar
 
 - Instalar (gratis): https://precio-real.firemandeveloper.com/#instalar (GitHub releases, activo)
-- Chrome Web Store: pendiente de aprobación — ZIP v0.2.2 listo, submission en proceso
+- Chrome Web Store: pendiente de aprobación — ZIP v0.2.4 listo, submission en proceso
 - Repositorio: https://github.com/larancibia/precio-real
 - Sitio oficial: https://precio-real.firemandeveloper.com
 
@@ -74,8 +75,8 @@ Enviar por mail junto al pitch al periodista si lo solicita; no adjuntar en el p
 
 - Hot Sale Argentina 2026: 11 al 13 de mayo, organizado por CACE.
 - Inflación 2025: IPC nacional INDEC, cierre anual 31,5%.
-- Datos propios del producto: 101 e-commerce soportados en `extension/manifest.json`, release público v0.2.2 en GitHub.
+- Datos propios del producto: 101 e-commerce soportados en `extension/manifest.json`, release público v0.2.4 en GitHub.
 
 ---
 
-Última actualización: 2026-05-09 (ciclo 1635 — 101 retailers, lista completa sincronizada con manifest v0.2.2)
+Última actualización: 2026-05-09 (ciclo 1635 — 101 retailers, lista completa sincronizada con manifest v0.2.4)

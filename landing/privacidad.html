@@ -142,7 +142,7 @@
     <h2>Resumen rápido</h2>
     <ul>
       <li><strong>No recolectamos información personal identificable.</strong> No pedimos email, nombre, teléfono ni cuenta.</li>
-      <li><strong>No vendemos datos a terceros.</strong> Nunca. No hay forma — no los tenemos.</li>
+      <li><strong>No vendemos datos a terceros.</strong> Nunca. No vendemos URLs, precios, historiales ni datos de usuarios.</li>
       <li><strong>No usamos analytics dentro de la extensión.</strong> El sitio público (precio-real.firemandeveloper.com) usa Cloudflare Web Analytics, que es agregado y sin cookies.</li>
       <li><strong>El código es auditable</strong> en <a href="https://github.com/larancibia/precio-real" target="_blank" rel="noopener noreferrer">GitHub</a>.</li>
     </ul>
@@ -152,8 +152,9 @@
       Cuando navegás un sitio soportado y entrás a la ficha de un producto, la extensión:
     </p>
     <ul>
-      <li>Lee el <strong>HTML público de la página de producto</strong> (URL, título y precio actual) usando un <em>content script</em>.</li>
-      <li>Envía la <strong>URL canónica del producto</strong> a nuestro backend (<code>precio-real.firemandeveloper.com</code>) para consultar su historial de precios.</li>
+      <li>Lee el <strong>HTML público de la página de producto</strong> (URL, título, precio actual, moneda cuando está disponible e imagen pública si la página la expone) usando un <em>content script</em>.</li>
+      <li>Envía la <strong>URL canónica del producto</strong> a nuestro backend (<code>GET /api/price</code> en <code>precio-real.firemandeveloper.com</code>) para consultar su historial de precios.</li>
+      <li>En páginas de producto de Mercado Libre, también puede enviar una observación a <code>POST /api/observe</code> con URL canónica, precio actual, moneda (<code>ARS</code>), título e imagen pública cuando están disponibles. Esto mantiene fresco el historial del producto sin asociarlo a una persona.</li>
       <li>Recibe el historial y muestra un badge en la página con el veredicto (precio real / inflado / neutral).</li>
     </ul>
     <p>
@@ -174,8 +175,8 @@
     </p>
     <ul>
       <li>La <strong>URL canónica</strong> del producto.</li>
-      <li>El <strong>precio observado</strong> y la fecha de la observación.</li>
-      <li>Metadatos públicos del producto (título, sitio).</li>
+      <li>El <strong>precio observado</strong>, la moneda y la fecha de la observación.</li>
+      <li>Metadatos públicos del producto cuando están disponibles (título, sitio/vendedor e imagen pública).</li>
     </ul>
     <p>
       <strong>No guardamos tu IP de forma persistente</strong>, ni un identificador de usuario,
@@ -191,7 +192,7 @@
     </ul>
 
     <h3>Sitios soportados (101 e-commerce argentinos)</h3>
-    <p>La extensión v0.2.2 está activa en las siguientes plataformas:</p>
+    <p>La extensión v0.2.4 está activa en las siguientes plataformas:</p>
     <ul>
       <li>Mercado Libre Argentina (<em>mercadolibre.com.ar</em>)</li>
       <li>Frávega (<em>fravega.com</em>)</li>

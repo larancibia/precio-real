@@ -40,9 +40,9 @@ Asi que me puse a hacer algo al respecto. Se llama **Precio Real** y es una exte
 - **Open source**, codigo en GitHub.
 - Funciona en **101 e-commerce argentinos**: Mercado Libre, Fravega, Garbarino, Falabella, Carrefour, Coto, Naldo, Musimundo, Cetrogar, Megatone, Jumbo, Disco, Sodimac, Amazon Argentina, Samsung Store, HP Tienda, Lenovo, CompraGamer, FullH4rd, PC Factory y muchos mas (lista completa en precio-real.firemandeveloper.com).
 - Cuando entras a una ficha de producto, te muestra el **historial real de precios** de las ultimas semanas y te avisa si el "descuento" oculta un aumento previo.
-- Permisos minimos: `storage` y `activeTab`. Nada de tracking de terceros, nada de mandar datos a ningun lado.
+- Permisos minimos: `storage` y `activeTab`. Nada de tracking de terceros. La extensión consulta el backend con la URL pública del producto y, en Mercado Libre, puede enviar precio, moneda, título e imagen públicos para actualizar el historial.
 
-**Como la uso yo:** la instale hace un par de semanas y la dejo correr. Cuanto antes la instales mas datos vas a tener acumulados cuando arranque el Hot Sale.
+**Como la uso yo:** la instale hace un par de semanas y reviso con tiempo qué productos ya tienen historial disponible. En Mercado Libre, las visitas también pueden sumar observaciones públicas de precio.
 
 **Por que la hice:** queria una herramienta para mi mismo. Despues pense que si me servia a mi capaz le servia a mas gente, y como no quiero monetizar nada de esto la hice abierta. Si te sirve y queres bancar el laburo hay un Cafecito en el sitio, pero no es necesario.
 
@@ -80,12 +80,12 @@ Buenas, comparto un proyecto personal por si a alguien le sirve o quiere contrib
 **Stack rapido:**
 - Extension: Manifest V3, content scripts por retailer (`extension/content/`), retailer config en `extension/utils/retailers.js`.
 - Backend: cron que descubre los top 500 productos populares de MLA y refresca precios periodicamente (`backend/src/scrapers/`).
-- Sitios soportados v0.2.2: 101 e-commerce argentinos (lista completa en https://precio-real.firemandeveloper.com).
+- Sitios soportados v0.2.4: 101 e-commerce argentinos (lista completa en https://precio-real.firemandeveloper.com).
 - Sin telemetria de terceros, permisos minimos (`storage`, `activeTab`).
 
 **Por que lo abri:**
 - No quiero monetizar (hay un Cafecito opcional pero nada mas).
-- Quiero que cualquiera pueda auditar que la extension no manda datos a ningun lado.
+- Quiero que cualquiera pueda auditar exactamente qué datos manda la extensión al backend.
 - Si alguien quiere contribuir un retailer nuevo, los selectors viven en `extension/utils/retailers.js` — el README tiene una seccion para agregar uno.
 
 **Links:**
