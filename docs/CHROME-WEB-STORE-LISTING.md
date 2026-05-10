@@ -1,9 +1,9 @@
 # Chrome Web Store — Listing pack (ES-AR)
 
 Material listo para pegar en el formulario de submission de la Chrome Web Store
-para Precio Real v0.2.2. Idioma principal: español (Argentina).
+para Precio Real v0.2.4. Idioma principal: español (Argentina).
 
-> Última revisión: 2026-05-09 (v11 — sincronizado con manifest v0.2.2 de 101 retailers, ciclo 1623).
+> Última revisión: 2026-05-09 (v11 — sincronizado con manifest v0.2.4 de 101 retailers, ciclo 1623).
 > Mantener sincronizado con `extension/manifest.json`, `landing/index.html` y
 > `landing/privacidad.html`. Si se agregan retailers en el manifest, actualizar acá
 > y en privacidad.html antes de re-submit.
@@ -44,13 +44,14 @@ CÓMO FUNCIONA
 QUÉ INCLUYE
 - Historial de precios real por producto.
 - Alertas de aumentos disfrazados de descuento.
-- 101 sitios soportados v0.2.2: Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Argentina, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store, LG Argentina, Sony Store, Philips Argentina, BGH, Noblex, Whirlpool, Changomás, Electrolux, Drean, Motorola Store, Todomodo, Amazon Argentina, HiperTehno, Xiaomi Mi Store, Philco Argentina, Venex, BGood, HP Tienda, Lenovo Argentina, Alphatec, Exo, Hisense Argentina, TCL Argentina, Pycca, Newsan, Asus Store Argentina, Mac Center, Full, Micro Center, iPoint, Acer Store, Coolbox, Olimpo, Dexter, TGC, Maxiconsumo, FullH4rd, Start Tech PC, PC House, Zetta, Geek Store, Computodo, MaxiHogar, PC Factory, CompraGamer, Golden Shop, Soluciones, Arredondo, iThink, Nexstore, Cable Hogar, Bit, Digital Haus, InStore, Staples, Gotta, Power Planet, iGaming Store, Netizar, MegaStore, Century Tech, Klibr, Lazer, PC Arg, Carsa, GrupoDIN, Coppel, Megatronics, Mac Station, Winpy, GearZone, Binario, CompuPC, Autronic, Megatrix y Pixelstore.
+- 101 sitios soportados v0.2.4: Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Argentina, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store, LG Argentina, Sony Store, Philips Argentina, BGH, Noblex, Whirlpool, Changomás, Electrolux, Drean, Motorola Store, Todomodo, Amazon Argentina, HiperTehno, Xiaomi Mi Store, Philco Argentina, Venex, BGood, HP Tienda, Lenovo Argentina, Alphatec, Exo, Hisense Argentina, TCL Argentina, Pycca, Newsan, Asus Store Argentina, Mac Center, Full, Micro Center, iPoint, Acer Store, Coolbox, Olimpo, Dexter, TGC, Maxiconsumo, FullH4rd, Start Tech PC, PC House, Zetta, Geek Store, Computodo, MaxiHogar, PC Factory, CompraGamer, Golden Shop, Soluciones, Arredondo, iThink, Nexstore, Cable Hogar, Bit, Digital Haus, InStore, Staples, Gotta, Power Planet, iGaming Store, Netizar, MegaStore, Century Tech, Klibr, Lazer, PC Arg, Carsa, GrupoDIN, Coppel, Megatronics, Mac Station, Winpy, GearZone, Binario, CompuPC, Autronic, Megatrix y Pixelstore.
 - Contexto de precios históricos para no confundir marketing con ahorro real.
 
 PRIVACIDAD
 - Sin cuenta, sin login, sin datos personales.
 - Solo procesamos la URL pública del producto para consultar su historial.
-- No vendemos datos. No tenemos.
+- No vendemos datos, URLs ni historiales a terceros.
+- La extensión consulta `GET /api/price` con la URL pública del producto y, en Mercado Libre, puede enviar `POST /api/observe` con URL, precio, moneda, título e imagen pública cuando están disponibles.
 - Política completa: https://precio-real.firemandeveloper.com/privacidad.html
 
 OPEN SOURCE
@@ -79,13 +80,13 @@ HOW IT WORKS
 WHAT'S INCLUDED
 - Real price history per product.
 - Alerts for fake discounts (price-hike-then-markdown tactics).
-- 101 supported Argentine e-commerce sites (v0.2.2): Mercado Libre, Frávega, Garbarino, Falabella, Carrefour, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store, LG Argentina, Sony Store, Philips Argentina, BGH, Noblex, Whirlpool, Changomás, Electrolux, Drean, Motorola Store, Todomodo, Amazon Argentina, HiperTehno, Xiaomi Mi Store Argentina, Philco Argentina, Venex, BGood, HP Tienda, Lenovo Argentina, Alphatec, Exo, Hisense Argentina, TCL Argentina, Pycca, Newsan, Asus Store Argentina, Mac Center, Full, Micro Center, iPoint, Acer Store, Coolbox, Olimpo, Dexter, TGC, Maxiconsumo, FullH4rd, Start Tech PC, PC House, Zetta, Geek Store, Computodo, MaxiHogar, PC Factory, CompraGamer, Golden Shop, Soluciones, Arredondo, iThink, Nexstore, Cable Hogar, Bit, Digital Haus, InStore, Staples, Gotta, Power Planet, iGaming Store, Netizar, MegaStore, Century Tech, Klibr, Lazer, PC Arg, Carsa, GrupoDIN, Coppel, Megatronics, Mac Station, Winpy, GearZone, Binario, CompuPC, Autronic, Megatrix, and Pixelstore.
+- 101 supported Argentine e-commerce sites (v0.2.4): Mercado Libre, Frávega, Garbarino, Falabella, Carrefour, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store, LG Argentina, Sony Store, Philips Argentina, BGH, Noblex, Whirlpool, Changomás, Electrolux, Drean, Motorola Store, Todomodo, Amazon Argentina, HiperTehno, Xiaomi Mi Store Argentina, Philco Argentina, Venex, BGood, HP Tienda, Lenovo Argentina, Alphatec, Exo, Hisense Argentina, TCL Argentina, Pycca, Newsan, Asus Store Argentina, Mac Center, Full, Micro Center, iPoint, Acer Store, Coolbox, Olimpo, Dexter, TGC, Maxiconsumo, FullH4rd, Start Tech PC, PC House, Zetta, Geek Store, Computodo, MaxiHogar, PC Factory, CompraGamer, Golden Shop, Soluciones, Arredondo, iThink, Nexstore, Cable Hogar, Bit, Digital Haus, InStore, Staples, Gotta, Power Planet, iGaming Store, Netizar, MegaStore, Century Tech, Klibr, Lazer, PC Arg, Carsa, GrupoDIN, Coppel, Megatronics, Mac Station, Winpy, GearZone, Binario, CompuPC, Autronic, Megatrix, and Pixelstore.
 - Historical price context to distinguish marketing from real savings.
 
 PRIVACY
 - No account, no login, no personal data collected.
-- We only process the public product URL to query its history.
-- We don't sell data. We don't have any to sell.
+- We query `GET /api/price` with the public product URL and, on Mercado Libre, may send `POST /api/observe` with URL, price, currency, title, and public image when available.
+- We do not sell data, URLs, or histories to third parties.
 - Full policy: https://precio-real.firemandeveloper.com/privacy-policy.html
 
 OPEN SOURCE
@@ -216,7 +217,7 @@ Dominios solicitados (101 retailers de e-commerce argentino):
 
 ### Remote code use
 ```
-La extensión NO ejecuta código remoto. Todo el JavaScript está empaquetado dentro del .zip subido a la Chrome Web Store. La única comunicación de red es una llamada GET a https://precio-real.firemandeveloper.com/api/price para obtener el historial de un producto.
+La extensión NO ejecuta código remoto. Todo el JavaScript está empaquetado dentro del .zip subido a la Chrome Web Store. Las comunicaciones de red con el backend son: `GET https://precio-real.firemandeveloper.com/api/price?url=...` para consultar el historial por URL pública de producto y, en Mercado Libre, `POST https://precio-real.firemandeveloper.com/api/observe` para enviar URL, precio, moneda, título e imagen pública cuando están disponibles.
 ```
 
 ### Data usage disclosures (sección "Privacy practices")
@@ -231,7 +232,7 @@ La extensión NO ejecuta código remoto. Todo el JavaScript está empaquetado de
 | Location | NO |
 | Web history | NO (solo URL del producto consultado, sin asociar a un usuario) |
 | User activity | NO |
-| Website content | YES — limitado a HTML público de la ficha de producto en sitios soportados |
+| Website content | YES — limitado a HTML público de la ficha de producto en sitios soportados (URL, precio, moneda, título e imagen pública cuando está disponible) |
 
 Tildar también los tres certifications obligatorias:
 - [x] No vendemos datos a terceros.
@@ -296,7 +297,7 @@ Verificar que `icon128.png` se ve nítido en el preview de la store antes de sub
 
 ## 6. Checklist pre-submit
 
-- [x] `manifest.json` con `version: "0.2.2"`.
+- [x] `manifest.json` con `version: "0.2.4"`.
 - [ ] `manifest.json` apunta a producción (`config.js` con `API_BASE = "https://precio-real.firemandeveloper.com"`, **no** localhost).
 - [ ] Privacy policy publicada en `https://precio-real.firemandeveloper.com/privacidad.html` y accesible.
 - [ ] Footer del landing linkea a `/privacidad.html`.

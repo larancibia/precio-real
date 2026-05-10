@@ -49,12 +49,13 @@ Todo automatico. No tenes que hacer nada.
 - No pide registro
 - No pide email
 - No pide tarjeta
-- No envia datos personales a ningun lado
 - No tiene tracking de terceros
+
+Consulta el backend con la URL pública del producto. En Mercado Libre también puede enviar observaciones públicas de precio para mantener fresco el historial.
 
 Permisos minimos: `storage` y `activeTab`. Codigo auditable en GitHub.
 
-### 6/8 — Sitios soportados (v0.2.2 — 101 e-commerce argentinos)
+### 6/8 — Sitios soportados (v0.2.4 — 101 e-commerce argentinos)
 
 Los principales: Mercado Libre Argentina, Fravega, Garbarino, Falabella Argentina, Carrefour Argentina, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Jumbo, Disco, Sodimac, Amazon Argentina, Samsung Store, LG Argentina, Lenovo Argentina, HP Tienda, CompraGamer, FullH4rd, PC Factory y 75 mas.
 
@@ -62,9 +63,9 @@ Lista completa en https://precio-real.firemandeveloper.com
 
 ### 7/8 — Por que ahora
 
-El Hot Sale arranca el **11 de mayo de 2026**. La idea es que tengas la herramienta instalada **antes** de que empiecen las "ofertas" para que la extension ya tenga historial cuando hagas click.
+El Hot Sale arranca el **11 de mayo de 2026**. La idea es que tengas la herramienta instalada **antes** de que empiecen las "ofertas" para revisar con tiempo qué productos ya tienen historial disponible.
 
-Cuanto antes la instales, mejores datos vas a ver.
+En Mercado Libre, las visitas también pueden sumar observaciones públicas de precio al historial.
 
 ### 8/8 — CTA
 

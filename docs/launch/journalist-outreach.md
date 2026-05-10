@@ -51,7 +51,7 @@ Soy Luis Arancibia, desarrollador. Hice **Precio Real**, una extension de Chrome
 
 El angulo es bastante argento:
 - Hot Sale 2026 arranca el 11 de mayo y el consumidor no tiene una forma simple de saber si el precio publicado es realmente menor que el de semanas anteriores.
-- La extension corre local, no pide registro ni datos personales, y el codigo esta auditable en GitHub.
+- La extension corre en el navegador, no pide registro ni datos personales, consulta el backend con la URL pública del producto y el codigo esta auditable en GitHub.
 - Esta hecha por un solo desarrollador argentino. No hay empresa ni fondeo detras.
 
 Si te sirve, te dejo:
@@ -125,13 +125,13 @@ Luis
 Para tener a mano si el periodista pide "mandame los datos clave en bullets":
 
 - Que es: extension de Chrome gratuita y open source que muestra historial real de precios en e-commerce argentinos.
-- Sitios soportados (v0.2.2): 101 e-commerce argentinos (lista completa en https://precio-real.firemandeveloper.com).
+- Sitios soportados (v0.2.4): 101 e-commerce argentinos (lista completa en https://precio-real.firemandeveloper.com).
 - Dato fuerte: la extension compara el precio actual contra el historial real de las semanas previas y alerta cuando la "rebaja" no mejora el precio anterior.
-- Privacidad: corre local, no pide registro ni email, no envia datos personales. Permisos minimos (`storage`, `activeTab`).
+- Privacidad: corre en el navegador, no pide registro ni email, no envia datos personales. Consulta el backend con la URL pública del producto y, en Mercado Libre, puede enviar precio, moneda, título e imagen públicos. Permisos minimos (`storage`, `activeTab`).
 - Modelo: gratis, sin ads, sin tracking. Soporte opcional via Cafecito.
 - Codigo: open source, auditable en https://github.com/larancibia/precio-real.
 - Creador: Luis Arancibia, desarrollador argentino, proyecto solo. Sin empresa ni fondeo.
-- Disponibilidad: Chrome Web Store (pendiente de aprobación — ZIP v0.2.2 listo), Hot Sale 2026: 11 al 13 de mayo.
+- Disponibilidad: Chrome Web Store (pendiente de aprobación — ZIP v0.2.4 listo), Hot Sale 2026: 11 al 13 de mayo.
 
 ---
 

@@ -14,7 +14,7 @@ Fuentes base:
 
 - Hot Sale Argentina 2026: 11 al 13 de mayo, organizado por CACE.
 - Inflacion 2025: IPC nacional INDEC, cierre anual alrededor de 31-32%.
-- Producto: 101 e-commerce soportados en v0.2.2, repo publico y release publicado en GitHub.
+- Producto: 101 e-commerce soportados en v0.2.4, repo publico y release publicado en GitHub.
 
 ## X / Twitter — hilo
 
@@ -58,13 +58,14 @@ Privacidad:
 - No pide tarjeta
 - No vende datos
 - No usa tracking de terceros
+- Consulta el backend con la URL pública del producto. En Mercado Libre puede enviar precio, moneda, título e imagen públicos para actualizar el historial.
 
 Permisos minimos: storage y activeTab.
 Codigo auditable en GitHub.
 
 6/8
 
-v0.2.2 soporta 101 e-commerce argentinos.
+v0.2.4 soporta 101 e-commerce argentinos.
 
 Principales: Mercado Libre, Fravega, Garbarino, Falabella, Carrefour, Coto, Naldo, Musimundo, Cetrogar, Megatone, Jumbo, Disco, Sodimac, Amazon Argentina, Samsung, Lenovo, HP, CompraGamer, FullH4rd y mas.
 
@@ -72,7 +73,7 @@ Principales: Mercado Libre, Fravega, Garbarino, Falabella, Carrefour, Coto, Nald
 
 La idea es que tengas la herramienta instalada antes de que empiecen las ofertas.
 
-Cuanto antes la uses, mas historial vas a ver cuando compares precios durante Hot Sale.
+Cuanto antes la uses, más tiempo tenés para revisar qué productos ya tienen historial disponible antes de comparar precios durante Hot Sale.
 
 8/8
 
@@ -107,7 +108,7 @@ Asi que hice Precio Real, una extension de Chrome:
 - Open source, codigo en GitHub.
 - Funciona en 101 e-commerce argentinos: Mercado Libre, Fravega, Garbarino, Falabella, Carrefour, Coto, Naldo, Musimundo, Cetrogar, Megatone, Jumbo, Disco, Sodimac, Amazon Argentina, Samsung, HP, Lenovo, CompraGamer, FullH4rd, PC Factory y varios mas.
 - Cuando entras a una ficha de producto, te muestra el historial real de precios de las ultimas semanas.
-- Permisos minimos: storage y activeTab. Nada de tracking de terceros.
+- Permisos minimos: storage y activeTab. Nada de tracking de terceros. Consulta el backend con la URL pública del producto y, en Mercado Libre, puede enviar observaciones públicas de precio para actualizar el historial.
 
 La hice porque queria una herramienta para mi mismo. Despues pense que si me servia a mi capaz le servia a mas gente, asi que la deje abierta.
 
@@ -142,7 +143,7 @@ Stack:
 - Extension MV3 con content scripts por retailer.
 - Backend en Cloudflare Workers + D1.
 - Scraping programado para productos populares.
-- 101 e-commerce argentinos soportados en v0.2.2.
+- 101 e-commerce argentinos soportados en v0.2.4.
 - Sin telemetria de terceros, permisos minimos: storage y activeTab.
 
 Links:
@@ -177,7 +178,7 @@ La idea es simple: cuando el usuario entra a una ficha de producto, la extension
 Datos clave:
 
 - Hot Sale Argentina 2026: 11 al 13 de mayo.
-- 101 e-commerce soportados en v0.2.2.
+- 101 e-commerce soportados en v0.2.4.
 - Gratis, sin registro, sin email, sin datos personales.
 - Permisos minimos: storage y activeTab.
 - Codigo publico en GitHub.
