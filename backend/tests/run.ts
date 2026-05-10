@@ -20,6 +20,7 @@
 
 import { computeStats } from "../src/lib/analytics";
 import { extractMLAId, normalizeMLUrl } from "../src/lib/ml-url";
+import { isSyntheticPublicProduct } from "../src/lib/public-catalog";
 import { parseArgentinePrice, extractPriceFromHTML } from "../src/lib/price-parse";
 import { clampLimit, clampMinDrop, fetchMovers } from "../src/lib/movers";
 import { validateObservation } from "../src/lib/observe";
@@ -513,6 +514,26 @@ function assertEq<T>(actual: T, expected: T, msg: string): void {
       currency: "ARS",
     },
     "validateObservation drops unsafe image URL",
+  );
+}
+
+// ── public-catalog: obvious synthetic rows stay out of public lists ─────────
+{
+  assertEq(
+    isSyntheticPublicProduct({
+      url: "https://www.mercadolibre.com.ar/test-precio-real-hot-sale/p/MLA999999999",
+      title: "Test Precio Real Hot Sale",
+    }),
+    true,
+    "isSyntheticPublicProduct flags obvious test titles/URLs",
+  );
+  assertEq(
+    isSyntheticPublicProduct({
+      url: "https://www.mercadolibre.com.ar/smart-tv-55/p/MLA123456",
+      title: "Smart TV 55\"",
+    }),
+    false,
+    "isSyntheticPublicProduct keeps normal catalog rows",
   );
 }
 
