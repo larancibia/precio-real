@@ -145,6 +145,7 @@
     wrap.className = 'precio-real-badge ' +
       (verdict.kind === 'real' ? 'precio-real-badge--real' :
        verdict.kind === 'inflated' ? 'precio-real-badge--fake' :
+       verdict.kind === 'no_data' ? 'precio-real-badge--neutral' :
        'precio-real-badge--neutral');
     wrap.setAttribute('role', 'status');
     // Ciclo 1602: data-version para facilitar debugging ("¿qué versión del
@@ -323,6 +324,12 @@
   // Ciclo 1592: si price_7d_ago es null pero price_30d_ago está disponible,
   // se usa como baseline secundario con umbrales levemente más amplios
   // (±10% para "real"/"inflado") para compensar la mayor volatilidad en 30d.
+  // Issue #37: formato compacto de montos ARS para el badge.
+  // Usa separador de miles con punto (convención argentina): 45000 → "$45.000".
+  function fmtARS(n) {
+    return '$' + Math.round(n).toLocaleString('es-AR');
+  }
+
   function classifyFromStats(current, stats) {
     const pct = stats.real_discount_pct;  // positivo = bajó, negativo = subió
     const inflated = stats.inflated;
@@ -333,25 +340,30 @@
 
     // ── Camino 7-day baseline (primario) ──────────────────────────────────────
     if (baseline7d != null) {
-      const arsEra7d = Math.round(baseline7d).toLocaleString('es-AR');
       if (inflated) {
         // Subió >5% respecto al precio de hace 7 días.
         const risePct = pct != null ? Math.abs(Math.round(pct)) : 5;
+        // Issue #37: label compacto con montos ARS (ej. "↑15% · $45.000 → $51.750").
+        const arsFrom = fmtARS(baseline7d);
+        const arsTo = fmtARS(current);
         return {
           kind: 'inflated',
           pct: risePct,
-          label: 'Precio Real: ✗ INFLADO',
-          sub: `Subió ${risePct}% · era $${arsEra7d} hace 7 días${ageSuffix}`,
+          label: `✗ INFLADO ↑${risePct}% · ${arsFrom} → ${arsTo}`,
+          sub: `Subió respecto a hace 7 días${ageSuffix}`,
         };
       }
       if (pct != null && pct >= 5) {
         // Bajó al menos 5% respecto a hace 7 días.
-        const arsNow = Math.round(current).toLocaleString('es-AR');
+        // Issue #37: label compacto con montos ARS (ej. "↓15% · $51.750 → $45.000").
+        const roundPct = Math.round(pct);
+        const arsFrom = fmtARS(baseline7d);
+        const arsTo = fmtARS(current);
         return {
           kind: 'real',
-          pct: Math.round(pct),
-          label: 'Precio Real: ✓ DESCUENTO REAL',
-          sub: `-${Math.round(pct)}% · bajó de $${arsEra7d} a $${arsNow}${ageSuffix}`,
+          pct: roundPct,
+          label: `✓ DESCUENTO REAL ↓${roundPct}% · ${arsFrom} → ${arsTo}`,
+          sub: `Bajó respecto a hace 7 días${ageSuffix}`,
         };
       }
       // Tenemos baseline pero el movimiento es pequeño (|pct| < 5%).
@@ -377,20 +389,26 @@
       if (current > baseline30d * 1.10) {
         // Subió >10% en el mes: precio inflado.
         const risePct = Math.round(Math.abs(pct30));
+        // Issue #37: montos ARS en label para 30d fallback.
+        const arsFrom = fmtARS(baseline30d);
+        const arsTo = fmtARS(current);
         return {
           kind: 'inflated',
           pct: risePct,
-          label: 'Precio Real: ✗ INFLADO',
-          sub: `Subió ${risePct}% vs. 30 días atrás`,
+          label: `✗ INFLADO ↑${risePct}% · ${arsFrom} → ${arsTo}`,
+          sub: `Subió vs. 30 días atrás`,
         };
       }
       if (pct30 >= 10) {
         // Bajó al menos 10% respecto al mes pasado.
+        const roundPct30 = Math.round(pct30);
+        const arsFrom = fmtARS(baseline30d);
+        const arsTo = fmtARS(current);
         return {
           kind: 'real',
-          pct: Math.round(pct30),
-          label: 'Precio Real: ✓ DESCUENTO REAL',
-          sub: `-${Math.round(pct30)}% vs. 30 días atrás`,
+          pct: roundPct30,
+          label: `✓ DESCUENTO REAL ↓${roundPct30}% · ${arsFrom} → ${arsTo}`,
+          sub: `Bajó vs. 30 días atrás`,
         };
       }
       // Movimiento pequeño en el mes.
@@ -404,7 +422,10 @@
       };
     }
 
-    return { kind: 'neutral', pct: 0, label: 'Precio Real: sin datos', sub: 'Histórico insuficiente' };
+    // Issue #35: devolver kind 'no_data' para que tryMount no monte el badge.
+    // Antes devolvíamos 'neutral' con label "sin datos", que mostraba un badge
+    // gris inútil en cada producto sin historial.
+    return { kind: 'no_data', pct: 0, label: '', sub: '' };
   }
 
   let lastUrl = null;        // canonicalUrl
@@ -813,6 +834,11 @@
       log.warn('classify failed', e && e.message);
       return false;
     }
+    // Issue #35: si classify devuelve 'no_data' o 'unknown', no montar badge.
+    // 'no_data' viene de classifyFromStats cuando no hay baseline.
+    // 'unknown' viene de fallbackClassify cuando el historial es insuficiente.
+    // Retornar true detiene el retry loop (no tiene sentido seguir intentando).
+    if (verdict.kind === 'no_data' || verdict.kind === 'unknown') return true;
     const ok = mountBadge(verdict, { retailer: siteKey, href: location.href });
     if (!ok) return false;
     mounted = true;

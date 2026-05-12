@@ -1240,7 +1240,7 @@ function makeContextWithLd(ldNodes) {
     {
       const v = fn(9000, { real_discount_pct: 10, inflated: false, price_7d_ago: 10000, price_30d_ago: 10500, baseline_age_days: 7 });
       assertEq(v.kind, 'real', 'classifyFromStats 7d: descuento real');
-      assert(v.sub.includes('bajó de'), 'classifyFromStats 7d: sub mentions bajó de');
+      assert(v.sub.includes('hace 7 días'), 'classifyFromStats 7d: sub mentions hace 7 días');
     }
     // Inflado (>5% sube en 7d).
     {
@@ -1285,38 +1285,62 @@ function makeContextWithLd(ldNodes) {
       assertEq(v.kind, 'inflated', 'classifyFromStats 30d: >10% inflado threshold');
     }
 
-    // ── Sin ningún baseline ──────────────────────────────────────────────────
+    // ── Issue #35: sin ningún baseline → kind 'no_data' (badge suppressed) ──
     {
       const v = fn(10000, { real_discount_pct: null, inflated: false, price_7d_ago: null, price_30d_ago: null, baseline_age_days: null });
-      assertEq(v.kind, 'neutral', 'classifyFromStats no baseline: neutral/sin datos');
-      assert(v.label.includes('sin datos'), 'classifyFromStats no baseline: label says sin datos');
+      assertEq(v.kind, 'no_data', '#35 classifyFromStats no baseline: kind no_data (badge suppressed)');
+      assertEq(v.label, '', '#35 classifyFromStats no baseline: empty label');
     }
     // 7d baseline tiene precedencia sobre 30d.
     {
       const v = fn(9000, { real_discount_pct: 10, inflated: false, price_7d_ago: 10000, price_30d_ago: 5000, baseline_age_days: 7 });
       // Con 30d=5000, precio actual 9000 subiría vs 30d → inflado. Pero 7d tiene precedencia: descuento real.
       assertEq(v.kind, 'real', 'classifyFromStats: 7d baseline has precedence over 30d');
-      assert(v.sub.includes('bajó de'), 'classifyFromStats: 7d wins — sub has bajó de');
+      assert(v.sub.includes('hace 7 días'), 'classifyFromStats: 7d wins — sub mentions hace 7 días');
     }
 
-    // ── Issue #37: ARS amounts in sub-text ──────────────────────────────────
-    // Inflated: sub debe incluir el precio anterior en ARS (era $156.000).
+    // ── Issue #37: ARS amounts in label (badge title) ───────────────────────
+    // Inflated: label debe incluir montos ARS con flecha (ej. "$156.000 → $180.000").
     {
       const v = fn(180000, { real_discount_pct: -15, inflated: true, price_7d_ago: 156000, price_30d_ago: null, baseline_age_days: 7 });
-      assertEq(v.kind, 'inflated', 'classifyFromStats #37: inflated con ARS');
-      assert(v.sub.includes('156.000'), 'classifyFromStats #37: inflated sub incluye era price 156.000');
+      assertEq(v.kind, 'inflated', '#37 classifyFromStats: inflated con ARS');
+      assert(v.label.includes('156.000'), '#37 inflated label incluye from-price 156.000');
+      assert(v.label.includes('180.000'), '#37 inflated label incluye to-price 180.000');
+      assert(v.label.includes('→'), '#37 inflated label incluye flecha →');
+      assert(v.label.includes('↑'), '#37 inflated label incluye indicador ↑');
+      assert(v.label.includes('15%'), '#37 inflated label incluye porcentaje');
     }
-    // Real: sub debe incluir el precio anterior y el actual en ARS.
+    // Real: label debe incluir montos ARS con flecha y porcentaje.
     {
       const v = fn(153000, { real_discount_pct: 15, inflated: false, price_7d_ago: 180000, price_30d_ago: null, baseline_age_days: 7 });
-      assertEq(v.kind, 'real', 'classifyFromStats #37: real con ARS');
-      assert(v.sub.includes('180.000'), 'classifyFromStats #37: real sub incluye from-price 180.000');
+      assertEq(v.kind, 'real', '#37 classifyFromStats: real con ARS');
+      assert(v.label.includes('180.000'), '#37 real label incluye from-price 180.000');
+      assert(v.label.includes('153.000'), '#37 real label incluye to-price 153.000');
+      assert(v.label.includes('→'), '#37 real label incluye flecha →');
+      assert(v.label.includes('↓'), '#37 real label incluye indicador ↓');
+      assert(v.label.includes('15%'), '#37 real label incluye porcentaje');
     }
-    // Neutral: sub NO debe incluir montos (evitar ruido).
+    // Neutral: label y sub NO deben incluir montos (evitar ruido).
     {
       const v = fn(9800, { real_discount_pct: 2, inflated: false, price_7d_ago: 10000, price_30d_ago: null, baseline_age_days: 7 });
-      assertEq(v.kind, 'neutral', 'classifyFromStats #37: neutral sin montos');
-      assert(!v.sub.includes('10.000') && !v.sub.includes('9.800'), 'classifyFromStats #37: neutral no tiene montos ARS');
+      assertEq(v.kind, 'neutral', '#37 classifyFromStats: neutral sin montos');
+      assert(!v.label.includes('10.000') && !v.label.includes('9.800'), '#37 neutral label no tiene montos ARS');
+      assert(!v.sub.includes('10.000') && !v.sub.includes('9.800'), '#37 neutral sub no tiene montos ARS');
+    }
+    // Issue #37: 30d fallback also includes ARS amounts in label.
+    {
+      const v = fn(8000, { real_discount_pct: null, inflated: false, price_7d_ago: null, price_30d_ago: 10000, baseline_age_days: null });
+      assertEq(v.kind, 'real', '#37 classifyFromStats 30d: real con ARS amounts');
+      assert(v.label.includes('10.000'), '#37 30d real label incluye from-price 10.000');
+      assert(v.label.includes('8.000'), '#37 30d real label incluye to-price 8.000');
+      assert(v.label.includes('↓'), '#37 30d real label incluye indicador ↓');
+    }
+    {
+      const v = fn(11500, { real_discount_pct: null, inflated: false, price_7d_ago: null, price_30d_ago: 10000, baseline_age_days: null });
+      assertEq(v.kind, 'inflated', '#37 classifyFromStats 30d: inflated con ARS amounts');
+      assert(v.label.includes('10.000'), '#37 30d inflated label incluye from-price 10.000');
+      assert(v.label.includes('11.500'), '#37 30d inflated label incluye to-price 11.500');
+      assert(v.label.includes('↑'), '#37 30d inflated label incluye indicador ↑');
     }
   } else {
     failed++;
