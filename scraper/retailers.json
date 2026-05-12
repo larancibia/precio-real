@@ -1,0 +1,261 @@
+{
+  "$schema": "retailers-schema",
+  "_comment": "Tech/gaming retailer configs for precio-real scraper. Issue #49.",
+  "_tested": "2026-05-12 — each domain verified via curl + DNS lookup",
+  "retailers": [
+    {
+      "id": "compragamer",
+      "name": "CompraGamer",
+      "domain": "compragamer.com",
+      "type": "json_api",
+      "platform": "angular_spa",
+      "api_url": "https://api.compragamer.com",
+      "api_version": "v2026",
+      "antibot": null,
+      "curl_status": 200,
+      "categories": {
+        "notebooks": "/productos?seccion=6",
+        "placas_de_video": "/productos?seccion=4",
+        "procesadores": "/productos?seccion=3",
+        "monitores": "/productos?seccion=8",
+        "perifericos": "/productos?seccion=13",
+        "almacenamiento": "/productos?seccion=5",
+        "gabinetes": "/productos?seccion=9",
+        "motherboards": "/productos?seccion=2"
+      },
+      "notes": "SPA renders client-side. API at api.compragamer.com returns JSON (confirmed: {api_version: v2026.05.05 1}). Largest AR gaming retailer."
+    },
+    {
+      "id": "fullh4rd",
+      "name": "FullH4rd",
+      "domain": "fullh4rd.com.ar",
+      "type": "html_scrape",
+      "platform": "custom",
+      "antibot": "cloudflare_js_challenge",
+      "curl_status": 403,
+      "categories": {
+        "notebooks": "/cat/notebooks",
+        "placas_de_video": "/cat/placas-de-video",
+        "procesadores": "/cat/procesadores",
+        "monitores": "/cat/monitores",
+        "perifericos": "/cat/perifericos",
+        "almacenamiento": "/cat/almacenamiento",
+        "gabinetes": "/cat/gabinetes",
+        "motherboards": "/cat/motherboards"
+      },
+      "selectors": null,
+      "notes": "Cloudflare managed JS challenge (confirmed: 'Just a moment...' page). Requires browser automation or antibot bypass from feature/45-antibot-framework. Selectors TBD after bypass."
+    },
+    {
+      "id": "venex",
+      "name": "Venex",
+      "domain": "venex.com.ar",
+      "type": "html_scrape",
+      "platform": "custom",
+      "antibot": "cloudflare_js_challenge",
+      "curl_status": 403,
+      "categories": {
+        "notebooks": "/productos/notebooks",
+        "placas_de_video": "/productos/placas-de-video",
+        "procesadores": "/productos/procesadores",
+        "monitores": "/productos/monitores",
+        "perifericos": "/productos/perifericos",
+        "almacenamiento": "/productos/almacenamiento"
+      },
+      "selectors": null,
+      "notes": "Cloudflare managed JS challenge (confirmed: 'Just a moment...' page). Category paths inferred — verify after Cloudflare bypass is implemented."
+    },
+    {
+      "id": "gezatek",
+      "name": "Gezatek",
+      "domain": "gezatek.com.ar",
+      "type": "html_scrape",
+      "platform": "qloud",
+      "antibot": null,
+      "curl_status": 200,
+      "categories": {
+        "notebooks": "/notebooks-y-accesorios/notebooks/",
+        "placas_de_video": "/placas-de-video/",
+        "procesadores": "/procesadores/",
+        "monitores": "/perifericos/monitores/",
+        "memorias_ram": "/memorias-ram/",
+        "motherboards": "/motherboards/",
+        "almacenamiento": "/almacenamiento/",
+        "gabinetes_fuentes": "/gabinetes-y-fuentes/",
+        "refrigeracion": "/refrigeracion/",
+        "pc_armadas": "/pc-armadas/"
+      },
+      "selectors": {
+        "product_card": ".prod-cat",
+        "product_name": ".card-title",
+        "product_price": ".pecio_final",
+        "product_price_attr": "data-precio",
+        "product_image": ".view.imagen img.img-fluid",
+        "add_to_cart": ".add_bag",
+        "card_data_attrs": ["data-id", "data-nombre", "data-marca", "data-cat"]
+      },
+      "notes": "Qloud platform (statics.qloud.ar / cdn.qloud.ar). Redirects www -> non-www (301). Price in data-precio attribute. Directly scrapable with httpx."
+    },
+    {
+      "id": "maximus",
+      "name": "Maximus Gaming",
+      "domain": "maximus.com.ar",
+      "type": "html_scrape",
+      "platform": "custom",
+      "antibot": "cloudflare_block",
+      "curl_status": 403,
+      "categories": {
+        "notebooks": "/Notebooks",
+        "placas_de_video": "/Placas-de-Video",
+        "procesadores": "/Procesadores",
+        "monitores": "/Monitores",
+        "perifericos": "/Perifericos"
+      },
+      "selectors": null,
+      "notes": "Cloudflare 'Attention Required' block (stricter than JS challenge — returns 403 error page, not challenge). Requires antibot bypass. Category paths inferred."
+    },
+    {
+      "id": "gamingcity",
+      "name": "GamingCity",
+      "domain": "gamingcity.com.ar",
+      "type": "html_scrape",
+      "platform": "custom_php",
+      "antibot": null,
+      "curl_status": 200,
+      "categories": {
+        "monitores": "/monitores--prod--32",
+        "notebooks": "/notebooks--prod--50",
+        "componentes": "/componentes--prod--166",
+        "perifericos": "/perifericos--prod--178",
+        "almacenamiento": "/almacenamiento-extraible--prod--113"
+      },
+      "selectors": {
+        "product_card": ".product",
+        "product_wrap": ".product-wrap-proyector",
+        "product_name": ".product a",
+        "product_price": ".price-sales",
+        "product_price_original": ".price-standard",
+        "product_badge_new": ".new-product",
+        "product_badge_promo": ".promotion",
+        "product_list": ".productos"
+      },
+      "notes": "Custom PHP platform. URL pattern: /[slug]--prod--[id]. Uses MercadoPago. GTM: GTM-PWFF3N75. Directly scrapable with httpx."
+    },
+    {
+      "id": "xtpc",
+      "name": "XT-PC",
+      "domain": "xt-pc.com.ar",
+      "type": "html_scrape",
+      "platform": "custom_php",
+      "antibot": null,
+      "curl_status": 200,
+      "categories": {
+        "procesadores": "/cat/supra/1/microprocesador/1",
+        "placas_de_video": "/cat/supra/3/placas-de-video/1",
+        "monitores": "/cat/supra/18/monitores/1",
+        "mouses": "/cat/supra/14/mouses/1",
+        "teclados": "/cat/supra/8/teclados/1",
+        "ssd": "/cat/185/discos-ssd/1",
+        "pc_armadas": "/pcarmada"
+      },
+      "selectors": {
+        "product_list": ".products",
+        "product_card": ".item.product-list",
+        "product_name": ".name",
+        "product_price": ".price",
+        "product_price_promo": ".price-promo",
+        "product_image_base": "/img/productos/"
+      },
+      "notes": "Custom PHP platform. URL pattern: /cat/supra/[cat_id]/[slug]/[page]. Search at /_func/search.php. GTM: GTM-KMCH85VD. Directly scrapable with httpx."
+    },
+    {
+      "id": "mexx",
+      "name": "Mexx",
+      "domain": "mexx.com.ar",
+      "type": "html_scrape",
+      "platform": "custom_php",
+      "antibot": null,
+      "curl_status": 200,
+      "categories": {
+        "notebooks": "/productos-rubro/notebooks/",
+        "placas_de_video": "/productos-rubro/placas-de-video/",
+        "procesadores": "/productos-rubro/procesadores/",
+        "monitores": "/productos-rubro/monitores/",
+        "motherboards": "/productos-rubro/motherboards/",
+        "memorias_ram": "/productos-rubro/memorias-ram/",
+        "almacenamiento": "/productos-rubro/almacenamiento/",
+        "gabinetes": "/productos-rubro/gabinetes/",
+        "fuentes": "/productos-rubro/fuentes-de-poder/",
+        "gamers": "/productos-rubro/gamers/",
+        "consolas": "/productos-rubro/consolas-/",
+        "refrigeracion": "/productos-rubro/refrigeracion-pc/",
+        "sillas_gamer": "/productos-rubro/sillas-gamers-/",
+        "volantes_gamepads": "/productos-rubro/volantes-y-gamepads/"
+      },
+      "selectors": {
+        "product_card": ".productos",
+        "product_name": ".card-title",
+        "product_price": ".precioFT",
+        "product_image": ".card-content img",
+        "product_footer": ".card-footer"
+      },
+      "notes": "Custom PHP platform. URL pattern: /productos-rubro/[category]/. Product URLs: /productos-rubro/[category]/[id]-[slug].html. Directly scrapable with httpx."
+    },
+    {
+      "id": "startech",
+      "name": "Startech Computacion",
+      "domain": "startechcomputacion.com.ar",
+      "type": "html_scrape",
+      "platform": "odoo",
+      "antibot": null,
+      "curl_status": 200,
+      "categories": {
+        "notebooks": "/shop/category/notebooks-4",
+        "pc_gamer": "/shop/category/computadoras-gamers-pc-oficina-3",
+        "placas_de_video": "/shop/category/placas-de-video-20",
+        "monitores": "/shop/category/monitores-tv-led-21"
+      },
+      "selectors": {
+        "product_card": ".tp-product-wrapper",
+        "product_name": ".tp-product-wrapper a",
+        "product_image": "img.tp-product-image",
+        "product_grid": ".tp-product-item",
+        "search_form": ".o_wsale_products_searchbar_form"
+      },
+      "notes": "Odoo e-commerce. URL pattern: /shop/category/[slug]-[id]. Infinite scroll for load-more. Mar del Plata store. Directly scrapable with httpx."
+    },
+    {
+      "id": "pcbox",
+      "name": "PCBOX Argentina",
+      "domain": "pcboxargentina.com.ar",
+      "type": "unavailable",
+      "platform": "unknown",
+      "antibot": null,
+      "curl_status": null,
+      "categories": {},
+      "notes": "Domain pcbox.com.ar NXDOMAIN. pcboxargentina.com.ar shows 'Sitio en Construccion' (403). Primary sales via MercadoLibre tienda/pcbox. Skip until site launches."
+    },
+    {
+      "id": "computodo",
+      "name": "CompuTodo",
+      "domain": "computodo.com.ar",
+      "type": "unavailable",
+      "platform": "unknown",
+      "antibot": null,
+      "curl_status": null,
+      "categories": {},
+      "notes": "Domain NXDOMAIN (Google DNS 8.8.8.8). Physical store in Merlo, BA. No web presence. Skip."
+    },
+    {
+      "id": "gearzone",
+      "name": "GearZone",
+      "domain": "gearzone.com.ar",
+      "type": "unavailable",
+      "platform": "unknown",
+      "antibot": null,
+      "curl_status": null,
+      "categories": {},
+      "notes": "Domain NXDOMAIN (Google DNS 8.8.8.8). No web presence found. Skip."
+    }
+  ]
+}
