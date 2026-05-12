@@ -1,0 +1,153 @@
+{
+  "$schema": "retailers-schema",
+  "_comment": "Hardware/IT store configs for precio-real scraper. Issue #51.",
+  "_tested": "2026-05-12 — each domain verified via curl + DNS lookup (Google DNS 8.8.8.8)",
+  "retailers": [
+    {
+      "id": "compumundo",
+      "name": "Compumundo",
+      "domain": "compumundo.com.ar",
+      "type": "unavailable",
+      "platform": "wordpress_blog",
+      "antibot": null,
+      "curl_status": 200,
+      "categories": {},
+      "notes": "WordPress blog (Cube Blog theme, wp.com stats). No ecommerce functionality — site publishes tech articles/reviews only. No product catalog, no cart, no prices. Not scrapable for pricing. Skip."
+    },
+    {
+      "id": "microcenter",
+      "name": "MicroCenter",
+      "domain": "microcenter.com.ar",
+      "type": "unavailable",
+      "platform": "unknown",
+      "antibot": null,
+      "curl_status": null,
+      "categories": {},
+      "notes": "Domain NXDOMAIN (Google DNS 8.8.8.8). No web presence found. Skip."
+    },
+    {
+      "id": "alphatec",
+      "name": "Alphatec",
+      "domain": "alphatec.com.ar",
+      "type": "html_scrape",
+      "platform": "empretienda",
+      "antibot": null,
+      "curl_status": 200,
+      "categories": {
+        "catalogo": "/catalogo"
+      },
+      "selectors": null,
+      "notes": "Empretienda platform (esmsv.com CDN, Laravel Livewire). Has cart and product catalog at /catalogo. Category structure is flat (single /catalogo page). Products loaded via Livewire AJAX. Limited product variety — small store. Requires Livewire wire:snapshot parsing or browser automation."
+    },
+    {
+      "id": "bitar",
+      "name": "Bit.ar",
+      "domain": "bit.ar",
+      "type": "unavailable",
+      "platform": "seo_parked",
+      "antibot": null,
+      "curl_status": 200,
+      "categories": {},
+      "notes": "Domain returns 200 but is a parked/SEO page about 'bit technology' and 'cryptocurrency'. Title mentions 'Comprar Dominios Web Argentina'. Not a real tech store — domain is parked with generic SEO content. Skip."
+    },
+    {
+      "id": "digitalhaus",
+      "name": "DigitalHaus",
+      "domain": "digitalhaus.com.ar",
+      "type": "unavailable",
+      "platform": "unknown",
+      "antibot": null,
+      "curl_status": null,
+      "categories": {},
+      "notes": "Domain NXDOMAIN (Google DNS 8.8.8.8). No web presence found. Skip."
+    },
+    {
+      "id": "binario",
+      "name": "Binario",
+      "domain": "binario.com.ar",
+      "type": "unavailable",
+      "platform": "static_bootstrap",
+      "antibot": null,
+      "curl_status": 200,
+      "categories": {},
+      "notes": "IT consulting company landing page (Bootstrap 3, single-page). Sections: Nosotros, Servicios, Clientes, Contacto. No ecommerce, no products, no prices. 'Especialistas en consultoria y soluciones tecnologicas.' Not a retail store. Skip."
+    },
+    {
+      "id": "compupc",
+      "name": "CompuPC",
+      "domain": "compupc.com.ar",
+      "type": "unavailable",
+      "platform": "unknown",
+      "antibot": null,
+      "curl_status": null,
+      "categories": {},
+      "notes": "Domain NXDOMAIN (Google DNS 8.8.8.8). No web presence found. Skip."
+    },
+    {
+      "id": "autronic",
+      "name": "Autronic",
+      "domain": "autronic.com.ar",
+      "type": "unavailable",
+      "platform": "unknown",
+      "antibot": null,
+      "curl_status": null,
+      "categories": {},
+      "notes": "Domain NXDOMAIN (Google DNS 8.8.8.8). No web presence found. Skip."
+    },
+    {
+      "id": "centurytech",
+      "name": "CenturyTech",
+      "domain": "centurytech.com.ar",
+      "type": "unavailable",
+      "platform": "unknown",
+      "antibot": null,
+      "curl_status": null,
+      "categories": {},
+      "notes": "Domain NXDOMAIN (Google DNS 8.8.8.8). No web presence found. Skip."
+    },
+    {
+      "id": "pcarg",
+      "name": "PCarg",
+      "domain": "pcarg.com",
+      "type": "unavailable",
+      "platform": "domain_parked",
+      "antibot": null,
+      "curl_status": 405,
+      "categories": {},
+      "notes": "Domain is for sale on GoDaddy (redirects to forsale.godaddy.com/forsale/pcarg.com). Returns 405 on HEAD, lander page shows 'Access Denied' via Akamai. Not a functional store. Skip."
+    },
+    {
+      "id": "megatrix",
+      "name": "Megatrix",
+      "domain": "megatrix.com.ar",
+      "type": "unavailable",
+      "platform": "unknown",
+      "antibot": null,
+      "curl_status": null,
+      "categories": {},
+      "notes": "Domain NXDOMAIN (Google DNS 8.8.8.8). No web presence found. Skip."
+    },
+    {
+      "id": "netizar",
+      "name": "Netizar",
+      "domain": "netizar.com.ar",
+      "type": "unavailable",
+      "platform": "unknown",
+      "antibot": null,
+      "curl_status": null,
+      "categories": {},
+      "notes": "DNS resolves to 18.213.50.227 (AWS) but connection times out on port 443 and port 80 returns no response. Server is unreachable. Skip."
+    },
+    {
+      "id": "lazer",
+      "name": "Lazer",
+      "domain": "lazer.com.ar",
+      "type": "unavailable",
+      "platform": "unknown",
+      "antibot": null,
+      "curl_status": 500,
+      "categories": {},
+      "notes": "DNS resolves to 205.178.146.236 (openresty/1.27.1.2). TLS certificate verification fails (exit code 60) — insecure connection returns 500 Internal Server Error with empty body. Server is broken. Skip."
+    }
+  ]
+}
