@@ -1,0 +1,256 @@
+{
+  "$schema": "retailers-schema",
+  "_comment": "Supermarket/pharmacy retailer configs for precio-real scraper. Issue #48.",
+  "_tested": "2026-05-12 — each domain verified via curl + VTEX/Magento API probes",
+  "retailers": [
+    {
+      "id": "carrefour",
+      "name": "Carrefour Argentina",
+      "domain": "carrefour.com.ar",
+      "type": "vtex_api",
+      "platform": "vtex",
+      "vtex_account": "carrefourar",
+      "api_base": "https://www.carrefour.com.ar/api/catalog_system/pub",
+      "antibot": null,
+      "curl_status": 200,
+      "categories": {
+        "electro_y_tecnologia": "/electro-y-tecnologia",
+        "smart_tv": "/electro-y-tecnologia/tv-y-soportes/smart-tv",
+        "celulares_libres": "/electro-y-tecnologia/celulares/celulares-libres",
+        "notebooks_y_pc": "/electro-y-tecnologia/informatica-y-gaming/notebooks-y-pc",
+        "informatica_y_gaming": "/electro-y-tecnologia/informatica-y-gaming",
+        "audio": "/electro-y-tecnologia/audio",
+        "impresoras": "/electro-y-tecnologia/informatica-y-gaming/impresoras-y-cartuchos/impresoras",
+        "pequenos_electrodomesticos": "/electro-y-tecnologia/pequenos-electrodomesticos"
+      },
+      "vtex_category_ids": {
+        "electro_y_tecnologia": 3,
+        "tv_y_soportes": 4,
+        "smart_tv": 5,
+        "celulares": 7,
+        "celulares_libres": 8,
+        "informatica_y_gaming": 48,
+        "notebooks_y_pc": 49,
+        "audio": 56,
+        "fotografia": 598,
+        "pequenos_electrodomesticos": 31
+      },
+      "selectors": null,
+      "notes": "VTEX platform (vtex.render-server@8.179.3). Best approach: VTEX REST API at /api/catalog_system/pub/products/search?fq=C:/[catId]/. Confirmed: search returns JSON with productName, brand, Price, ListPrice. Largest supermarket chain in AR."
+    },
+    {
+      "id": "coto",
+      "name": "Coto Digital",
+      "domain": "cotodigital3.com.ar",
+      "actual_domain": "cotodigital.com.ar",
+      "type": "angular_spa",
+      "platform": "angular_custom",
+      "api_base": "https://api.coto.com.ar/api/v1/ms-digital-sitio-bff-web/api/v1",
+      "search_provider": "constructor_io",
+      "search_api_key": "coto_Kf4oTm",
+      "antibot": "fortigate_waf",
+      "curl_status": 200,
+      "categories": {
+        "electro": "/browse/catalogo-702/electro-766",
+        "tv_y_video": "/browse/catalogo-702/electro-766/tv-y-video-1183",
+        "celulares": "/browse/catalogo-702/electro-766/celulares-y-telefonia-1190",
+        "informatica": "/browse/catalogo-702/electro-766/informatica-1196",
+        "audio": "/browse/catalogo-702/electro-766/audio-1202",
+        "electrodomesticos": "/browse/catalogo-702/electro-766/electrodomesticos-1208"
+      },
+      "selectors": null,
+      "notes": "Angular SPA (<app-root>). Redirects cotodigital3.com.ar -> cotodigital.com.ar/sitios/cdigi/nuevositio. Uses Constructor.io (cnstrc.com) for search and BFF API at api.coto.com.ar. FortiGate WAF present. Requires browser automation or API reverse-engineering. Category browse paths use ATG-style numeric IDs."
+    },
+    {
+      "id": "jumbo",
+      "name": "Jumbo Argentina",
+      "domain": "jumbo.com.ar",
+      "type": "vtex_api",
+      "platform": "vtex",
+      "vtex_account": "caborar",
+      "api_base": "https://www.jumbo.com.ar/api/catalog_system/pub",
+      "antibot": null,
+      "curl_status": 200,
+      "categories": {
+        "electro": "/electro",
+        "tv_y_video": "/electro/tv-y-video",
+        "audio": "/electro/audio",
+        "pequenos_electros": "/electro/pequenos-electros",
+        "celulares": "/electro/telefonos/celulares",
+        "accesorios_celulares": "/electro/telefonos/accesorios-de-celulares"
+      },
+      "vtex_category_ids": {
+        "electro": 15,
+        "tv_y_video": 113,
+        "audio": 115,
+        "pequenos_electros": 123,
+        "celulares": 396,
+        "accesorios_celulares": 398
+      },
+      "selectors": null,
+      "notes": "VTEX platform (vtex.render-server@8.179.3). Cencosud group (same backend as Disco). VTEX REST API confirmed working: /api/catalog_system/pub/products/search?fq=C:/[catId]/. Electro section has TV, audio, small appliances, and phones."
+    },
+    {
+      "id": "disco",
+      "name": "Disco Argentina",
+      "domain": "disco.com.ar",
+      "type": "vtex_api",
+      "platform": "vtex",
+      "vtex_account": "caborar",
+      "api_base": "https://www.disco.com.ar/api/catalog_system/pub",
+      "antibot": null,
+      "curl_status": 200,
+      "categories": {
+        "electro": "/electro",
+        "tv_y_video": "/electro/tv-y-video",
+        "audio": "/electro/audio",
+        "pequenos_electros": "/electro/pequenos-electros",
+        "celulares": "/electro/telefonos/celulares",
+        "accesorios_celulares": "/electro/telefonos/accesorios-de-celulares"
+      },
+      "vtex_category_ids": {
+        "electro": 15,
+        "tv_y_video": 113,
+        "audio": 115,
+        "pequenos_electros": 123,
+        "celulares": 396,
+        "accesorios_celulares": 398
+      },
+      "selectors": null,
+      "notes": "VTEX platform (vtex.render-server@8.179.3). Cencosud group (shares VTEX account 'caborar' with Jumbo — same category IDs). VTEX REST API confirmed. Electro section mirrors Jumbo structure."
+    },
+    {
+      "id": "dia",
+      "name": "Supermercados Dia",
+      "domain": "supermercadosdia.com.ar",
+      "actual_domain": "diaonline.supermercadosdia.com.ar",
+      "type": "vtex_api",
+      "platform": "vtex",
+      "vtex_account": "diaargentina",
+      "api_base": "https://diaonline.supermercadosdia.com.ar/api/catalog_system/pub",
+      "antibot": null,
+      "curl_status": 200,
+      "categories": {
+        "tecnologia": "/tecnologia",
+        "smart_tv": "/tecnologia/televisores/smart-tv",
+        "tv_led": "/tecnologia/televisores/tv-led",
+        "celulares_libres": "/tecnologia/telefonia/celulares-libres",
+        "notebook": "/tecnologia/informatica/notebook",
+        "impresoras": "/tecnologia/impresoras",
+        "audio": "/tecnologia/audio",
+        "electro_hogar": "/electro-hogar",
+        "pequenos_electrodomesticos": "/electro-hogar/pequenos-electrodomesticos"
+      },
+      "vtex_category_ids": {
+        "tecnologia": 339,
+        "smart_tv": 342,
+        "tv_led": 341,
+        "celulares_libres": 351,
+        "notebook": 357,
+        "impresoras": 366,
+        "audio": 344,
+        "electro_hogar": 441,
+        "pequenos_electrodomesticos": 450
+      },
+      "selectors": null,
+      "notes": "VTEX platform (vtex.render-server@8.179.3). Redirects supermercadosdia.com.ar -> diaonline.supermercadosdia.com.ar. Has both 'Tecnologia' (cat 339) and 'Electro Hogar' (cat 441) sections. VTEX REST API confirmed working."
+    },
+    {
+      "id": "changomas",
+      "name": "Changomas (Mas Online)",
+      "domain": "changomas.com.ar",
+      "actual_domain": "masonline.com.ar",
+      "type": "vtex_api",
+      "platform": "vtex",
+      "vtex_account": "maborar",
+      "api_base": "https://www.masonline.com.ar/api/catalog_system/pub",
+      "antibot": null,
+      "curl_status": 200,
+      "tls_note": "changomas.com.ar has invalid TLS cert (unable to get local issuer certificate); redirects to masonline.com.ar which works fine",
+      "categories": {
+        "tv_y_video": "/tv-y-video",
+        "tv_y_accesorios": "/tv-y-video/tv-y-accesorios",
+        "audio": "/audio",
+        "parlantes": "/audio/parlantes-y-equipos-de-audio",
+        "informatica": "/informatica",
+        "notebooks": "/informatica/notebooks",
+        "celulares_y_telefonia": "/celulares-y-telefonia",
+        "celulares": "/celulares-y-telefonia/celulares",
+        "gaming": "/gaming",
+        "pequenos_electrodomesticos": "/pequenos-electrodomesticos"
+      },
+      "vtex_category_ids": {
+        "tv_y_video": 200102,
+        "tv_y_accesorios": 300443,
+        "audio": 200010,
+        "parlantes": 300036,
+        "informatica": 200059,
+        "notebooks": 300254,
+        "celulares_y_telefonia": 200101,
+        "celulares": 300440,
+        "gaming": 200050,
+        "pequenos_electrodomesticos": 200085
+      },
+      "selectors": null,
+      "notes": "VTEX platform (vtex.render-server@8.179.3). Changomas.com.ar redirects to masonline.com.ar (Walmart Argentina successor). changomas.com.ar TLS cert is broken — use masonline.com.ar directly. VTEX REST API confirmed. Rich tech catalog: TV, audio, notebooks, phones, gaming."
+    },
+    {
+      "id": "maxiconsumo",
+      "name": "Maxiconsumo",
+      "domain": "maxiconsumo.com",
+      "type": "html_scrape",
+      "platform": "magento2",
+      "antibot": null,
+      "curl_status": 200,
+      "store_code": "sucursal_moreno",
+      "categories": {
+        "electro": "/electro.html",
+        "tv": "/electro/tv.html",
+        "audio": "/electro/audio.html",
+        "cocina": "/electro/cocina.html",
+        "pequenos_electrodomesticos": "/electro/peque-os-electrodomesticos.html",
+        "aire_y_ventilacion": "/electro/aire-y-ventilacion.html",
+        "cuidados_personales": "/electro/cuidados-personales.html"
+      },
+      "selectors": {
+        "product_list": ".products.list.items.product-items",
+        "product_card": ".item.product.product-item",
+        "product_name": ".product-item-name .product-item-link",
+        "product_sku": ".product-sku",
+        "product_price": ".price-wrapper .price",
+        "product_price_attr": "data-price-amount",
+        "product_image": ".product-image-photo",
+        "product_details": ".product-item-details",
+        "product_actions": ".product-item-actions"
+      },
+      "notes": "Magento 2 platform (Ulula/maxiconsumo-theme). URL base: /sucursal_moreno/. Wholesale-oriented (Marolio group). Electro section has TVs, audio, kitchen, small appliances. Price in data-price-amount attribute. GTM: GTM-NMMT8WC. Directly scrapable with httpx."
+    },
+    {
+      "id": "farmacity",
+      "name": "Farmacity",
+      "domain": "farmacity.com",
+      "type": "vtex_api",
+      "platform": "vtex",
+      "vtex_account": "farmacity",
+      "api_base": "https://www.farmacity.com/api/catalog_system/pub",
+      "antibot": null,
+      "curl_status": 200,
+      "categories": {
+        "electronica_y_pilas": "/hogar-y-alimentos/electronica-y-pilas",
+        "tecnologia": "/hogar-y-alimentos/electronica-y-pilas/tecnologia",
+        "pilas": "/hogar-y-alimentos/electronica-y-pilas/pilas",
+        "electro_belleza": "/electro-belleza",
+        "electrosalud": "/electrosalud"
+      },
+      "vtex_category_ids": {
+        "electronica_y_pilas": 302,
+        "tecnologia": 303,
+        "pilas": 304,
+        "electro_belleza": 339,
+        "electrosalud": 204
+      },
+      "selectors": null,
+      "notes": "VTEX platform (vtex.render-server@8.179.3). Primarily pharmacy/beauty, limited tech: small electronics under 'Hogar y Alimentos > Electronica y Pilas > Tecnologia' (cat 303), plus beauty devices in 'Electro Belleza' (cat 339). VTEX REST API confirmed. Not a core tech retailer but useful for cross-price comparison on small electronics."
+    }
+  ]
+}
