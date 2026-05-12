@@ -333,6 +333,7 @@
 
     // ── Camino 7-day baseline (primario) ──────────────────────────────────────
     if (baseline7d != null) {
+      const arsEra7d = Math.round(baseline7d).toLocaleString('es-AR');
       if (inflated) {
         // Subió >5% respecto al precio de hace 7 días.
         const risePct = pct != null ? Math.abs(Math.round(pct)) : 5;
@@ -340,16 +341,17 @@
           kind: 'inflated',
           pct: risePct,
           label: 'Precio Real: ✗ INFLADO',
-          sub: `Subió ${risePct}% vs. 7 días atrás${ageSuffix}`,
+          sub: `Subió ${risePct}% · era $${arsEra7d} hace 7 días${ageSuffix}`,
         };
       }
       if (pct != null && pct >= 5) {
         // Bajó al menos 5% respecto a hace 7 días.
+        const arsNow = Math.round(current).toLocaleString('es-AR');
         return {
           kind: 'real',
           pct: Math.round(pct),
           label: 'Precio Real: ✓ DESCUENTO REAL',
-          sub: `-${Math.round(pct)}% vs. 7 días atrás${ageSuffix}`,
+          sub: `-${Math.round(pct)}% · bajó de $${arsEra7d} a $${arsNow}${ageSuffix}`,
         };
       }
       // Tenemos baseline pero el movimiento es pequeño (|pct| < 5%).
@@ -792,6 +794,9 @@
     log.debug(siteKey, 'tryMount', { url, key, current });
     await reportObservedPrice(siteKey, url, current);
     const { history, stats } = await fetchHistory(url);
+    // Issue #35: no mostrar badge si no hay historial ni stats — evitar badge gris
+    // en cada producto sin datos. Retornar true detiene el retry loop.
+    if ((!history || history.length === 0) && !stats) return true;
     // Ciclo 1619: re-verificar siteKey post-fetch. El usuario pudo navegar a otra
     // URL mientras el fetch estaba en vuelo (especialmente en conexiones lentas
     // durante Hot Sale). Si el sitio cambió, el runToken ya habrá rotado pero si

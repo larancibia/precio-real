@@ -45,7 +45,7 @@ import { extractMLAId, normalizeMLUrl } from "./lib/ml-url";
 import { fetchMovers, clampLimit, clampMinDrop } from "./lib/movers";
 import { isSyntheticPublicProduct, publicProductWhere } from "./lib/public-catalog";
 import { validateObservation } from "./lib/observe";
-import { backfillWaybackHistory } from "./scrapers/wayback";
+import { backfillWaybackHistory, shouldTriggerWayback } from "./scrapers/wayback";
 import { runScheduledScrape } from "./scrapers/scheduled";
 
 // Cap history rows returned by /api/price. The extension only needs enough
@@ -138,7 +138,7 @@ async function handlePrice(
   const rows = history.results ?? [];
   const stats = computeStats(rows);
 
-  if (rows.length < 5 && extractMLAId(product.url)) {
+  if (shouldTriggerWayback(rows, Math.floor(Date.now() / 1000)) && extractMLAId(product.url)) {
     ctx.waitUntil(
       backfillWaybackHistory(product.id, product.url, env).catch((err) =>
         console.warn("[price] waitUntil wayback failed:", err),

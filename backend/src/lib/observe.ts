@@ -1,3 +1,5 @@
+import type { ProductRow } from "../types";
+
 export interface ObservationInput {
   url?: unknown;
   title?: unknown;
@@ -72,6 +74,80 @@ function normalizeCurrency(raw: unknown): string {
   const currency = raw.trim().toUpperCase();
   if (/^[A-Z]{3}$/.test(currency)) return currency;
   return "ARS";
+}
+
+// Minimal D1 surface used by upsertObservedProduct — structurally compatible
+// with D1Database so the real worker works and tests can inject a stub.
+interface ObserveDB {
+  prepare(sql: string): {
+    bind(...args: unknown[]): {
+      first<T>(): Promise<T | null>;
+      run(): Promise<{ meta?: { changes?: number } }>;
+    };
+  };
+}
+
+/**
+ * Upsert the observed product row and patch any null metadata fields.
+ *
+ * Uses INSERT OR IGNORE so that concurrent requests observing the same URL
+ * don't race to a UNIQUE constraint error (which previously caused 500s under
+ * Hot Sale traffic). The re-SELECT after the INSERT always finds the row
+ * regardless of which concurrent request actually inserted it.
+ *
+ * Returns the product row, or null if the row cannot be found after the upsert
+ * (should never happen in practice — signals a D1 error).
+ */
+export async function upsertObservedProduct(
+  db: ObserveDB,
+  obs: ValidObservation,
+): Promise<ProductRow | null> {
+  // Fast path: product already in DB — skip the INSERT.
+  let product = await db
+    .prepare(
+      "SELECT id, url, title, seller, image_url, created_at FROM products WHERE url = ?1",
+    )
+    .bind(obs.url)
+    .first<ProductRow>();
+
+  if (!product) {
+    // INSERT OR IGNORE: if a concurrent request wins the race and inserts the
+    // same URL first, the UNIQUE constraint is silently ignored rather than
+    // propagating an error. The re-SELECT below finds the winning row either way.
+    await db
+      .prepare(
+        "INSERT OR IGNORE INTO products (url, title, seller, image_url) VALUES (?1, ?2, ?3, ?4)",
+      )
+      .bind(obs.url, obs.title, obs.seller, obs.image_url)
+      .run();
+
+    product = await db
+      .prepare(
+        "SELECT id, url, title, seller, image_url, created_at FROM products WHERE url = ?1",
+      )
+      .bind(obs.url)
+      .first<ProductRow>();
+  }
+
+  if (!product) return null;
+
+  // Patch null metadata. Applies whether we just inserted or found an existing
+  // row — the concurrent-insert race can leave fields null when the other
+  // inserter also had no metadata and our observation carries richer data.
+  if (
+    (!product.title && obs.title) ||
+    (!product.seller && obs.seller) ||
+    (!product.image_url && obs.image_url)
+  ) {
+    await db
+      .prepare(
+        "UPDATE products SET title = COALESCE(title, ?1), seller = COALESCE(seller, ?2), image_url = COALESCE(image_url, ?3) WHERE id = ?4",
+      )
+      .bind(obs.title, obs.seller, obs.image_url, product.id)
+      .run();
+  }
+
+  return product;
 }
 
 export function validateObservation(input: ObservationInput): ValidObservation | { error: string } {

@@ -85,3 +85,6 @@ main {
 .pr-verdict--neutral { background: #f3f4f6; color: #4b5563; }
 .pr-chart-wrap { margin-top: 12px; display: flex; justify-content: center; }
 #pr-chart { max-width: 100%; }
+
+.pr-skeleton-row { height: 16px; background: linear-gradient(90deg, #eee 25%, #ddd 50%, #eee 75%); background-size: 200% 100%; animation: pr-skeleton-pulse 1.5s infinite; border-radius: 4px; margin: 8px 0; }
+@keyframes pr-skeleton-pulse { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }

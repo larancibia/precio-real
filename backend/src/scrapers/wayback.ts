@@ -50,6 +50,29 @@ export function wayback14ToUnix(ts14: string): number | null {
   return Math.floor(ms / 1000);
 }
 
+/**
+ * Decides whether to trigger a Wayback backfill for a product.
+ * Exported for unit tests (tests/run.ts).
+ *
+ * Rules:
+ *  - 0 rows   → true  (no data at all, critical to backfill)
+ *  - ≥5 rows  → false (sufficient history, skip)
+ *  - 1-4 rows → true only if the newest row is stale (> 12 hours old)
+ *
+ * The 12-hour staleness check prevents 50 concurrent Hot-Sale requests
+ * from all firing parallel Wayback scrapes for the same sparse product.
+ */
+export function shouldTriggerWayback(
+  rows: { scraped_at: number }[],
+  nowSec: number,
+): boolean {
+  if (rows.length === 0) return true;
+  if (rows.length >= 5) return false;
+  // rows is ordered DESC by scraped_at, so rows[0] is the newest
+  const newestSec = rows[0].scraped_at;
+  return nowSec - newestSec > 43200; // 12 hours
+}
+
 // Evenly sample n elements down to k while preserving order; dedupe by reference index.
 // Exported for unit tests (tests/run.ts).
 export function evenSample<T>(arr: T[], k: number): T[] {

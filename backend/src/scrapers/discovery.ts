@@ -55,6 +55,9 @@ export interface DiscoveryResult {
   candidates: number;
   inserted: number;
   failed: number;
+  // DB row IDs of products that were newly inserted this run (INSERT changed a row).
+  // Used by the scheduler to trigger Wayback Machine backfill for fresh products.
+  newIds: number[];
 }
 
 async function fetchSearchOnce(query: string): Promise<MLSearchItem[]> {
