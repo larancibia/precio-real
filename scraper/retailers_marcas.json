@@ -1,0 +1,489 @@
+{
+  "$schema": "retailers-schema",
+  "_comment": "Official brand store configs for precio-real scraper. Issue #50. MSRP reference stores.",
+  "_tested": "2026-05-12 — each domain verified via curl + DNS lookup + platform detection",
+  "_scrape_frequency": "once_per_day",
+  "retailers": [
+    {
+      "id": "samsung_ar",
+      "name": "Samsung Argentina",
+      "domain": "samsung.com/ar",
+      "url": "https://www.samsung.com/ar/",
+      "type": "html_scrape",
+      "platform": "adobe_aem",
+      "antibot": null,
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "delay_between_ms": 20000
+      },
+      "categories": {
+        "televisores": "/ar/tvs/all-tvs/",
+        "celulares": "/ar/smartphones/all-smartphones/",
+        "tablets": "/ar/tablets/all-tablets/",
+        "notebooks": "/ar/computers/all-computers/",
+        "monitores": "/ar/monitors/all-monitors/",
+        "refrigeradores": "/ar/refrigerators/all-refrigerators/",
+        "lavarropas": "/ar/washers-and-dryers/all-washers-and-dryers/",
+        "aires_acondicionados": "/ar/air-conditioners/all-air-conditioners/",
+        "audio": "/ar/audio-video/all-audio/"
+      },
+      "notes": "Adobe AEM platform (Akamai CDN). Full ecommerce with prices in ARS and cart. Largest global brand store with AR presence. Category paths follow Samsung global /ar/[category]/all-[category]/ pattern."
+    },
+    {
+      "id": "lg_ar",
+      "name": "LG Argentina",
+      "domain": "lg.com/ar",
+      "url": "https://www.lg.com/ar/",
+      "type": "html_scrape",
+      "platform": "custom",
+      "antibot": null,
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "delay_between_ms": 20000
+      },
+      "categories": {
+        "televisores": "/ar/televisores/",
+        "celulares": "/ar/celulares/",
+        "monitores": "/ar/monitores/",
+        "audio": "/ar/audio/",
+        "refrigeradores": "/ar/refrigeradores/",
+        "lavarropas": "/ar/lavarropas/",
+        "aires_acondicionados": "/ar/aire-acondicionado/",
+        "microondas": "/ar/microondas/"
+      },
+      "notes": "Custom platform (Akamai CDN). Redirects www -> non-www (301). Product pages show prices in ARS with buy/comprar buttons. Category pages at /ar/[category]/."
+    },
+    {
+      "id": "sony_ar",
+      "name": "Sony Store Argentina",
+      "domain": "store.sony.com.ar",
+      "url": "https://store.sony.com.ar/",
+      "type": "vtex_api",
+      "platform": "vtex_io",
+      "vtex_account": "c",
+      "api_base": "https://store.sony.com.ar/api/catalog_system/pub",
+      "antibot": null,
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "delay_between_ms": 20000
+      },
+      "categories": {
+        "televisores": "/televisores",
+        "audio": "/audio",
+        "camaras": "/camaras",
+        "celulares": "/celulares",
+        "playstation": "/playstation",
+        "accesorios": "/accesorios"
+      },
+      "notes": "VTEX IO platform (c.vtexassets.com). Official Sony ecommerce for Argentina. VTEX REST API should work at /api/catalog_system/pub/products/search."
+    },
+    {
+      "id": "philips_ar",
+      "name": "Philips Argentina",
+      "domain": "philips.com.ar",
+      "url": "https://www.philips.com.ar/",
+      "type": "html_scrape",
+      "platform": "nextjs_cloudflare",
+      "antibot": "cloudflare",
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "delay_between_ms": 20000
+      },
+      "categories": {
+        "televisores": "/c/television/",
+        "audio": "/c/sound-and-speakers/",
+        "cuidado_personal": "/c/personal-care/",
+        "cocina": "/c/kitchen-appliances/",
+        "iluminacion": "/c/lighting/"
+      },
+      "notes": "Next.js on Cloudflare. Product pages show prices in ARS with buy options. No dedicated AR store subdomain — uses global philips.com.ar domain. Category paths use /c/[slug]/ pattern."
+    },
+    {
+      "id": "bgh_ar",
+      "name": "BGH Argentina",
+      "domain": "bgh.com.ar",
+      "url": "https://www.bgh.com.ar/",
+      "type": "vtex_api",
+      "platform": "vtex_io",
+      "vtex_account": "arbghprodio",
+      "api_base": "https://www.bgh.com.ar/api/catalog_system/pub",
+      "antibot": null,
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "delay_between_ms": 20000
+      },
+      "categories": {
+        "aires_acondicionados": "/aires-acondicionados",
+        "televisores": "/televisores",
+        "freezers": "/freezers",
+        "cocinas": "/cocinas",
+        "calefaccion": "/calefaccion"
+      },
+      "notes": "VTEX IO platform (arbghprodio.vtexassets.com). Full ecommerce with prices and cart. VTEX REST API at /api/catalog_system/pub/products/search. Argentine brand (Grupo Newsan)."
+    },
+    {
+      "id": "noblex_ar",
+      "name": "Noblex Argentina",
+      "domain": "noblex.com.ar",
+      "url": "https://www.noblex.com.ar/",
+      "type": "html_scrape",
+      "platform": "nextjs",
+      "antibot": null,
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "delay_between_ms": 20000
+      },
+      "categories": {
+        "televisores": "/productos/televisores",
+        "aires_acondicionados": "/productos/aires-acondicionados",
+        "lavarropas": "/productos/lavarropas",
+        "heladeras": "/productos/heladeras",
+        "cocinas": "/productos/cocinas"
+      },
+      "notes": "Next.js on Google Cloud. Has 'Tienda' section with products and prices in ARS. Product pages at /productos/[category]. Newsan group brand. SPA — may require JS rendering for product data."
+    },
+    {
+      "id": "whirlpool_ar",
+      "name": "Whirlpool Argentina",
+      "domain": "whirlpool.com.ar",
+      "url": "https://www.whirlpool.com.ar/",
+      "type": "vtex_api",
+      "platform": "vtex_io",
+      "vtex_account": "whirlpoolargio",
+      "api_base": "https://www.whirlpool.com.ar/api/catalog_system/pub",
+      "antibot": null,
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "delay_between_ms": 20000
+      },
+      "categories": {
+        "heladeras": "/heladeras",
+        "lavarropas": "/lavarropas",
+        "secarropas": "/secarropas",
+        "lavavajillas": "/lavavajillas",
+        "cocinas": "/cocinas",
+        "microondas": "/microondas",
+        "aires_acondicionados": "/aires-acondicionados"
+      },
+      "notes": "VTEX IO platform (whirlpoolargio.vtexassets.com). Full ecommerce with prices and cart. VTEX REST API at /api/catalog_system/pub/products/search."
+    },
+    {
+      "id": "electrolux_ar",
+      "name": "Electrolux Argentina",
+      "domain": "tienda.electrolux.com.ar",
+      "url": "https://www.tienda.electrolux.com.ar/",
+      "type": "vtex_api",
+      "platform": "vtex_io",
+      "vtex_account": "electrolux",
+      "api_base": "https://www.tienda.electrolux.com.ar/api/catalog_system/pub",
+      "antibot": null,
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "delay_between_ms": 20000
+      },
+      "categories": {
+        "heladeras": "/heladeras",
+        "lavarropas": "/lavarropas",
+        "lavavajillas": "/lavavajillas",
+        "cocinas": "/cocinas",
+        "hornos": "/hornos",
+        "aspiradoras": "/aspiradoras"
+      },
+      "notes": "VTEX IO platform (electrolux.vtexassets.com). Redirects electrolux.com.ar -> tienda.electrolux.com.ar. Full ecommerce with prices and cart. VTEX REST API at /api/catalog_system/pub/products/search."
+    },
+    {
+      "id": "drean_ar",
+      "name": "Drean Argentina",
+      "domain": "drean.com.ar",
+      "url": "https://drean.com.ar/es_AR/",
+      "type": "html_scrape",
+      "platform": "sap_hybris",
+      "antibot": null,
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "delay_between_ms": 20000
+      },
+      "categories": {
+        "lavarropas": "/es_AR/lavarropas/",
+        "secarropas": "/es_AR/secarropas/",
+        "lavavajillas": "/es_AR/lavavajillas/"
+      },
+      "notes": "SAP Hybris/Commerce Cloud platform (accstorefront, JSESSIONID, X-SAP-Pad). Redirects to /es_AR/ locale. Product pages show prices. Electrolux Group brand. Next.js frontend on SAP Commerce backend."
+    },
+    {
+      "id": "motorola_ar",
+      "name": "Motorola Argentina",
+      "domain": "motorola.com.ar",
+      "url": "https://www.motorola.com.ar/",
+      "type": "vtex_api",
+      "platform": "vtex_io",
+      "vtex_account": "armoto",
+      "api_base": "https://www.motorola.com.ar/api/catalog_system/pub",
+      "antibot": null,
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "delay_between_ms": 20000
+      },
+      "categories": {
+        "celulares": "/celulares",
+        "accesorios": "/accesorios"
+      },
+      "notes": "VTEX IO platform (armoto.vtexassets.com). Official Motorola ecommerce for Argentina. VTEX REST API at /api/catalog_system/pub/products/search."
+    },
+    {
+      "id": "hisense_ar",
+      "name": "Hisense Argentina",
+      "domain": "hisense.com.ar",
+      "url": "https://www.hisense.com.ar/",
+      "type": "html_scrape",
+      "platform": "wordpress",
+      "antibot": null,
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "delay_between_ms": 20000
+      },
+      "categories": {
+        "televisores": "/productos/tv/",
+        "mini_led": "/productos/mini-led/",
+        "qled": "/productos/qled/",
+        "uled": "/productos/uled/",
+        "cine_laser": "/productos/cine_laser/",
+        "aire_acondicionado": "/productos/aire-acondicionado/"
+      },
+      "notes": "WordPress + Next.js. Product pages at /productos/[category]/ show prices in ARS with 'comprar' links. WP REST API at /wp-json/. hisense-argentina.com NXDOMAIN — use hisense.com.ar."
+    },
+    {
+      "id": "tcl_ar",
+      "name": "TCL Argentina",
+      "domain": "tcl.com/ar/es",
+      "url": "https://www.tcl.com/ar/es",
+      "type": "html_scrape",
+      "platform": "aem_cloudfront",
+      "antibot": null,
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "delay_between_ms": 20000
+      },
+      "categories": {
+        "televisores": "/ar/es/tvs",
+        "aire_acondicionado": "/ar/es/air-conditioners",
+        "audio": "/ar/es/audio",
+        "celulares": "/ar/es/phones"
+      },
+      "notes": "Adobe AEM/CQ (Apache/Communique) on CloudFront. Product catalog with 'Puntos de Venta' (where-to-buy) links — not a direct ecommerce store, but shows MSRP reference prices. tienda.tcl.com.ar NXDOMAIN."
+    },
+    {
+      "id": "philco_ar",
+      "name": "Philco Argentina",
+      "domain": "philco.com.ar",
+      "url": "https://www.philco.com.ar/",
+      "type": "html_scrape",
+      "platform": "nextjs",
+      "antibot": null,
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "delay_between_ms": 20000
+      },
+      "categories": {
+        "televisores": "/productos/televisores",
+        "aires_acondicionados": "/productos/aires-acondicionados",
+        "heladeras": "/productos/heladeras",
+        "lavarropas": "/productos/lavarropas",
+        "cocinas": "/productos/cocinas",
+        "small_electro": "/productos/pequenos-electrodomesticos"
+      },
+      "notes": "Next.js on Google Cloud. Has 'Tienda' section with products and prices in ARS. Product pages at /productos/[category]. Newsan group brand (same platform as Noblex). SPA — may require JS rendering for product data."
+    },
+    {
+      "id": "newsan_ar",
+      "name": "Newsan",
+      "domain": "newsan.com.ar",
+      "url": "https://www.newsan.com.ar/",
+      "type": "unavailable",
+      "platform": "angular_spa",
+      "antibot": null,
+      "curl_status": 200,
+      "rate_limit": null,
+      "categories": {},
+      "notes": "Corporate/institutional site only (Angular SPA, 'Sitio institucional de Newsan'). No ecommerce — no product listings or prices. tienda.newsan.com is a Jotform redirect, not a store. Newsan brands (Noblex, Philco, BGH, Sanyo) have their own separate stores. Skip for MSRP scraping."
+    },
+    {
+      "id": "asus_ar",
+      "name": "ASUS Argentina",
+      "domain": "asus.com/ar",
+      "url": "https://www.asus.com/ar/",
+      "type": "html_scrape",
+      "platform": "custom",
+      "antibot": "bigip_waf",
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "delay_between_ms": 20000
+      },
+      "categories": {
+        "notebooks": "/ar/laptops/all-series/",
+        "monitores": "/ar/displays-desktops/monitors/all-series/",
+        "placas_de_video": "/ar/motherboards-components/graphics-cards/all-series/",
+        "motherboards": "/ar/motherboards-components/motherboards/all-series/",
+        "routers": "/ar/networking-iot-servers/wifi-routers/all-series/",
+        "celulares": "/ar/mobile-handhelds/phones/all-series/"
+      },
+      "notes": "Custom platform with BIG-IP WAF (F5) and CloudFront CDN. Full ecommerce with prices in ARS and cart. Has eshop section. Category paths at /ar/[category]/all-series/."
+    },
+    {
+      "id": "acer_ar",
+      "name": "Acer Argentina",
+      "domain": "acer.com/ar-es",
+      "url": "https://www.acer.com/ar-es/",
+      "type": "blocked",
+      "platform": "akamai",
+      "antibot": "akamai_waf",
+      "curl_status": 0,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "delay_between_ms": 20000
+      },
+      "categories": {
+        "notebooks": "/ar-es/laptops",
+        "monitores": "/ar-es/monitors",
+        "desktops": "/ar-es/desktops",
+        "proyectores": "/ar-es/projectors"
+      },
+      "notes": "Akamai CDN with aggressive WAF — HTTP/2 stream returns INTERNAL_ERROR (err 2) on all curl attempts (HTTP/1.1 and HTTP/2, with and without UA). DNS resolves (dsa.acer.com.edgekey.net via Akamai). Requires browser automation. Category paths inferred from global Acer pattern."
+    },
+    {
+      "id": "lenovo_ar",
+      "name": "Lenovo Argentina",
+      "domain": "lenovo.com/ar/es",
+      "url": "https://www.lenovo.com/ar/es/",
+      "type": "html_scrape",
+      "platform": "custom_openresty",
+      "antibot": null,
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "delay_between_ms": 20000
+      },
+      "categories": {
+        "notebooks": "/ar/es/laptops/",
+        "desktops": "/ar/es/desktops/",
+        "tablets": "/ar/es/tablets/",
+        "monitores": "/ar/es/accessories-and-monitors/monitors/",
+        "accesorios": "/ar/es/accessories-and-monitors/"
+      },
+      "notes": "Custom platform on OpenResty (nginx-based). Full ecommerce with prices in ARS, cart, and checkout. Category paths at /ar/es/[category]/."
+    },
+    {
+      "id": "exo_ar",
+      "name": "EXO Argentina",
+      "domain": "exo.com.ar",
+      "url": "https://exo.com.ar/",
+      "type": "html_scrape",
+      "platform": "woocommerce",
+      "antibot": null,
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "delay_between_ms": 20000
+      },
+      "categories": {
+        "notebooks": "/product-category/notebooks/",
+        "tablets": "/product-category/tablets/",
+        "desktops": "/product-category/desktops/",
+        "accesorios": "/product-category/accesorios/"
+      },
+      "notes": "WooCommerce on Apache/PHP 8.5. Argentine brand. Redirects www -> non-www (301). Standard WooCommerce product-category URLs. Directly scrapable with httpx."
+    },
+    {
+      "id": "hp_ar",
+      "name": "HP Argentina",
+      "domain": "hp.com/ar-es/shop",
+      "url": "https://www.hp.com/ar-es/shop/",
+      "type": "html_scrape",
+      "platform": "custom",
+      "antibot": "akamai",
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "delay_between_ms": 20000
+      },
+      "categories": {
+        "notebooks": "/ar-es/shop/laptops",
+        "desktops": "/ar-es/shop/desktops",
+        "monitores": "/ar-es/shop/monitors",
+        "impresoras": "/ar-es/shop/printers",
+        "accesorios": "/ar-es/shop/accessories"
+      },
+      "notes": "Custom platform on AWS ELB + Akamai CDN. Official HP ecommerce at hp.com/ar-es/shop/. Note: hptienda.com.ar is NXDOMAIN. Full ecommerce with prices in ARS and cart."
+    },
+    {
+      "id": "xiaomi_ar",
+      "name": "Xiaomi Argentina",
+      "domain": "mi.com/ar",
+      "url": "https://www.mi.com/ar/",
+      "type": "html_scrape",
+      "platform": "custom",
+      "antibot": "akamai",
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "delay_between_ms": 20000
+      },
+      "categories": {
+        "celulares": "/ar/phone",
+        "tablets": "/ar/tablet",
+        "accesorios": "/ar/accessory",
+        "audio": "/ar/audio",
+        "wearables": "/ar/watch"
+      },
+      "notes": "Custom platform on Akamai CDN. Official Xiaomi ecommerce for Argentina. Prices in ARS with cart/tienda. Category paths at /ar/[category]."
+    },
+    {
+      "id": "oster_ar",
+      "name": "Oster Argentina",
+      "domain": "oster.com.ar",
+      "url": "https://www.oster.com.ar/",
+      "type": "unavailable",
+      "platform": "unknown",
+      "antibot": null,
+      "curl_status": null,
+      "rate_limit": null,
+      "categories": {},
+      "notes": "Domain NXDOMAIN (oster.com.ar and www.oster.com.ar). Global oster.com/es-ar returns 403. No official AR ecommerce presence found. Skip."
+    },
+    {
+      "id": "garmin_ar",
+      "name": "Garmin Argentina",
+      "domain": "garmin.com.ar",
+      "url": "https://www.garmin.com.ar/",
+      "type": "blocked",
+      "platform": "cloudflare",
+      "antibot": "cloudflare_js_challenge",
+      "curl_status": 403,
+      "rate_limit": {
+        "requests_per_minute": 3,
+        "delay_between_ms": 20000
+      },
+      "categories": {
+        "relojes": "/watches/",
+        "outdoor": "/outdoor/",
+        "fitness": "/fitness/",
+        "running": "/running/"
+      },
+      "notes": "Cloudflare managed JS challenge ('Just a moment...' page, cf-mitigated: challenge). Requires browser automation with Cloudflare bypass. Category paths inferred from global Garmin pattern."
+    }
+  ]
+}
