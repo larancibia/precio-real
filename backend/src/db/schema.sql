@@ -21,3 +21,4 @@ CREATE TABLE IF NOT EXISTS prices (
 CREATE INDEX IF NOT EXISTS idx_products_url        ON products(url);
 CREATE INDEX IF NOT EXISTS idx_prices_product_id   ON prices(product_id);
 CREATE INDEX IF NOT EXISTS idx_prices_scraped_at   ON prices(scraped_at DESC);
+CREATE INDEX IF NOT EXISTS idx_prices_product_scraped ON prices(product_id, scraped_at DESC);

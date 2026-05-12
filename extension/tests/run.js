@@ -251,6 +251,17 @@ console.log('[precio-real tests] starting…');
   assertEq(PR.urlLooksLikeListing(null, '/collections/verano'), true, 'Shopify /collections/ generic is listing');
 }
 
+// issue #35: fallbackClassify with empty or minimal history → kind:'unknown'
+// This is the case when the backend has no data — tryMount suppresses badge.
+{
+  const PR = freshNs();
+  const v = PR.fallbackClassify(10000, []);
+  assertEq(v.kind, 'unknown', '#35 fallbackClassify(empty history) → kind unknown (badge suppressed)');
+  const now35 = Math.floor(Date.now() / 1000);
+  const v2 = PR.fallbackClassify(10000, [{ scraped_at: now35, price: 10000 }]);
+  assertEq(v2.kind, 'unknown', '#35 fallbackClassify(1 point) → kind unknown');
+}
+
 // fallbackClassify — clasificación con histórico sintético.
 {
   const PR = freshNs();
@@ -1229,13 +1240,13 @@ function makeContextWithLd(ldNodes) {
     {
       const v = fn(9000, { real_discount_pct: 10, inflated: false, price_7d_ago: 10000, price_30d_ago: 10500, baseline_age_days: 7 });
       assertEq(v.kind, 'real', 'classifyFromStats 7d: descuento real');
-      assert(v.sub.includes('7 días atrás'), 'classifyFromStats 7d: sub mentions 7 días');
+      assert(v.sub.includes('bajó de'), 'classifyFromStats 7d: sub mentions bajó de');
     }
     // Inflado (>5% sube en 7d).
     {
       const v = fn(11000, { real_discount_pct: -10, inflated: true, price_7d_ago: 10000, price_30d_ago: 9500, baseline_age_days: 7 });
       assertEq(v.kind, 'inflated', 'classifyFromStats 7d: inflado');
-      assert(v.sub.includes('7 días atrás'), 'classifyFromStats 7d: inflado sub mentions 7d');
+      assert(v.sub.includes('hace 7 días'), 'classifyFromStats 7d: inflado sub mentions hace 7 días');
     }
     // Neutral (<5% movimiento).
     {
@@ -1285,7 +1296,27 @@ function makeContextWithLd(ldNodes) {
       const v = fn(9000, { real_discount_pct: 10, inflated: false, price_7d_ago: 10000, price_30d_ago: 5000, baseline_age_days: 7 });
       // Con 30d=5000, precio actual 9000 subiría vs 30d → inflado. Pero 7d tiene precedencia: descuento real.
       assertEq(v.kind, 'real', 'classifyFromStats: 7d baseline has precedence over 30d');
-      assert(v.sub.includes('7 días atrás'), 'classifyFromStats: 7d wins sub label');
+      assert(v.sub.includes('bajó de'), 'classifyFromStats: 7d wins — sub has bajó de');
+    }
+
+    // ── Issue #37: ARS amounts in sub-text ──────────────────────────────────
+    // Inflated: sub debe incluir el precio anterior en ARS (era $156.000).
+    {
+      const v = fn(180000, { real_discount_pct: -15, inflated: true, price_7d_ago: 156000, price_30d_ago: null, baseline_age_days: 7 });
+      assertEq(v.kind, 'inflated', 'classifyFromStats #37: inflated con ARS');
+      assert(v.sub.includes('156.000'), 'classifyFromStats #37: inflated sub incluye era price 156.000');
+    }
+    // Real: sub debe incluir el precio anterior y el actual en ARS.
+    {
+      const v = fn(153000, { real_discount_pct: 15, inflated: false, price_7d_ago: 180000, price_30d_ago: null, baseline_age_days: 7 });
+      assertEq(v.kind, 'real', 'classifyFromStats #37: real con ARS');
+      assert(v.sub.includes('180.000'), 'classifyFromStats #37: real sub incluye from-price 180.000');
+    }
+    // Neutral: sub NO debe incluir montos (evitar ruido).
+    {
+      const v = fn(9800, { real_discount_pct: 2, inflated: false, price_7d_ago: 10000, price_30d_ago: null, baseline_age_days: 7 });
+      assertEq(v.kind, 'neutral', 'classifyFromStats #37: neutral sin montos');
+      assert(!v.sub.includes('10.000') && !v.sub.includes('9.800'), 'classifyFromStats #37: neutral no tiene montos ARS');
     }
   } else {
     failed++;
@@ -1465,6 +1496,18 @@ function makeContextWithLd(ldNodes) {
     const key = PR.productKey('https://www.falabella.com.ar/falabella-ar/product/123?colorId=negro');
     assert(key.includes('colorId=negro'), 'productKey falabella: colorId variant param included');
   }
+}
+
+// ── Ciclo popup skeleton (issue #36) ────────────────────────────────────────
+{
+  const fs = require('fs');
+  const path = require('path');
+  const htmlPath = path.join(__dirname, '../popup/popup.html');
+  const cssPath = path.join(__dirname, '../popup/popup.css');
+  const html = fs.readFileSync(htmlPath, 'utf8');
+  const css = fs.readFileSync(cssPath, 'utf8');
+  assert(html.includes('pr-skeleton-row'), 'popup.html: contiene elemento con clase pr-skeleton-row');
+  assert(css.includes('@keyframes pr-skeleton-pulse'), 'popup.css: define @keyframes pr-skeleton-pulse');
 }
 
 // ── Resultado ───────────────────────────────────────────────────────────────

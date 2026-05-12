@@ -12,17 +12,23 @@
     </header>
 
     <main>
-      <section class="pr-row">
+      <div id="pr-skeleton">
+        <div class="pr-skeleton-row"></div>
+        <div class="pr-skeleton-row"></div>
+        <div class="pr-skeleton-row"></div>
+      </div>
+
+      <section class="pr-row" id="pr-row-site" style="display:none">
         <span class="pr-label">Sitio detectado</span>
         <span class="pr-value" id="pr-site">—</span>
       </section>
-      <section class="pr-row">
+      <section class="pr-row" id="pr-row-product" style="display:none">
         <span class="pr-label">Producto</span>
         <span class="pr-value" id="pr-product">—</span>
       </section>
 
-      <div id="pr-verdict" class="pr-verdict"></div>
-      <div class="pr-chart-wrap">
+      <div id="pr-verdict" class="pr-verdict" style="display:none"></div>
+      <div class="pr-chart-wrap" id="pr-chart-wrap" style="display:none">
         <canvas id="pr-chart" width="300" height="120"></canvas>
       </div>
     </main>

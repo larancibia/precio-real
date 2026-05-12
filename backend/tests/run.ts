@@ -23,13 +23,15 @@ import { extractMLAId, normalizeMLUrl } from "../src/lib/ml-url";
 import { isSyntheticPublicProduct } from "../src/lib/public-catalog";
 import { parseArgentinePrice, extractPriceFromHTML } from "../src/lib/price-parse";
 import { clampLimit, clampMinDrop, fetchMovers } from "../src/lib/movers";
-import { validateObservation } from "../src/lib/observe";
+import { validateObservation, upsertObservedProduct } from "../src/lib/observe";
+import type { ValidObservation } from "../src/lib/observe";
 import { isTransientHttpStatus, isRetriableError, withRetry } from "../src/lib/retry";
 import {
   formatYYYYMMDD,
   wayback14ToUnix,
   evenSample,
   parseCdxResponse,
+  shouldTriggerWayback,
 } from "../src/scrapers/wayback";
 
 let passed = 0;
@@ -443,6 +445,75 @@ function assertEq<T>(actual: T, expected: T, msg: string): void {
   );
 }
 
+// ── wayback: shouldTriggerWayback ───────────────────────────────────────────
+{
+  const NOW = 1_700_000_000; // arbitrary fixed "now" in unix seconds
+
+  // 0 rows → always trigger (no data at all)
+  assertEq(
+    shouldTriggerWayback([], NOW),
+    true,
+    "shouldTriggerWayback: 0 rows → true",
+  );
+
+  // 5+ rows → never trigger (sufficient history)
+  assertEq(
+    shouldTriggerWayback(
+      [{ scraped_at: NOW - 100 }, { scraped_at: NOW - 200 }, { scraped_at: NOW - 300 },
+       { scraped_at: NOW - 400 }, { scraped_at: NOW - 500 }],
+      NOW,
+    ),
+    false,
+    "shouldTriggerWayback: 5 rows → false",
+  );
+  assertEq(
+    shouldTriggerWayback(
+      [{ scraped_at: NOW - 100 }, { scraped_at: NOW - 200 }, { scraped_at: NOW - 300 },
+       { scraped_at: NOW - 400 }, { scraped_at: NOW - 500 }, { scraped_at: NOW - 600 }],
+      NOW,
+    ),
+    false,
+    "shouldTriggerWayback: 6 rows → false",
+  );
+
+  // 3 rows, newest 6h ago → false (not stale enough, 6h < 12h threshold)
+  assertEq(
+    shouldTriggerWayback(
+      [{ scraped_at: NOW - 6 * 3600 }, { scraped_at: NOW - 24 * 3600 }, { scraped_at: NOW - 48 * 3600 }],
+      NOW,
+    ),
+    false,
+    "shouldTriggerWayback: 3 rows, newest 6h ago → false",
+  );
+
+  // 3 rows, newest 13h ago → true (stale, 13h > 12h threshold)
+  assertEq(
+    shouldTriggerWayback(
+      [{ scraped_at: NOW - 13 * 3600 }, { scraped_at: NOW - 24 * 3600 }, { scraped_at: NOW - 48 * 3600 }],
+      NOW,
+    ),
+    true,
+    "shouldTriggerWayback: 3 rows, newest 13h ago → true",
+  );
+
+  // Edge: exactly at threshold (43200s = 12h) → false (not strictly greater)
+  assertEq(
+    shouldTriggerWayback(
+      [{ scraped_at: NOW - 43200 }, { scraped_at: NOW - 90000 }],
+      NOW,
+    ),
+    false,
+    "shouldTriggerWayback: 2 rows, newest exactly 12h ago → false",
+  );
+
+  // Edge: 1 row, newest 1s past threshold → true
+  assertEq(
+    shouldTriggerWayback([{ scraped_at: NOW - 43201 }], NOW),
+    true,
+    "shouldTriggerWayback: 1 row, newest 12h+1s ago → true",
+  );
+}
+
 // ── ml-url: extractMLAId additional edge cases ──────────────────────────────
 {
   // Empty / malformed
@@ -600,6 +671,155 @@ function assertEq<T>(actual: T, expected: T, msg: string): void {
 //   - the limit slice
 //   - the discount math
 async function main(): Promise<void> {
+  // ── observe: upsertObservedProduct (in-memory D1 stub) ────────────────────
+  {
+    type StoredRow = {
+      id: number; url: string; title: string | null;
+      seller: string | null; image_url: string | null; created_at: number;
+    };
+
+    // Minimal D1-compatible stub backed by a Map.
+    // INSERT OR IGNORE semantics: silently skips if URL already exists.
+    function makeObserveDB(store: Map<string, StoredRow>) {
+      let nextId = 1;
+      return {
+        prepare(sql: string) {
+          return {
+            bind(...args: unknown[]) {
+              return {
+                async first<T>() {
+                  const url = args[0] as string;
+                  return (store.get(url) ?? null) as T;
+                },
+                async run() {
+                  if (sql.includes("INSERT")) {
+                    const url = args[0] as string;
+                    if (!store.has(url)) {
+                      store.set(url, {
+                        id: nextId++, url,
+                        title: args[1] as string | null,
+                        seller: args[2] as string | null,
+                        image_url: args[3] as string | null,
+                        created_at: 0,
+                      });
+                    }
+                    // INSERT OR IGNORE: silent no-op on duplicate URL
+                  } else if (sql.includes("UPDATE")) {
+                    const id = args[3] as number;
+                    for (const row of store.values()) {
+                      if (row.id === id) {
+                        row.title = row.title ?? (args[0] as string | null);
+                        row.seller = row.seller ?? (args[1] as string | null);
+                        row.image_url = row.image_url ?? (args[2] as string | null);
+                      }
+                    }
+                  }
+                  return { meta: { changes: 1 } };
+                },
+              };
+            },
+          };
+        },
+      };
+    }
+
+    const BASE_OBS: ValidObservation = {
+      url: "https://www.mercadolibre.com.ar/celular/p/MLA500",
+      title: "Test Phone", seller: "Shop", image_url: null,
+      price: 50000, currency: "ARS",
+    };
+
+    // New product: INSERT runs, re-SELECT returns the row.
+    {
+      const store: Map<string, StoredRow> = new Map();
+      const result = await upsertObservedProduct(makeObserveDB(store) as any, BASE_OBS);
+      assertEq(result !== null, true, "upsertObservedProduct new: returns non-null");
+      assertEq(result?.url, BASE_OBS.url, "upsertObservedProduct new: correct URL");
+      assertEq(result?.title, BASE_OBS.title, "upsertObservedProduct new: correct title");
+      assertEq(store.size, 1, "upsertObservedProduct new: one row inserted");
+    }
+
+    // Existing product: SELECT fast path, no INSERT.
+    {
+      const store: Map<string, StoredRow> = new Map();
+      const db = makeObserveDB(store) as any;
+      await upsertObservedProduct(db, BASE_OBS); // seed
+      const result = await upsertObservedProduct(db, BASE_OBS);
+      assertEq(result !== null, true, "upsertObservedProduct existing: returns non-null");
+      assertEq(result?.url, BASE_OBS.url, "upsertObservedProduct existing: correct URL");
+      assertEq(store.size, 1, "upsertObservedProduct existing: no duplicate row");
+    }
+
+    // Race condition: two concurrent callers both see null on initial SELECT
+    // (gate ensures neither INSERT runs until both have read), both attempt
+    // INSERT, exactly one row is created, both return the row successfully.
+    // This is the bug from issue #38: without INSERT OR IGNORE the second
+    // caller would throw a UNIQUE constraint error (500). With INSERT OR IGNORE
+    // it silently ignores the duplicate and both callers succeed.
+    {
+      const store: Map<string, StoredRow> = new Map();
+      let nextId = 1;
+
+      // Gate: suspends the first SELECT until the second has also run,
+      // ensuring both see null before any INSERT executes.
+      let resolveGate: () => void = () => {};
+      const gateDone = new Promise<void>((r) => { resolveGate = r; });
+      let selectCount = 0;
+      let gateOpen = false;
+
+      const racingDB = {
+        prepare(sql: string) {
+          return {
+            bind(...args: unknown[]) {
+              return {
+                async first<T>() {
+                  const url = args[0] as string;
+                  if (sql.includes("SELECT") && !gateOpen) {
+                    selectCount++;
+                    if (selectCount === 1) {
+                      await gateDone; // wait for second caller to also SELECT
+                    } else {
+                      gateOpen = true;
+                      resolveGate(); // both have now SELECTed, open the gate
+                    }
+                  }
+                  return (store.get(url) ?? null) as T;
+                },
+                async run() {
+                  if (sql.includes("INSERT")) {
+                    const url = args[0] as string;
+                    if (!store.has(url)) {
+                      store.set(url, {
+                        id: nextId++, url,
+                        title: args[1] as string | null,
+                        seller: args[2] as string | null,
+                        image_url: args[3] as string | null,
+                        created_at: 0,
+                      });
+                    }
+                    // INSERT OR IGNORE: silent no-op on duplicate
+                  }
+                  return { meta: { changes: 1 } };
+                },
+              };
+            },
+          };
+        },
+      };
+
+      const [r1, r2] = await Promise.all([
+        upsertObservedProduct(racingDB as any, BASE_OBS),
+        upsertObservedProduct(racingDB as any, BASE_OBS),
+      ]);
+
+      assertEq(r1 !== null, true, "upsertObservedProduct race: first concurrent caller succeeds");
+      assertEq(r2 !== null, true, "upsertObservedProduct race: second concurrent caller succeeds");
+      assertEq(r1?.url, BASE_OBS.url, "upsertObservedProduct race: first caller returns correct URL");
+      assertEq(r2?.url, BASE_OBS.url, "upsertObservedProduct race: second caller returns correct URL");
+      assertEq(store.size, 1, "upsertObservedProduct race: exactly one row inserted despite concurrent requests");
+    }
+  }
+
   type Row = {
     product_id: number;
     url: string;

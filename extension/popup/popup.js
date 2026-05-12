@@ -131,11 +131,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const productEl = document.getElementById('pr-product');
   const verdictEl = document.getElementById('pr-verdict');
   const chartEl = document.getElementById('pr-chart');
+  const skeletonEl = document.getElementById('pr-skeleton');
+  const rowSiteEl = document.getElementById('pr-row-site');
+  const rowProductEl = document.getElementById('pr-row-product');
+  const chartWrapEl = document.getElementById('pr-chart-wrap');
+
+  function hideSkeleton() {
+    skeletonEl.style.display = 'none';
+  }
+
+  function showContent() {
+    hideSkeleton();
+    rowSiteEl.style.display = '';
+    rowProductEl.style.display = '';
+    verdictEl.style.display = '';
+    chartWrapEl.style.display = '';
+  }
 
   chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
     const tab = tabs && tabs[0];
     if (!tab || !tab.url) {
+      hideSkeleton();
       siteEl.textContent = 'Sitio no soportado';
+      rowSiteEl.style.display = '';
       return;
     }
     let hostname = '';
@@ -145,6 +163,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const site = detectSite(hostname);
     if (!site) {
+      hideSkeleton();
+      rowSiteEl.style.display = '';
+      rowProductEl.style.display = '';
+      verdictEl.style.display = '';
       siteEl.textContent = 'Sitio no soportado';
       productEl.textContent = '—';
       setVerdict(verdictEl, { kind: 'neutral', label: 'Sitio no soportado', sub: '' });
@@ -157,11 +179,13 @@ document.addEventListener('DOMContentLoaded', () => {
       const url = canonicalUrl(tab.url);
       const res = await fetch(BACKEND + '/api/price?url=' + encodeURIComponent(url), { cache: 'no-store' });
       if (res.status === 404) {
+        showContent();
         setVerdict(verdictEl, { kind: 'neutral', label: 'Sin historial para este producto', sub: '' });
         return;
       }
       if (!res.ok) {
         console.warn('precio-real popup: backend error', res.status);
+        showContent();
         setVerdict(verdictEl, { kind: 'neutral', label: 'Sin historial para este producto', sub: '' });
         return;
       }
@@ -170,6 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // history sorted DESC by scraped_at; current = history[0].price
       const current = history[0]?.price;
       const verdict = classifyPrice(current, history);
+      showContent();
       setVerdict(verdictEl, verdict);
 
       // Chart: last 30 days, ASC by time
@@ -178,6 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
       drawChart(chartEl, last30);
     } catch (err) {
       console.warn('precio-real popup: fetch failed', err);
+      showContent();
       setVerdict(verdictEl, { kind: 'neutral', label: 'Sin historial para este producto', sub: '' });
     }
   });
