@@ -25,14 +25,17 @@ from typing import Optional
 
 import httpx
 
+from scraper.antibot import ThrottleManager, random_headers
+
 log = logging.getLogger(__name__)
 
 # ── Constants ────────────────────────────────────────────────────────────────
 
 API_BASE_URL = "https://api.precio-real.crisolabs.com"
 ML_API_BASE = "https://api.mercadolibre.com"
-USER_AGENT = "precio-real-scraper/1.0 (+https://precioreal.ar)"
+ML_DOMAIN = "api.mercadolibre.com"
 TIMEOUT_SEC = 15.0
+THROTTLE_STATE_PATH = os.path.join(os.path.dirname(__file__), "throttle_state.json")
 LIMIT_PER_QUERY = 20
 ML_ITEM_ATTRIBUTES = "id,title,price,currency_id,permalink,thumbnail"
 ML_RETRY_ATTEMPTS = 3
@@ -193,17 +196,33 @@ def build_observe_payload(item: dict) -> Optional[dict]:
 
 # ── I/O helpers (accept injectable client for tests) ─────────────────────────
 
-def _get_with_retry(client: httpx.Client, url: str) -> httpx.Response:
-    """GET with retry on 429/5xx. Raises on final failure."""
+def _get_with_retry(
+    client: httpx.Client,
+    url: str,
+    throttle: Optional["DomainThrottle"] = None,
+) -> httpx.Response:
+    """GET with retry on 429/5xx. Records bans on the throttle if provided."""
+    from scraper.antibot import DomainThrottle
+
     for attempt in range(ML_RETRY_ATTEMPTS):
         resp = client.get(url, timeout=TIMEOUT_SEC)
-        if resp.status_code == 429 or resp.status_code >= 500:
+        if resp.status_code in (429, 403):
+            if throttle is not None:
+                throttle.record_ban()
+            if attempt < ML_RETRY_ATTEMPTS - 1:
+                delay = ML_RETRY_BASE_SEC * (2 ** attempt)
+                log.debug("[retry] status=%d url=%s sleeping=%.1fs", resp.status_code, url, delay)
+                time.sleep(delay)
+                continue
+        elif resp.status_code >= 500:
             if attempt < ML_RETRY_ATTEMPTS - 1:
                 delay = ML_RETRY_BASE_SEC * (2 ** attempt)
                 log.debug("[retry] status=%d url=%s sleeping=%.1fs", resp.status_code, url, delay)
                 time.sleep(delay)
                 continue
         resp.raise_for_status()
+        if throttle is not None:
+            throttle.record_success()
         return resp
     resp.raise_for_status()  # last attempt
     return resp  # unreachable, satisfies type checker
@@ -285,21 +304,26 @@ def run_scraper(
     api_base: str = API_BASE_URL,
     client: Optional[httpx.Client] = None,
     dry_run: bool = False,
+    throttle_manager: Optional[ThrottleManager] = None,
 ) -> dict:
     """Run discovery across all queries, deduplicate, and POST new prices.
 
-    Returns a stats dict: queries, candidates, posted, inserted, deduped, failed.
+    Uses ThrottleManager to respect per-domain ban windows and apply
+    randomized delays between requests. Persists throttle state to disk.
+
+    Returns a stats dict: queries, candidates, posted, inserted, deduped, failed, skipped_banned.
     """
     own_client = client is None
     if own_client:
-        client = httpx.Client(
-            headers={
-                "User-Agent": USER_AGENT,
-                "Accept": "application/json",
-                "Accept-Language": "es-AR,es;q=0.9",
-            },
-            follow_redirects=True,
-        )
+        headers = random_headers()
+        headers["Accept"] = "application/json"
+        client = httpx.Client(headers=headers, follow_redirects=True)
+
+    if throttle_manager is None:
+        throttle_manager = ThrottleManager()
+        throttle_manager.load_state(THROTTLE_STATE_PATH)
+
+    ml_throttle = throttle_manager.get(ML_DOMAIN, min_delay=2.0, max_delay=5.0)
 
     stats = {
         "queries": len(queries),
@@ -308,13 +332,41 @@ def run_scraper(
         "inserted": 0,
         "deduped": 0,
         "failed": 0,
+        "skipped_banned": 0,
     }
+
+    # Check if ML API is currently banned
+    if ml_throttle.is_banned():
+        log.warning(
+            "[scraper] ML API domain %s is banned until %.0f — skipping discovery",
+            ML_DOMAIN,
+            ml_throttle.ban_until,
+        )
+        stats["skipped_banned"] = len(queries)
+        throttle_manager.save_state(THROTTLE_STATE_PATH)
+        if own_client:
+            client.close()  # type: ignore[union-attr]
+        return stats
 
     seen_urls: set[str] = set()
     payloads: list[dict] = []
 
     for query in queries:
+        # Re-check ban between queries (might get banned mid-run)
+        if ml_throttle.is_banned():
+            log.warning("[scraper] ML API banned mid-run — stopping discovery")
+            stats["skipped_banned"] += 1
+            continue
+
+        # Throttle between requests
+        delay = time.time() - ml_throttle.last_request_at
+        min_wait = ml_throttle.min_delay
+        if delay < min_wait:
+            time.sleep(min_wait - delay + (time.time() % 1) * 0.5)
+
         items = discover_products(query, limit=LIMIT_PER_QUERY, client=client)
+        ml_throttle.last_request_at = time.time()
+
         for item in items:
             payload = build_observe_payload(item)
             if payload is None:
@@ -340,14 +392,18 @@ def run_scraper(
                 stats["failed"] += 1
 
     log.info(
-        "[scraper] queries=%d candidates=%d posted=%d inserted=%d deduped=%d failed=%d",
+        "[scraper] queries=%d candidates=%d posted=%d inserted=%d deduped=%d failed=%d skipped_banned=%d",
         stats["queries"],
         stats["candidates"],
         stats["posted"],
         stats["inserted"],
         stats["deduped"],
         stats["failed"],
+        stats["skipped_banned"],
     )
+
+    # Persist throttle state for next run
+    throttle_manager.save_state(THROTTLE_STATE_PATH)
 
     if own_client:
         client.close()  # type: ignore[union-attr]
