@@ -103,6 +103,36 @@ assert(
   'edge: no separate manifest needed (Chromium-based, uses manifest.json)'
 );
 
+// ── Chrome-only API check ────────────────────────────────────────────────────
+// popup.js and background.js should use `api.*` (browser/chrome shim), not
+// bare `chrome.*` calls. content.js doesn't use extension APIs so it's fine.
+{
+  const filesToCheck = ['popup/popup.js', 'background/background.js'];
+  for (const file of filesToCheck) {
+    const fp = path.join(EXT, file);
+    if (!fs.existsSync(fp)) continue;
+    const src = fs.readFileSync(fp, 'utf8');
+    // Match bare `chrome.tabs`, `chrome.runtime`, etc. but not inside comments
+    // or the shim declaration itself (which references `chrome` to build `api`).
+    const lines = src.split('\n');
+    let bareChromeCalls = 0;
+    for (const line of lines) {
+      const trimmed = line.trim();
+      // Skip comments and the shim line that references chrome to build api.
+      if (trimmed.startsWith('//')) continue;
+      if (trimmed.includes('typeof browser') || trimmed.includes('? browser : chrome')) continue;
+      // Check for bare chrome.tabs, chrome.runtime, chrome.storage etc.
+      if (/\bchrome\.(tabs|runtime|storage|action|scripting)\b/.test(trimmed)) {
+        bareChromeCalls++;
+      }
+    }
+    assert(
+      bareChromeCalls === 0,
+      `${file}: no bare chrome.* API calls (found ${bareChromeCalls}, should use api.* shim)`
+    );
+  }
+}
+
 // ── Package script ────────────────────────────────────────────────────────────
 assert(
   fs.existsSync(path.join(ROOT, 'scripts/package-extension.mjs')),

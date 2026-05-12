@@ -2,6 +2,11 @@
 // Usar el config compartido (config.js cargado antes en popup.html).
 const BACKEND = (typeof window !== 'undefined' && window.PrecioRealConfig && window.PrecioRealConfig.API_BASE) || 'https://precio-real.firemandeveloper.com';
 
+// browser.* es el namespace nativo de Firefox; Chrome expone chrome.*.
+// Firefox MV3 soporta chrome.* como compat layer, pero preferimos browser.*
+// cuando existe para evitar quirks con Promises vs callbacks.
+const api = (typeof browser !== 'undefined' && browser.tabs) ? browser : chrome;
+
 const SITE_LABELS = {
   mercadolibre: 'Mercado Libre',
   fravega: 'Frávega',
@@ -148,7 +153,10 @@ document.addEventListener('DOMContentLoaded', () => {
     chartWrapEl.style.display = '';
   }
 
-  chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
+  // Firefox browser.tabs.query() returns a Promise; Chrome chrome.tabs.query()
+  // uses a callback. In MV3, Chrome also returns a promise. Promise.resolve()
+  // normalizes both paths.
+  Promise.resolve(api.tabs.query({ active: true, currentWindow: true })).then(async (tabs) => {
     const tab = tabs && tabs[0];
     if (!tab || !tab.url) {
       hideSkeleton();
