@@ -1,0 +1,146 @@
+[
+  {
+    "name": "compragamer",
+    "domain": "compragamer.com",
+    "type": "api",
+    "api_url": "https://compragamer.com/index.php?action=json_products",
+    "rate_limit": 10,
+    "categories": []
+  },
+  {
+    "name": "fullh4rd",
+    "domain": "fullh4rd.com.ar",
+    "type": "html",
+    "categories": [
+      "https://www.fullh4rd.com.ar/cat/notebooks",
+      "https://www.fullh4rd.com.ar/cat/placas-de-video",
+      "https://www.fullh4rd.com.ar/cat/procesadores"
+    ],
+    "selectors": {
+      "product_link": "a.product-card",
+      "price": ".product-price",
+      "title": ".product-name"
+    },
+    "rate_limit": 5
+  },
+  {
+    "name": "venex",
+    "domain": "venex.com.ar",
+    "type": "html",
+    "categories": [
+      "https://www.venex.com.ar/computacion/notebooks.html",
+      "https://www.venex.com.ar/computacion/placas-de-video.html",
+      "https://www.venex.com.ar/computacion/procesadores.html"
+    ],
+    "selectors": {
+      "product_link": ".product-item a.product-item-link",
+      "price": ".price",
+      "title": ".product-item-name"
+    },
+    "rate_limit": 5
+  },
+  {
+    "name": "gezatek",
+    "domain": "gezatek.com.ar",
+    "type": "html",
+    "categories": [
+      "https://www.gezatek.com.ar/tienda/notebooks/",
+      "https://www.gezatek.com.ar/tienda/placas-de-video/",
+      "https://www.gezatek.com.ar/tienda/procesadores/"
+    ],
+    "selectors": {
+      "product_link": ".product-layout a",
+      "price": ".price-new, .price",
+      "title": ".name a"
+    },
+    "rate_limit": 5
+  },
+  {
+    "name": "mexx",
+    "domain": "mexx.com.ar",
+    "type": "html",
+    "categories": [
+      "https://www.mexx.com.ar/notebooks",
+      "https://www.mexx.com.ar/placas-de-video",
+      "https://www.mexx.com.ar/procesadores"
+    ],
+    "selectors": {
+      "product_link": ".product-card a",
+      "price": ".price-best-price",
+      "title": ".product-card-name"
+    },
+    "rate_limit": 5
+  },
+  {
+    "name": "maximus",
+    "domain": "www.maximus.com.ar",
+    "type": "html",
+    "categories": [
+      "https://www.maximus.com.ar/Categoria/notebooks/42",
+      "https://www.maximus.com.ar/Categoria/placas-de-video/18",
+      "https://www.maximus.com.ar/Categoria/procesadores/2"
+    ],
+    "selectors": {
+      "product_link": ".product-item a",
+      "price": ".product-price",
+      "title": ".product-name"
+    },
+    "rate_limit": 5
+  },
+  {
+    "name": "hardgamers",
+    "domain": "www.hardgamers.com.ar",
+    "type": "api",
+    "api_url": "https://www.hardgamers.com.ar/api/products",
+    "rate_limit": 10,
+    "categories": []
+  },
+  {
+    "name": "gamingcity",
+    "domain": "gamingcity.com.ar",
+    "type": "html",
+    "categories": [
+      "https://gamingcity.com.ar/categoria/notebooks/",
+      "https://gamingcity.com.ar/categoria/placas-de-video/",
+      "https://gamingcity.com.ar/categoria/procesadores/"
+    ],
+    "selectors": {
+      "product_link": ".woocommerce-loop-product__link",
+      "price": ".woocommerce-Price-amount",
+      "title": ".woocommerce-loop-product__title"
+    },
+    "rate_limit": 5
+  },
+  {
+    "name": "diamond_system",
+    "domain": "www.diamondsystem.com.ar",
+    "type": "html",
+    "categories": [
+      "https://www.diamondsystem.com.ar/notebooks",
+      "https://www.diamondsystem.com.ar/placas-de-video",
+      "https://www.diamondsystem.com.ar/procesadores"
+    ],
+    "selectors": {
+      "product_link": ".item-product a",
+      "price": ".item-price",
+      "title": ".item-name"
+    },
+    "rate_limit": 5
+  },
+  {
+    "name": "logg",
+    "domain": "logg.com.ar",
+    "type": "html",
+    "categories": [
+      "https://logg.com.ar/notebooks",
+      "https://logg.com.ar/placas-de-video",
+      "https://logg.com.ar/procesadores"
+    ],
+    "selectors": {
+      "product_link": ".product-block a",
+      "price": ".product-price",
+      "title": ".product-title"
+    },
+    "rate_limit": 5
+  }
+]
