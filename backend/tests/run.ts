@@ -18,6 +18,9 @@
  */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { readFileSync } from "node:fs";
+import { resolve, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 import { computeStats } from "../src/lib/analytics";
 import { extractMLAId, normalizeMLUrl } from "../src/lib/ml-url";
 import { isSyntheticPublicProduct } from "../src/lib/public-catalog";
@@ -1041,6 +1044,24 @@ async function main(): Promise<void> {
       assertEq(thrown instanceof Error, true, "withRetry maxAttempts=1: still throws on failure");
     }
   }
+}
+
+// ── schema: composite index exists (issue #39) ────────────────────────────
+{
+  const __dirname = dirname(fileURLToPath(import.meta.url));
+  const schemaPath = resolve(__dirname, "../src/db/schema.sql");
+  const schema = readFileSync(schemaPath, "utf-8");
+
+  assertEq(
+    schema.includes("idx_prices_product_scraped"),
+    true,
+    "schema.sql contains idx_prices_product_scraped composite index",
+  );
+  assertEq(
+    schema.includes("prices(product_id, scraped_at DESC)"),
+    true,
+    "schema.sql composite index covers (product_id, scraped_at DESC)",
+  );
 }
 
 main()

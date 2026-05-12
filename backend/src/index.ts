@@ -44,7 +44,7 @@ import { computeStats } from "./lib/analytics";
 import { extractMLAId, normalizeMLUrl } from "./lib/ml-url";
 import { fetchMovers, clampLimit, clampMinDrop } from "./lib/movers";
 import { isSyntheticPublicProduct, publicProductWhere } from "./lib/public-catalog";
-import { validateObservation } from "./lib/observe";
+import { validateObservation, upsertObservedProduct } from "./lib/observe";
 import { backfillWaybackHistory, shouldTriggerWayback } from "./scrapers/wayback";
 import { runScheduledScrape } from "./scrapers/scheduled";
 
@@ -607,30 +607,9 @@ async function handleObserve(request: Request, env: Env): Promise<Response> {
     return json({ error: observation.error }, 400);
   }
 
-  let product = await env.DB
-    .prepare("SELECT id, url, title, seller, image_url, created_at FROM products WHERE url = ?1")
-    .bind(observation.url)
-    .first<ProductRow>();
-
-  if (!product) {
-    await env.DB
-      .prepare("INSERT INTO products (url, title, seller, image_url) VALUES (?1, ?2, ?3, ?4)")
-      .bind(observation.url, observation.title, observation.seller, observation.image_url)
-      .run();
-    product = await env.DB
-      .prepare("SELECT id, url, title, seller, image_url, created_at FROM products WHERE url = ?1")
-      .bind(observation.url)
-      .first<ProductRow>();
-  } else if (
-    (!product.title && observation.title) ||
-    (!product.seller && observation.seller) ||
-    (!product.image_url && observation.image_url)
-  ) {
-    await env.DB
-      .prepare("UPDATE products SET title = COALESCE(title, ?1), seller = COALESCE(seller, ?2), image_url = COALESCE(image_url, ?3) WHERE id = ?4")
-      .bind(observation.title, observation.seller, observation.image_url, product.id)
-      .run();
-  }
+  // Use INSERT OR IGNORE upsert to prevent UNIQUE constraint errors when
+  // concurrent requests try to insert the same product URL (issue #38).
+  const product = await upsertObservedProduct(env.DB, observation);
 
   if (!product) {
     return json({ error: "Product insert failed" }, 500);
