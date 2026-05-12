@@ -1,6 +1,6 @@
 {
   "$schema": "retailers-schema",
-  "_comment": "Tech/gaming retailer configs for precio-real scraper. Issue #49.",
+  "_comment": "Tech/gaming + electro/retail retailer configs for precio-real scraper. Issues #49, #47.",
   "_tested": "2026-05-12 — each domain verified via curl + DNS lookup",
   "retailers": [
     {
@@ -256,6 +256,198 @@
       "curl_status": null,
       "categories": {},
       "notes": "Domain NXDOMAIN (Google DNS 8.8.8.8). No web presence found. Skip."
+    },
+    {
+      "id": "fravega",
+      "name": "Fravega",
+      "domain": "fravega.com",
+      "type": "html_scrape",
+      "platform": "custom",
+      "antibot": "cloudfront_geo_block",
+      "curl_status": 403,
+      "rate_limit": null,
+      "categories": {
+        "televisores": "/categorias/tv/",
+        "heladeras": "/categorias/heladeras/",
+        "lavarropas": "/categorias/lavarropas/",
+        "aire_acondicionado": "/categorias/aire-acondicionado/",
+        "celulares": "/categorias/celulares/",
+        "notebooks": "/categorias/notebooks/",
+        "cocinas": "/categorias/cocinas/",
+        "small_electro": "/categorias/pequenos-electrodomesticos/"
+      },
+      "selectors": null,
+      "notes": "CloudFront 403 geo-block ('configured to block access from your country'). Not Cloudflare — uses AWS CloudFront. Largest electro retailer in AR. Category paths inferred from sitemap. Requires browser automation with AR proxy/VPN."
+    },
+    {
+      "id": "garbarino",
+      "name": "Garbarino",
+      "domain": "garbarino.com",
+      "type": "unavailable",
+      "platform": "unknown",
+      "antibot": null,
+      "curl_status": null,
+      "rate_limit": null,
+      "categories": {},
+      "selectors": null,
+      "notes": "Domain NXDOMAIN (www.garbarino.com and garbarino.com). Company filed for bankruptcy (concurso preventivo). No web presence. Skip."
+    },
+    {
+      "id": "musimundo",
+      "name": "Musimundo",
+      "domain": "musimundo.com",
+      "type": "unavailable",
+      "platform": "static_s3",
+      "antibot": null,
+      "curl_status": 200,
+      "rate_limit": null,
+      "categories": {},
+      "selectors": null,
+      "notes": "Site returns 200 but shows 'Sitio en mantenimiento' page. Static HTML hosted on S3/CloudFront. GTM: GTM-XQKS. Contact channels listed but no product catalog. Skip until store relaunches."
+    },
+    {
+      "id": "cetrogar",
+      "name": "Cetrogar",
+      "domain": "cetrogar.com.ar",
+      "type": "html_scrape",
+      "platform": "vtex_nextjs",
+      "antibot": null,
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 20,
+        "delay_between_ms": 3000
+      },
+      "categories": {
+        "tecnologia": "/tecnologia",
+        "electrodomesticos": "/electrodomesticos",
+        "televisores": "/tv-y-video/televisores",
+        "heladeras": "/electrodomesticos/refrigeracion/heladeras",
+        "lavarropas": "/electrodomesticos/lavado-y-secado/lavarropas",
+        "aire_acondicionado": "/electrodomesticos/climatizacion/aire-acondicionados",
+        "cocinas": "/electrodomesticos/cocina/cocinas",
+        "celulares": "/tecnologia/celulares/smartphones",
+        "notebooks": "/tecnologia/informatica/notebooks",
+        "small_electro": "/pequenos-electrodomesticos"
+      },
+      "selectors": null,
+      "notes": "VTEX IO + Next.js (faststore-prod). SPA renders client-side — most links not in initial HTML. CloudFront CDN. Categories confirmed via direct URL test (200). Selectors TBD after SPA rendering is set up. Directly accessible with httpx but content requires JS rendering."
+    },
+    {
+      "id": "megatone",
+      "name": "Megatone",
+      "domain": "megatone.net",
+      "type": "html_scrape",
+      "platform": "custom_dotnet",
+      "antibot": "ua_check",
+      "curl_status": 418,
+      "curl_status_with_ua": 200,
+      "rate_limit": {
+        "requests_per_minute": 15,
+        "delay_between_ms": 4000
+      },
+      "categories": {
+        "tecnologia": "/listado/tecnologia/",
+        "electrodomesticos": "/listado/electrodomesticos/",
+        "televisores": "/landing/smart-tvs/",
+        "heladeras": "/listado/electrodomesticos/heladeras-freezers/",
+        "lavarropas": "/listado/electrodomesticos/lavado/lavarropas/",
+        "aire_acondicionado": "/listado/electrodomesticos/climatizacion/aires-acondicionados-split/",
+        "cocinas": "/listado/electrodomesticos/cocinas-hornos/cocinas/",
+        "celulares": "/listado/tecnologia/celulares/smartphones-celulares/",
+        "notebooks": "/listado/tecnologia/informatica/notebooks/",
+        "small_electro": "/listado/electrodomesticos/cocina-electro/freidoras-electricas/",
+        "gaming": "/listado/tecnologia/videojuegos/notebook-pc-gamer/"
+      },
+      "selectors": null,
+      "notes": "Custom .NET platform (IIS, GenericServer). Returns 418 without User-Agent — requires browser-like UA header. Product URLs: /producto/[slug]_[sku]/. URL pattern for listings: /listado/[category]/[subcategory]/. All categories confirmed via curl with UA. Large AR electro chain (interior del pais)."
+    },
+    {
+      "id": "ribeiro",
+      "name": "Ribeiro",
+      "domain": "ribeiro.com.ar",
+      "type": "html_scrape",
+      "platform": "unknown",
+      "antibot": "cloudflare",
+      "curl_status": 503,
+      "rate_limit": null,
+      "categories": {},
+      "selectors": null,
+      "notes": "Cloudflare 503 (www redirects 301 to non-www, then 503). Site appears down or under heavy Cloudflare protection. Server header: cloudflare. Retry later or use browser automation with Cloudflare bypass."
+    },
+    {
+      "id": "naldo",
+      "name": "Naldo",
+      "domain": "naldo.com.ar",
+      "type": "html_scrape",
+      "platform": "vtex_io",
+      "antibot": null,
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 20,
+        "delay_between_ms": 3000
+      },
+      "categories": {
+        "televisores": "/tv-audio-y-video/televisores",
+        "celulares": "/celulares/celulares?order=OrderByPriceDESC",
+        "climatizacion": "/climatizacion/calefaccion",
+        "electrodomesticos": "/electrodomesticos/cocinas/heladeras?initialMap=c&initialQuery=electrodomesticos&map=category-1,category-3,category-3"
+      },
+      "selectors": null,
+      "notes": "VTEX IO platform (naldoar.vtexassets.com, render@8). SPA renders client-side. Categories extracted from SSR HTML. URL pattern uses VTEX faceted search with map/initialMap params. Directly accessible with httpx but product data may require JS rendering. Interior AR chain."
+    },
+    {
+      "id": "carsa",
+      "name": "Carsa",
+      "domain": "carsa.com.ar",
+      "type": "unavailable",
+      "platform": "unknown",
+      "antibot": null,
+      "curl_status": null,
+      "rate_limit": null,
+      "categories": {},
+      "selectors": null,
+      "notes": "DNS resolves (200.58.110.145) but SSL certificate expired — TLS handshake fails with 'certificate has expired'. Site effectively down. Skip until certificate is renewed."
+    },
+    {
+      "id": "coppel",
+      "name": "Coppel Argentina",
+      "domain": "coppel.com.ar",
+      "type": "html_scrape",
+      "platform": "vtex_io",
+      "antibot": null,
+      "curl_status": 200,
+      "rate_limit": {
+        "requests_per_minute": 20,
+        "delay_between_ms": 3000
+      },
+      "categories": {
+        "notebooks_tecnologia": "/notebooks-y-tecnologia",
+        "televisores": "/tv-y-video/televisores",
+        "tv_video": "/tv-y-video",
+        "celulares": "/celulares-telefonos-y-accesorios/celulares",
+        "electrodomesticos": "/electrodomesticos",
+        "refrigeracion": "/electrodomesticos/refrigeracion/heladeras",
+        "lavado": "/electrodomesticos/lavado-y-secado",
+        "climatizacion": "/electrodomesticos/climatizacion/calefaccion",
+        "aires_ventiladores": "/aires-y-ventiladores",
+        "small_electro": "/pequenos-electrodomesticos",
+        "gaming": "/mundo-gamer"
+      },
+      "selectors": null,
+      "notes": "VTEX IO platform (coppelar.vtexassets.com). Note: coppel.com (Mexico main domain) returns 403 via Akamai; use coppel.com.ar for Argentina. SPA renders client-side. All categories confirmed from SSR HTML. Mexican retail chain with AR presence."
+    },
+    {
+      "id": "ripley",
+      "name": "Ripley Argentina",
+      "domain": "ripley.com.ar",
+      "type": "unavailable",
+      "platform": "unknown",
+      "antibot": null,
+      "curl_status": null,
+      "rate_limit": null,
+      "categories": {},
+      "selectors": null,
+      "notes": "Domain NXDOMAIN (ripley.com.ar and www.ripley.com.ar). Ripley exited the Argentine market. No web presence. Skip."
     }
   ]
 }
