@@ -55,20 +55,26 @@ class TestDomainThrottle:
     def test_exponential_backoff_increases(self):
         t = DomainThrottle(domain="example.com")
 
-        # First ban: 30 minutes
+        # First ban: 1 hour
         t.record_ban()
         ban1_duration = t.ban_until - time.time()
-        assert 29 * 60 < ban1_duration <= 30 * 60 + 1
+        assert 59 * 60 < ban1_duration <= 60 * 60 + 1
 
-        # Second ban: 1 hour
+        # Second ban: 2 hours
         t.record_ban()
         ban2_duration = t.ban_until - time.time()
-        assert 59 * 60 < ban2_duration <= 60 * 60 + 1
+        assert 119 * 60 < ban2_duration <= 120 * 60 + 1
 
-        # Third ban: 2 hours
+        # Third ban: 4 hours
         t.record_ban()
         ban3_duration = t.ban_until - time.time()
-        assert 119 * 60 < ban3_duration <= 120 * 60 + 1
+        assert 239 * 60 < ban3_duration <= 240 * 60 + 1
+
+    def test_record_ban_tracks_last_ban_time(self):
+        t = DomainThrottle(domain="example.com")
+        before = time.time()
+        t.record_ban()
+        assert t.last_ban_at >= before
 
     def test_backoff_caps_at_8_hours(self):
         t = DomainThrottle(domain="example.com")
@@ -101,6 +107,18 @@ class TestDomainThrottle:
         assert restored.max_delay == 7.0
         assert restored.consecutive_fails == 1
         assert restored.ban_until == t.ban_until
+        assert restored.last_ban_at == t.last_ban_at
+
+    def test_record_success_logs_recovery_after_ban(self, caplog):
+        t = DomainThrottle(domain="example.com")
+        t.record_ban()
+        t.ban_until = time.time() - 1
+
+        with caplog.at_level("INFO"):
+            t.record_success()
+
+        assert t.consecutive_fails == 0
+        assert "recovered" in caplog.text
 
 
 # ── ThrottleManager ────────────────────────────────────────────────────────
@@ -247,15 +265,15 @@ class TestRandomHeaders:
 
 
 class TestBackoffDurations:
-    def test_has_five_levels(self):
-        assert len(BACKOFF_DURATIONS) == 5
+    def test_has_four_levels(self):
+        assert len(BACKOFF_DURATIONS) == 4
 
     def test_monotonically_increasing(self):
         for i in range(1, len(BACKOFF_DURATIONS)):
             assert BACKOFF_DURATIONS[i] > BACKOFF_DURATIONS[i - 1]
 
-    def test_first_is_30_minutes(self):
-        assert BACKOFF_DURATIONS[0] == 30 * 60
+    def test_first_is_1_hour(self):
+        assert BACKOFF_DURATIONS[0] == 60 * 60
 
     def test_last_is_8_hours(self):
         assert BACKOFF_DURATIONS[-1] == 8 * 60 * 60

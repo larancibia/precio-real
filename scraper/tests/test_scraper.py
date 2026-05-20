@@ -12,6 +12,7 @@ import scraper.scraper as scraper_module
 
 # Imported after scraper.py exists
 from scraper.scraper import (
+    ML_DOMAIN,
     extract_mla_id,
     normalize_ml_url,
     build_observe_payload,
@@ -20,6 +21,7 @@ from scraper.scraper import (
     post_observe,
     run_scraper,
 )
+from scraper.antibot import ThrottleManager
 
 
 # ── extract_mla_id ──────────────────────────────────────────────────────────
@@ -203,6 +205,23 @@ class TestDiscoverProducts:
         client.get.return_value = resp
         result = discover_products("celular", limit=20, client=client)
         assert result == []
+
+    def test_429_records_ban_once_and_returns_empty(self):
+        resp = MagicMock()
+        resp.status_code = 429
+        resp.raise_for_status.side_effect = Exception("rate limited")
+        client = MagicMock()
+        client.get.return_value = resp
+        manager = ThrottleManager()
+        throttle = manager.get(ML_DOMAIN)
+
+        with patch.object(scraper_module.time, "sleep") as sleep:
+            result = discover_products("celular", limit=20, client=client, throttle=throttle)
+
+        assert result == []
+        assert throttle.is_banned() is True
+        assert throttle.consecutive_fails == 1
+        sleep.assert_not_called()
 
 
 # ── fetch_item_price ────────────────────────────────────────────────────────
@@ -428,6 +447,51 @@ class TestRunScraper:
         assert "inserted" in result
         assert "deduped" in result
         assert "failed" in result
+
+    def test_429_stops_batch_and_persists_throttle_ban(self):
+        rate_limited = MagicMock()
+        rate_limited.status_code = 429
+        rate_limited.raise_for_status.side_effect = Exception("rate limited")
+        client = MagicMock()
+        client.get.return_value = rate_limited
+        manager = ThrottleManager()
+
+        with patch.object(scraper_module.time, "sleep") as sleep:
+            result = run_scraper(
+                ["celular", "televisor"],
+                api_base="https://api.example.com",
+                client=client,
+                throttle_manager=manager,
+            )
+
+        throttle = manager.get(ML_DOMAIN)
+        assert throttle.is_banned() is True
+        assert throttle.consecutive_fails == 1
+        assert client.get.call_count == 1
+        assert result["skipped_banned"] == 1
+        sleep.assert_not_called()
+
+    def test_expired_ban_allows_request_and_logs_recovery(self, caplog):
+        client = MagicMock()
+        client.get.return_value = self._make_search_response([])
+        manager = ThrottleManager()
+        throttle = manager.get(ML_DOMAIN)
+        throttle.consecutive_fails = 1
+        throttle.ban_until = scraper_module.time.time() - 1
+
+        with caplog.at_level("INFO"):
+            result = run_scraper(
+                ["celular"],
+                api_base="https://api.example.com",
+                client=client,
+                dry_run=True,
+                throttle_manager=manager,
+            )
+
+        assert result["skipped_banned"] == 0
+        assert client.get.call_count == 1
+        assert throttle.consecutive_fails == 0
+        assert "recovered" in caplog.text
 
 
 # ── command entrypoint ──────────────────────────────────────────────────────

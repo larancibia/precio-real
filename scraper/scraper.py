@@ -26,7 +26,7 @@ from typing import Optional
 
 import httpx
 
-from scraper.antibot import ThrottleManager, random_headers
+from scraper.antibot import DomainThrottle, ThrottleManager, random_headers
 
 log = logging.getLogger(__name__)
 
@@ -200,25 +200,23 @@ def build_observe_payload(item: dict) -> Optional[dict]:
 def _get_with_retry(
     client: httpx.Client,
     url: str,
-    throttle: Optional["DomainThrottle"] = None,
+    throttle: Optional[DomainThrottle] = None,
 ) -> httpx.Response:
-    """GET with retry on 429/5xx. Records bans on the throttle if provided."""
-    from scraper.antibot import DomainThrottle
-
+    """GET with retry on 5xx. Records 429/403 bans without hammering ML."""
     for attempt in range(ML_RETRY_ATTEMPTS):
         resp = client.get(url, timeout=TIMEOUT_SEC)
-        if resp.status_code in (429, 403):
+        status_code = getattr(resp, "status_code", 200)
+        if not isinstance(status_code, int):
+            status_code = 200
+        if status_code in (429, 403):
             if throttle is not None:
                 throttle.record_ban()
+            resp.raise_for_status()
+            raise RuntimeError(f"ML API returned ban status {status_code}")
+        elif status_code >= 500:
             if attempt < ML_RETRY_ATTEMPTS - 1:
                 delay = ML_RETRY_BASE_SEC * (2 ** attempt)
-                log.debug("[retry] status=%d url=%s sleeping=%.1fs", resp.status_code, url, delay)
-                time.sleep(delay)
-                continue
-        elif resp.status_code >= 500:
-            if attempt < ML_RETRY_ATTEMPTS - 1:
-                delay = ML_RETRY_BASE_SEC * (2 ** attempt)
-                log.debug("[retry] status=%d url=%s sleeping=%.1fs", resp.status_code, url, delay)
+                log.debug("[retry] status=%d url=%s sleeping=%.1fs", status_code, url, delay)
                 time.sleep(delay)
                 continue
         resp.raise_for_status()
@@ -234,6 +232,7 @@ def discover_products(
     limit: int = LIMIT_PER_QUERY,
     *,
     client: httpx.Client,
+    throttle: Optional[DomainThrottle] = None,
 ) -> list[dict]:
     """Query ML Argentina search API and return the results list."""
     url = (
@@ -241,8 +240,7 @@ def discover_products(
         f"?q={urllib.parse.quote(query)}&limit={limit}"
     )
     try:
-        resp = client.get(url, timeout=TIMEOUT_SEC)
-        resp.raise_for_status()
+        resp = _get_with_retry(client, url, throttle=throttle)
         data = resp.json()
         return data.get("results") or []
     except Exception as exc:
@@ -250,7 +248,12 @@ def discover_products(
         return []
 
 
-def fetch_item_price(mla_id: str, *, client: httpx.Client) -> Optional[dict]:
+def fetch_item_price(
+    mla_id: str,
+    *,
+    client: httpx.Client,
+    throttle: Optional[DomainThrottle] = None,
+) -> Optional[dict]:
     """Fetch a single ML item by ID via /items/<ID>.
 
     Returns the raw response dict (with at least price + permalink) or None.
@@ -261,8 +264,7 @@ def fetch_item_price(mla_id: str, *, client: httpx.Client) -> Optional[dict]:
     upper_id = mla_id.upper()
     url = f"{ML_API_BASE}/items/{upper_id}?attributes={ML_ITEM_ATTRIBUTES}"
     try:
-        resp = client.get(url, timeout=TIMEOUT_SEC)
-        resp.raise_for_status()
+        resp = _get_with_retry(client, url, throttle=throttle)
         data = resp.json()
         if not isinstance(data.get("price"), (int, float)):
             return None
@@ -352,12 +354,12 @@ def run_scraper(
     seen_urls: set[str] = set()
     payloads: list[dict] = []
 
-    for query in queries:
+    for idx, query in enumerate(queries):
         # Re-check ban between queries (might get banned mid-run)
         if ml_throttle.is_banned():
             log.warning("[scraper] ML API banned mid-run — stopping discovery")
-            stats["skipped_banned"] += 1
-            continue
+            stats["skipped_banned"] += len(queries) - idx
+            break
 
         # Throttle between requests
         delay = time.time() - ml_throttle.last_request_at
@@ -365,8 +367,12 @@ def run_scraper(
         if delay < min_wait:
             time.sleep(min_wait - delay + (time.time() % 1) * 0.5)
 
-        items = discover_products(query, limit=LIMIT_PER_QUERY, client=client)
-        ml_throttle.last_request_at = time.time()
+        items = discover_products(
+            query,
+            limit=LIMIT_PER_QUERY,
+            client=client,
+            throttle=ml_throttle,
+        )
 
         for item in items:
             payload = build_observe_payload(item)

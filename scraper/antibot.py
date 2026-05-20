@@ -63,9 +63,8 @@ ACCEPT_LANGUAGES = [
     "es-AR,es;q=0.8,en-US;q=0.5,en;q=0.3",
 ]
 
-# Backoff schedule in seconds: 30m, 1h, 2h, 4h, 8h
+# Backoff schedule in seconds: 1h, 2h, 4h, 8h
 BACKOFF_DURATIONS = [
-    30 * 60,      # 30 minutes
     60 * 60,      # 1 hour
     2 * 60 * 60,  # 2 hours
     4 * 60 * 60,  # 4 hours
@@ -114,7 +113,7 @@ class DomainThrottle:
     """Per-domain rate limiter with exponential backoff on bans.
 
     Tracks consecutive failures and applies increasing ban windows:
-    30m -> 1h -> 2h -> 4h -> 8h (caps at 8h).
+    1h -> 2h -> 4h -> 8h (caps at 8h).
     """
 
     domain: str
@@ -123,24 +122,34 @@ class DomainThrottle:
     ban_until: float = 0.0
     consecutive_fails: int = 0
     last_request_at: float = 0.0
+    last_ban_at: float = 0.0
 
     def is_banned(self) -> bool:
         """Return True if this domain is currently in a ban backoff window."""
         return time.time() < self.ban_until
 
     def record_success(self) -> None:
-        """Record a successful request — resets the failure counter."""
+        """Record a successful request and log recovery after a ban window."""
+        if self.consecutive_fails > 0:
+            log.info(
+                "[antibot] domain=%s recovered after ban, last_ban_at=%.0f",
+                self.domain,
+                self.last_ban_at,
+            )
         self.consecutive_fails = 0
+        self.ban_until = 0.0
         self.last_request_at = time.time()
 
     def record_ban(self) -> None:
         """Record a 429/403 ban. Applies exponential backoff.
 
-        Backoff schedule: 30m, 1h, 2h, 4h, 8h (caps at 8h).
+        Backoff schedule: 1h, 2h, 4h, 8h (caps at 8h).
         """
         idx = min(self.consecutive_fails, len(BACKOFF_DURATIONS) - 1)
         duration = BACKOFF_DURATIONS[idx]
-        self.ban_until = time.time() + duration
+        now = time.time()
+        self.last_ban_at = now
+        self.ban_until = now + duration
         self.consecutive_fails += 1
         log.warning(
             "[antibot] domain=%s banned for %dm (fail #%d), ban_until=%.0f",
@@ -170,6 +179,7 @@ class DomainThrottle:
             "ban_until": self.ban_until,
             "consecutive_fails": self.consecutive_fails,
             "last_request_at": self.last_request_at,
+            "last_ban_at": self.last_ban_at,
         }
 
     @classmethod
@@ -182,6 +192,7 @@ class DomainThrottle:
             ban_until=data.get("ban_until", 0.0),
             consecutive_fails=data.get("consecutive_fails", 0),
             last_request_at=data.get("last_request_at", 0.0),
+            last_ban_at=data.get("last_ban_at", 0.0),
         )
 
 
