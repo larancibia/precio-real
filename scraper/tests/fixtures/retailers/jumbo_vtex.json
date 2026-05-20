@@ -1,0 +1,18 @@
+[
+  {
+    "productName": "Parlante Bluetooth Portatil",
+    "link": "https://www.jumbo.com.ar/parlante-bluetooth-portatil/p",
+    "brand": "Audio",
+    "items": [
+      {
+        "images": [{"imageUrl": "https://www.jumbo.com.ar/parlante.jpg"}],
+        "sellers": [
+          {
+            "sellerName": "Jumbo",
+            "commertialOffer": {"Price": 89999, "AvailableQuantity": 3}
+          }
+        ]
+      }
+    ]
+  }
+]

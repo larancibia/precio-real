@@ -1,0 +1,22 @@
+[
+  {
+    "productName": "Smart TV 50 pulgadas UHD 4K",
+    "link": "https://www.carrefour.com.ar/smart-tv-50-pulgadas-uhd-4k/p",
+    "brand": "Marca TV",
+    "items": [
+      {
+        "images": [{"imageUrl": "https://www.carrefour.com.ar/tv.jpg"}],
+        "sellers": [
+          {
+            "sellerName": "Carrefour",
+            "commertialOffer": {
+              "Price": 499999,
+              "ListPrice": 599999,
+              "AvailableQuantity": 7
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

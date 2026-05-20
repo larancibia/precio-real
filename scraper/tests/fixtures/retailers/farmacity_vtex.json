@@ -1,0 +1,18 @@
+[
+  {
+    "productName": "Cepillo Dental Electrico",
+    "link": "https://www.farmacity.com/cepillo-dental-electrico/p",
+    "brand": "Oral",
+    "items": [
+      {
+        "images": [{"imageUrl": "https://www.farmacity.com/cepillo.jpg"}],
+        "sellers": [
+          {
+            "sellerName": "Farmacity",
+            "commertialOffer": {"Price": 35125.5, "AvailableQuantity": 12}
+          }
+        ]
+      }
+    ]
+  }
+]
