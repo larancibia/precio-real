@@ -15,6 +15,7 @@
  */
 
 import { extractMLAId } from "../lib/ml-url";
+import { classifyProductUrl } from "../lib/product-url-classifier";
 import { fetchMLItem } from "./ml-api";
 import { runDiscovery } from "./discovery";
 
@@ -34,6 +35,7 @@ export interface ScheduledResult {
   scraped: number;
   failed: number;
   skipped: number;
+  quarantined: number;
   considered: number;
   discovery: { queries: number; candidates: number; inserted: number; failed: number };
 }
@@ -118,16 +120,25 @@ export async function runScheduledScrape(env: ScheduledEnv): Promise<ScheduledRe
   const rows = result.results ?? [];
   if (rows.length === 0) {
     console.log("[cron] scraped=0 failed=0 skipped=0 (empty products table)");
-    return { scraped: 0, failed: 0, skipped: 0, considered: 0, discovery };
+    return { scraped: 0, failed: 0, skipped: 0, quarantined: 0, considered: 0, discovery };
   }
 
   let scraped = 0;
   let failed = 0;
   let skipped = 0;
+  let quarantined = 0;
 
-  // Pre-filter rows that don't have a parseable MLA id.
+  // Pre-filter rows that are known non-product catalog URLs or don't have a
+  // parseable MLA id. Non-ML product candidates remain catalog rows but are not
+  // fetched by the current ML-only price refresher.
   const work: { row: ProductRow; mlaId: string }[] = [];
   for (const row of rows) {
+    const classification = classifyProductUrl(row.url);
+    if (classification.quarantine) {
+      quarantined++;
+      skipped++;
+      continue;
+    }
     const mlaId = extractMLAId(row.url);
     if (!mlaId) {
       skipped++;
@@ -151,7 +162,7 @@ export async function runScheduledScrape(env: ScheduledEnv): Promise<ScheduledRe
   }
 
   console.log(
-    `[cron] considered=${rows.length} scraped=${scraped} failed=${failed} skipped=${skipped}`,
+    `[cron] considered=${rows.length} scraped=${scraped} failed=${failed} skipped=${skipped} quarantined=${quarantined}`,
   );
-  return { scraped, failed, skipped, considered: rows.length, discovery };
+  return { scraped, failed, skipped, quarantined, considered: rows.length, discovery };
 }
