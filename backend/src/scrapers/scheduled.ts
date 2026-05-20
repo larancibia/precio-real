@@ -22,7 +22,7 @@ import { runDiscovery } from "./discovery";
 const PRODUCT_LIMIT = 500;
 const BATCH_SIZE = 10;
 
-interface ProductRow {
+export interface ProductRow {
   id: number;
   url: string;
 }
@@ -43,6 +43,35 @@ export interface ScheduledResult {
 interface ProductMetaRow {
   title: string | null;
   image_url: string | null;
+}
+
+export interface ScheduledWorkSelection {
+  work: { row: ProductRow; mlaId: string }[];
+  skipped: number;
+  quarantined: number;
+}
+
+export function selectScheduledWork(rows: ProductRow[]): ScheduledWorkSelection {
+  let skipped = 0;
+  let quarantined = 0;
+  const work: { row: ProductRow; mlaId: string }[] = [];
+
+  for (const row of rows) {
+    const classification = classifyProductUrl(row.url);
+    if (classification.quarantine) {
+      quarantined++;
+      skipped++;
+      continue;
+    }
+    const mlaId = extractMLAId(row.url);
+    if (!mlaId) {
+      skipped++;
+      continue;
+    }
+    work.push({ row, mlaId });
+  }
+
+  return { work, skipped, quarantined };
 }
 
 async function fetchAndInsert(row: ProductRow, mlaId: string, env: ScheduledEnv): Promise<void> {
@@ -125,27 +154,7 @@ export async function runScheduledScrape(env: ScheduledEnv): Promise<ScheduledRe
 
   let scraped = 0;
   let failed = 0;
-  let skipped = 0;
-  let quarantined = 0;
-
-  // Pre-filter rows that are known non-product catalog URLs or don't have a
-  // parseable MLA id. Non-ML product candidates remain catalog rows but are not
-  // fetched by the current ML-only price refresher.
-  const work: { row: ProductRow; mlaId: string }[] = [];
-  for (const row of rows) {
-    const classification = classifyProductUrl(row.url);
-    if (classification.quarantine) {
-      quarantined++;
-      skipped++;
-      continue;
-    }
-    const mlaId = extractMLAId(row.url);
-    if (!mlaId) {
-      skipped++;
-      continue;
-    }
-    work.push({ row, mlaId });
-  }
+  const { work, skipped, quarantined } = selectScheduledWork(rows);
 
   for (let i = 0; i < work.length; i += BATCH_SIZE) {
     const batch = work.slice(i, i + BATCH_SIZE);

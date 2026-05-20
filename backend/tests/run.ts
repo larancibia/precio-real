@@ -37,6 +37,7 @@ import {
   parseCdxResponse,
   shouldTriggerWayback,
 } from "../src/scrapers/wayback";
+import { selectScheduledWork } from "../src/scrapers/scheduled";
 
 let passed = 0;
 let failed = 0;
@@ -108,6 +109,21 @@ function assertEq<T>(actual: T, expected: T, msg: string): void {
     assertEq(result.isProduct, true, `classifyProductUrl product candidate: ${url}`);
     assertEq(result.quarantine, false, `classifyProductUrl does not quarantine: ${url}`);
   }
+}
+
+// ── scheduled scrape URL selection ──────────────────────────────────────────
+{
+  const selection = selectScheduledWork([
+    { id: 1, url: "https://www.fravega.com/l/celulares/" },
+    { id: 2, url: "https://articulo.mercadolibre.com.ar/MLA-1234567890-notebook" },
+    { id: 3, url: "https://www.naldo.com.ar/smart-tv-samsung-55-un55cu7000/p" },
+    { id: 4, url: "not a url" },
+  ]);
+
+  assertEq(selection.quarantined, 1, "selectScheduledWork counts quarantined catalog URLs");
+  assertEq(selection.skipped, 3, "selectScheduledWork skips quarantined, non-ML, and invalid URLs");
+  assertEq(selection.work.map((item) => item.row.id), [2], "selectScheduledWork only schedules MLA fetchable rows");
+  assertEq(selection.work[0].mlaId, "MLA1234567890", "selectScheduledWork extracts MLA id");
 }
 
 // ── price-parse: parseArgentinePrice ────────────────────────────────────────
