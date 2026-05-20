@@ -103,6 +103,8 @@ sudo systemctl restart precio-real-postgres.service precio-real-api.service
 8. Run the health check, readiness check, and synthetic observe smoke test.
 9. Confirm the scraper points at `http://127.0.0.1:8402/api/observe`.
 10. Confirm the Cloudflare Worker public API still reads from its expected backend and has not been switched unintentionally.
+11. Install or refresh scraper cron with `bash scraper/install_cron.sh` from the repo root, then confirm `/tmp/precio-real-scraper-run-history.jsonl` receives one JSON line per run.
+12. Review `docs/SCRAPER-RUNBOOK.md` for freshness thresholds, alert parsing, and DB-down/rate-limit diagnosis.
 
 ## Rollback
 

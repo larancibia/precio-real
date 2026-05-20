@@ -5,7 +5,7 @@ Run:
     cd scraper && pytest tests/ -v
 """
 import json
-from unittest.mock import MagicMock, patch, call
+from unittest.mock import MagicMock, patch
 import pytest
 
 import scraper.scraper as scraper_module
@@ -472,6 +472,40 @@ class TestRunScraper:
         assert "deduped" in result
         assert "failed" in result
 
+    def test_writes_run_summary_artifact_for_dry_run(self, tmp_path):
+        items = [
+            {
+                "id": "MLA1",
+                "title": "Notebook",
+                "price": 1500000.0,
+                "currency_id": "ARS",
+                "permalink": "https://articulo.mercadolibre.com.ar/MLA-1234567890-notebook",
+                "thumbnail": "https://img.jpg",
+                "seller": {"nickname": "vendedor"},
+            }
+        ]
+        client = MagicMock()
+        client.get.return_value = self._make_search_response(items)
+        history_path = tmp_path / "run_history.jsonl"
+
+        result = run_scraper(
+            ["celular"],
+            api_base="https://api.example.com",
+            client=client,
+            dry_run=True,
+            run_history_path=history_path,
+        )
+
+        assert result["candidates"] == 1
+        assert client.post.called is False
+        summary = json.loads(history_path.read_text(encoding="utf-8").strip())
+        assert summary["dry_run"] is True
+        assert summary["queries"] == 1
+        assert summary["candidates"] == 1
+        assert summary["attempted"] == 0
+        assert summary["succeeded"] == 0
+        assert summary["failed"] == 0
+
     def test_429_stops_batch_and_persists_throttle_ban(self):
         rate_limited = MagicMock()
         rate_limited.status_code = 429
@@ -524,11 +558,12 @@ class TestCommandEntrypoint:
     def test_dry_run_can_smoke_without_network(self, monkeypatch, capsys):
         calls = []
 
-        def fake_run_scraper(*, api_base, dry_run, queries):
+        def fake_run_scraper(*, api_base, dry_run, queries, run_history_path):
             calls.append({
                 "api_base": api_base,
                 "dry_run": dry_run,
                 "queries": queries,
+                "run_history_path": run_history_path,
             })
             return {
                 "queries": len(queries),
@@ -552,5 +587,6 @@ class TestCommandEntrypoint:
             "api_base": scraper_module.API_BASE_URL,
             "dry_run": True,
             "queries": [],
+            "run_history_path": str(scraper_module.DEFAULT_RUN_HISTORY_PATH),
         }]
-        assert "Done" in capsys.readouterr().out
+        assert json.loads(capsys.readouterr().out)["event"] == "scraper_run"

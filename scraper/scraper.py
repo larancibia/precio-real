@@ -18,15 +18,26 @@ Env vars (optional overrides):
 from __future__ import annotations
 
 import logging
+import json
 import os
 import re
 import time
 import urllib.parse
+from datetime import datetime, timezone
 from typing import Optional
 
 import httpx
 
 from scraper.antibot import DomainThrottle, ThrottleManager, random_headers
+from scraper.monitoring import (
+    DEFAULT_RUN_HISTORY_PATH,
+    build_run_summary,
+    classify_http_failure,
+    evaluate_freshness,
+    load_latest_successful_observation,
+    source_from_url,
+    write_run_summary,
+)
 
 log = logging.getLogger(__name__)
 
@@ -286,6 +297,17 @@ def post_observe(
 
     Returns (ok, inserted, deduped).
     """
+    result = _post_observe_result(api_base, payload, client=client)
+    return bool(result["ok"]), bool(result["inserted"]), bool(result["deduped"])
+
+
+def _post_observe_result(
+    api_base: str,
+    payload: dict,
+    *,
+    client: httpx.Client,
+) -> dict:
+    """POST payload to /api/observe and return monitoring metadata."""
     url = f"{api_base}/api/observe"
     try:
         resp = client.post(url, json=payload, timeout=TIMEOUT_SEC)
@@ -293,7 +315,12 @@ def post_observe(
         data = resp.json()
         inserted = bool(data.get("inserted"))
         deduped = bool(data.get("deduped"))
-        return True, inserted, deduped
+        return {
+            "ok": True,
+            "inserted": inserted,
+            "deduped": deduped,
+            "observed_at": int(data.get("observed_at") or time.time()),
+        }
     except httpx.HTTPStatusError as exc:
         response = exc.response
         status_code = response.status_code
@@ -308,6 +335,7 @@ def post_observe(
                     error_code = str(error.get("code") or error_code)
         except ValueError:
             pass
+        failure_class = classify_http_failure(status_code, None if error_code == "-" else error_code)
         if status_code == 503:
             log.warning(
                 "[observe] api_unavailable url=%s status=%s error_code=%s request_id=%s",
@@ -324,13 +352,27 @@ def post_observe(
                 error_code,
                 request_id,
             )
-        return False, False, False
+        return {
+            "ok": False,
+            "inserted": False,
+            "deduped": False,
+            "failure_class": failure_class,
+        }
     except Exception as exc:
         log.warning("[observe] url=%s error=%s", payload.get("url"), exc)
-        return False, False, False
+        return {
+            "ok": False,
+            "inserted": False,
+            "deduped": False,
+            "failure_class": "api_network_error",
+        }
 
 
 # ── Orchestration ─────────────────────────────────────────────────────────────
+
+def _utc_now_iso() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
+
 
 def run_scraper(
     queries: list[str] = DISCOVERY_QUERIES,
@@ -339,6 +381,7 @@ def run_scraper(
     client: Optional[httpx.Client] = None,
     dry_run: bool = False,
     throttle_manager: Optional[ThrottleManager] = None,
+    run_history_path: Optional[os.PathLike[str] | str] = DEFAULT_RUN_HISTORY_PATH,
 ) -> dict:
     """Run discovery across all queries, deduplicate, and POST new prices.
 
@@ -347,6 +390,7 @@ def run_scraper(
 
     Returns a stats dict: queries, candidates, posted, inserted, deduped, failed, skipped_banned.
     """
+    started_at = _utc_now_iso()
     own_client = client is None
     if own_client:
         headers = random_headers()
@@ -368,6 +412,7 @@ def run_scraper(
         "failed": 0,
         "skipped_banned": 0,
     }
+    observations: list[dict] = []
 
     # Check if ML API is currently banned
     if ml_throttle.is_banned():
@@ -378,6 +423,18 @@ def run_scraper(
         )
         stats["skipped_banned"] = len(queries)
         throttle_manager.save_state(THROTTLE_STATE_PATH)
+        if run_history_path is not None:
+            write_run_summary(
+                run_history_path,
+                build_run_summary(
+                    started_at=started_at,
+                    finished_at=_utc_now_iso(),
+                    dry_run=dry_run,
+                    queries=stats["queries"],
+                    candidates=stats["candidates"],
+                    observations=observations,
+                ),
+            )
         if own_client:
             client.close()  # type: ignore[union-attr]
         return stats
@@ -419,12 +476,23 @@ def run_scraper(
 
     if not dry_run:
         for payload in payloads:
-            ok, inserted, deduped = post_observe(api_base, payload, client=client)
-            if ok:
+            observe_result = _post_observe_result(api_base, payload, client=client)
+            observations.append({
+                "source": source_from_url(payload.get("url") or ""),
+                "ok": observe_result["ok"],
+                "inserted": observe_result["inserted"],
+                "deduped": observe_result["deduped"],
+                "failure_class": observe_result.get("failure_class"),
+                "observed_at": observe_result.get("observed_at"),
+                "price": payload.get("price"),
+                "currency": payload.get("currency"),
+                "url": payload.get("url"),
+            })
+            if observe_result["ok"]:
                 stats["posted"] += 1
-                if inserted:
+                if observe_result["inserted"]:
                     stats["inserted"] += 1
-                elif deduped:
+                elif observe_result["deduped"]:
                     stats["deduped"] += 1
             else:
                 stats["failed"] += 1
@@ -443,6 +511,19 @@ def run_scraper(
     # Persist throttle state for next run
     throttle_manager.save_state(THROTTLE_STATE_PATH)
 
+    if run_history_path is not None:
+        write_run_summary(
+            run_history_path,
+            build_run_summary(
+                started_at=started_at,
+                finished_at=_utc_now_iso(),
+                dry_run=dry_run,
+                queries=stats["queries"],
+                candidates=stats["candidates"],
+                observations=observations,
+            ),
+        )
+
     if own_client:
         client.close()  # type: ignore[union-attr]
 
@@ -454,8 +535,9 @@ def run_scraper(
 def main() -> None:
     import argparse
 
+    log_level = os.environ.get("PRECIO_REAL_LOG_LEVEL", "WARNING").upper()
     logging.basicConfig(
-        level=logging.INFO,
+        level=getattr(logging, log_level, logging.WARNING),
         format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
         datefmt="%Y-%m-%dT%H:%M:%S",
     )
@@ -478,21 +560,53 @@ def main() -> None:
         default=None,
         help="Limit discovery queries; use 0 for a no-network dry-run smoke test",
     )
+    parser.add_argument(
+        "--run-history-path",
+        default=os.environ.get("PRECIO_REAL_RUN_HISTORY_PATH", str(DEFAULT_RUN_HISTORY_PATH)),
+        help="JSONL run-history artifact path",
+    )
+    parser.add_argument(
+        "--check-freshness",
+        action="store_true",
+        help="Exit nonzero if the latest successful observation is stale",
+    )
+    parser.add_argument(
+        "--freshness-threshold-hours",
+        type=float,
+        default=float(os.environ.get("PRECIO_REAL_FRESHNESS_THRESHOLD_HOURS", "6")),
+        help="Maximum latest-observation age before freshness fails",
+    )
     args = parser.parse_args()
 
     if args.max_queries is not None and args.max_queries < 0:
         parser.error("--max-queries must be greater than or equal to 0")
+    if args.freshness_threshold_hours <= 0:
+        parser.error("--freshness-threshold-hours must be greater than 0")
 
     queries = DISCOVERY_QUERIES
     if args.max_queries is not None:
         queries = DISCOVERY_QUERIES[:args.max_queries]
 
-    stats = run_scraper(queries=queries, api_base=args.api_base, dry_run=args.dry_run)
-    print(
-        f"Done — queries={stats['queries']} candidates={stats['candidates']} "
-        f"posted={stats['posted']} inserted={stats['inserted']} "
-        f"deduped={stats['deduped']} failed={stats['failed']}"
+    stats = run_scraper(
+        queries=queries,
+        api_base=args.api_base,
+        dry_run=args.dry_run,
+        run_history_path=args.run_history_path,
     )
+    output = {"event": "scraper_run", **stats, "run_history_path": args.run_history_path}
+
+    if args.check_freshness:
+        latest = load_latest_successful_observation(args.run_history_path)
+        output["freshness"] = evaluate_freshness(
+            latest,
+            now_epoch=int(time.time()),
+            max_age_seconds=int(args.freshness_threshold_hours * 3600),
+        )
+
+    print(json.dumps(output, sort_keys=True, separators=(",", ":")))
+
+    if args.check_freshness and output.get("freshness", {}).get("ok") is not True:
+        raise SystemExit(2)
 
 
 if __name__ == "__main__":
