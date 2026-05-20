@@ -208,6 +208,14 @@ def build_observe_payload(item: dict) -> Optional[dict]:
 
 # ── I/O helpers (accept injectable client for tests) ─────────────────────────
 
+
+class SourceFetchError(RuntimeError):
+    """Fetch failure with a normalized class for run-history aggregation."""
+
+    def __init__(self, failure_class: str, message: str):
+        super().__init__(message)
+        self.failure_class = failure_class
+
 def _get_with_retry(
     client: httpx.Client,
     url: str,
@@ -222,14 +230,25 @@ def _get_with_retry(
         if status_code in (429, 403):
             if throttle is not None:
                 throttle.record_ban()
-            resp.raise_for_status()
-            raise RuntimeError(f"ML API returned ban status {status_code}")
+            raise SourceFetchError(
+                classify_http_failure(status_code),
+                f"ML API returned ban status {status_code}",
+            )
         elif status_code >= 500:
             if attempt < ML_RETRY_ATTEMPTS - 1:
                 delay = ML_RETRY_BASE_SEC * (2 ** attempt)
                 log.debug("[retry] status=%d url=%s sleeping=%.1fs", status_code, url, delay)
                 time.sleep(delay)
                 continue
+            raise SourceFetchError(
+                classify_http_failure(status_code),
+                f"ML API returned server status {status_code}",
+            )
+        elif status_code >= 400:
+            raise SourceFetchError(
+                classify_http_failure(status_code),
+                f"ML API returned client status {status_code}",
+            )
         resp.raise_for_status()
         if throttle is not None:
             throttle.record_success()
@@ -244,6 +263,7 @@ def discover_products(
     *,
     client: httpx.Client,
     throttle: Optional[DomainThrottle] = None,
+    failures: Optional[list[dict]] = None,
 ) -> list[dict]:
     """Query ML Argentina search API and return the results list."""
     url = (
@@ -254,7 +274,22 @@ def discover_products(
         resp = _get_with_retry(client, url, throttle=throttle)
         data = resp.json()
         return data.get("results") or []
+    except SourceFetchError as exc:
+        if failures is not None:
+            failures.append({
+                "source": ML_DOMAIN,
+                "ok": False,
+                "failure_class": exc.failure_class,
+            })
+        log.warning("[discover] query=%r error=%s", query, exc)
+        return []
     except Exception as exc:
+        if failures is not None:
+            failures.append({
+                "source": ML_DOMAIN,
+                "ok": False,
+                "failure_class": "source_network_error",
+            })
         log.warning("[discover] query=%r error=%s", query, exc)
         return []
 
@@ -432,6 +467,7 @@ def run_scraper(
                     dry_run=dry_run,
                     queries=stats["queries"],
                     candidates=stats["candidates"],
+                    skipped_banned=stats["skipped_banned"],
                     observations=observations,
                 ),
             )
@@ -460,6 +496,7 @@ def run_scraper(
             limit=LIMIT_PER_QUERY,
             client=client,
             throttle=ml_throttle,
+            failures=observations,
         )
 
         for item in items:
@@ -473,6 +510,7 @@ def run_scraper(
             payloads.append(payload)
 
     stats["candidates"] = len(payloads)
+    stats["failed"] = sum(1 for observation in observations if observation.get("ok") is not True)
 
     if not dry_run:
         for payload in payloads:
@@ -520,6 +558,7 @@ def run_scraper(
                 dry_run=dry_run,
                 queries=stats["queries"],
                 candidates=stats["candidates"],
+                skipped_banned=stats["skipped_banned"],
                 observations=observations,
             ),
         )

@@ -15,6 +15,7 @@ def test_build_run_summary_aggregates_sources_and_failures():
         dry_run=False,
         queries=2,
         candidates=3,
+        skipped_banned=1,
         observations=[
             {
                 "source": "mercadolibre.com.ar",
@@ -38,6 +39,7 @@ def test_build_run_summary_aggregates_sources_and_failures():
     )
 
     assert summary["attempted"] == 3
+    assert summary["skipped_banned"] == 1
     assert summary["succeeded"] == 1
     assert summary["failed"] == 2
     assert summary["failure_classes"] == {
