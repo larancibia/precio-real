@@ -1,0 +1,18 @@
+[
+  {
+    "productName": "Auriculares Inalambricos",
+    "link": "https://www.disco.com.ar/auriculares-inalambricos/p",
+    "brand": "Audio",
+    "items": [
+      {
+        "images": [{"imageUrl": "https://www.disco.com.ar/auriculares.jpg"}],
+        "sellers": [
+          {
+            "sellerName": "Disco",
+            "commertialOffer": {"Price": 42999, "AvailableQuantity": 2}
+          }
+        ]
+      }
+    ]
+  }
+]
