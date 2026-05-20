@@ -8,6 +8,7 @@ Usage:
     python -m scraper.scraper
     python -m scraper.scraper --api-base https://api.precio-real.crisolabs.com
     python -m scraper.scraper --dry-run
+    python -m scraper.scraper --dry-run --max-queries 0
 
 Env vars (optional overrides):
     PRECIO_REAL_API_BASE   → API base URL (default: https://api.precio-real.crisolabs.com)
@@ -434,9 +435,22 @@ def main() -> None:
         default=os.environ.get("PRECIO_REAL_DRY_RUN", "") == "1",
         help="Discover products but skip POSTing to /api/observe",
     )
+    parser.add_argument(
+        "--max-queries",
+        type=int,
+        default=None,
+        help="Limit discovery queries; use 0 for a no-network dry-run smoke test",
+    )
     args = parser.parse_args()
 
-    stats = run_scraper(api_base=args.api_base, dry_run=args.dry_run)
+    if args.max_queries is not None and args.max_queries < 0:
+        parser.error("--max-queries must be greater than or equal to 0")
+
+    queries = DISCOVERY_QUERIES
+    if args.max_queries is not None:
+        queries = DISCOVERY_QUERIES[:args.max_queries]
+
+    stats = run_scraper(queries=queries, api_base=args.api_base, dry_run=args.dry_run)
     print(
         f"Done — queries={stats['queries']} candidates={stats['candidates']} "
         f"posted={stats['posted']} inserted={stats['inserted']} "
