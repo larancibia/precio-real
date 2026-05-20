@@ -7,6 +7,8 @@ para Precio Real v0.2.4. Idioma principal: español (Argentina).
 > Mantener sincronizado con `extension/manifest.json`, `landing/index.html` y
 > `landing/privacidad.html`. Si se agregan retailers en el manifest, actualizar acá
 > y en privacidad.html antes de re-submit.
+> Claims de cobertura: mantener alineado con `docs/PUBLIC-DATA-QUALITY-POLICY.md`;
+> coverage, freshness and confidence vary by product and retailer.
 
 ---
 
@@ -15,7 +17,7 @@ para Precio Real v0.2.4. Idioma principal: español (Argentina).
 | Campo | Valor |
 |-------|-------|
 | Name (max 75 chars) | `Precio Real — historial real de precios en Argentina` |
-| Short summary (max 132 chars) | `Detectá descuentos truchos en Hot Sale: historial real de precios en 101 e-commerce argentinos. Sin cuenta, sin tracking.` |
+| Short summary (max 132 chars) | `Detectá descuentos truchos en Hot Sale: historial real de precios en sitios soportados. Sin cuenta, sin tracking.` |
 | Category | Shopping |
 | Language | Spanish (Argentina) — `es-AR` |
 | Website / Homepage URL | `https://precio-real.firemandeveloper.com` |
@@ -31,7 +33,7 @@ para Precio Real v0.2.4. Idioma principal: español (Argentina).
 > Total ~ 1.4k caracteres, dentro del límite de 16k de Chrome Web Store.
 
 ```
-Precio Real es una extensión gratuita y open source que te muestra el historial real de precios de cada producto en los principales e-commerce de Argentina. Pensada para Hot Sale, Cyber Monday y cualquier promo donde los descuentos suelen ser truchos.
+Precio Real es una extensión gratuita y open source que te muestra historial de precios cuando hay datos públicos suficientes en e-commerce soportados de Argentina. Pensada para Hot Sale, Cyber Monday y cualquier promo donde los descuentos suelen ser truchos.
 
 ¿Por qué? En Hot Sale aparecen miles de carteles de "OFF", pero muchas veces no sabés si el precio actual es realmente menor que el de la semana pasada. Precio Real te muestra el historial para decidir con datos.
 
@@ -44,7 +46,7 @@ CÓMO FUNCIONA
 QUÉ INCLUYE
 - Historial de precios real por producto.
 - Alertas de aumentos disfrazados de descuento.
-- 101 sitios soportados v0.2.4: Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Argentina, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store, LG Argentina, Sony Store, Philips Argentina, BGH, Noblex, Whirlpool, Changomás, Electrolux, Drean, Motorola Store, Todomodo, Amazon Argentina, HiperTehno, Xiaomi Mi Store, Philco Argentina, Venex, BGood, HP Tienda, Lenovo Argentina, Alphatec, Exo, Hisense Argentina, TCL Argentina, Pycca, Newsan, Asus Store Argentina, Mac Center, Full, Micro Center, iPoint, Acer Store, Coolbox, Olimpo, Dexter, TGC, Maxiconsumo, FullH4rd, Start Tech PC, PC House, Zetta, Geek Store, Computodo, MaxiHogar, PC Factory, CompraGamer, Golden Shop, Soluciones, Arredondo, iThink, Nexstore, Cable Hogar, Bit, Digital Haus, InStore, Staples, Gotta, Power Planet, iGaming Store, Netizar, MegaStore, Century Tech, Klibr, Lazer, PC Arg, Carsa, GrupoDIN, Coppel, Megatronics, Mac Station, Winpy, GearZone, Binario, CompuPC, Autronic, Megatrix y Pixelstore.
+- 101 sitios configurados en v0.2.4, con cobertura y frescura variables: Mercado Libre Argentina, Frávega, Garbarino, Falabella Argentina, Carrefour Argentina, Coto Digital, Naldo, Musimundo, Cetrogar, Megatone, Día Online, Jumbo, Disco, Sodimac, Easy, Hendel, Rodo, Ribeiro, Compumundo, Samsung Store, LG Argentina, Sony Store, Philips Argentina, BGH, Noblex, Whirlpool, Changomás, Electrolux, Drean, Motorola Store, Todomodo, Amazon Argentina, HiperTehno, Xiaomi Mi Store, Philco Argentina, Venex, BGood, HP Tienda, Lenovo Argentina, Alphatec, Exo, Hisense Argentina, TCL Argentina, Pycca, Newsan, Asus Store Argentina, Mac Center, Full, Micro Center, iPoint, Acer Store, Coolbox, Olimpo, Dexter, TGC, Maxiconsumo, FullH4rd, Start Tech PC, PC House, Zetta, Geek Store, Computodo, MaxiHogar, PC Factory, CompraGamer, Golden Shop, Soluciones, Arredondo, iThink, Nexstore, Cable Hogar, Bit, Digital Haus, InStore, Staples, Gotta, Power Planet, iGaming Store, Netizar, MegaStore, Century Tech, Klibr, Lazer, PC Arg, Carsa, GrupoDIN, Coppel, Megatronics, Mac Station, Winpy, GearZone, Binario, CompuPC, Autronic, Megatrix y Pixelstore.
 - Contexto de precios históricos para no confundir marketing con ahorro real.
 
 PRIVACIDAD
@@ -66,7 +68,7 @@ Hecha en Argentina. Gratis. Soporte opcional vía Cafecito.
 > Útil si Chrome Web Store permite idioma secundario. Pegar en el campo "Detailed description" del locale EN.
 
 ```
-Precio Real is a free, open-source Chrome extension that shows the real price history of products on Argentine e-commerce sites. Built for Hot Sale, Cyber Monday, and any sale event where discounts can be misleading.
+Precio Real is a free, open-source Chrome extension that shows price history when enough public data is available on supported Argentine e-commerce sites. Built for Hot Sale, Cyber Monday, and any sale event where discounts can be misleading.
 
 WHY?
 During Hot Sale, thousands of "OFF" labels appear, but it is hard to know whether the current price is actually lower than last week's price. Precio Real shows the product history so users can decide with data.
