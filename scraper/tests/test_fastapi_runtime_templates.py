@@ -31,8 +31,8 @@ def test_runtime_directory_tracks_expected_files():
 def test_compose_documents_live_ports_and_postgres_restart_policy():
     compose = read_runtime_file("compose.yml")
 
-    assert "127.0.0.1:8402:8402" in compose
-    assert "54330:5432" in compose
+    assert "${API_HOST:-127.0.0.1}:${API_PORT:-8402}:8402" in compose
+    assert "${POSTGRES_PUBLISHED_PORT:-54330}:5432" in compose
     assert "restart: unless-stopped" in compose
     assert "pg_isready" in compose
     assert "POSTGRES_PASSWORD" in compose

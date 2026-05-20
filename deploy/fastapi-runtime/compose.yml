@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "54330:5432"
+      - "${POSTGRES_PUBLISHED_PORT:-54330}:5432"
     volumes:
       - precio_real_postgres:/var/lib/postgresql/data
       - ./schema.sql:/docker-entrypoint-initdb.d/001-schema.sql:ro
@@ -31,7 +31,7 @@ services:
     environment:
       DATABASE_URL: ${DATABASE_URL}
     ports:
-      - "127.0.0.1:8402:8402"
+      - "${API_HOST:-127.0.0.1}:${API_PORT:-8402}:8402"
     depends_on:
       postgres:
         condition: service_healthy
