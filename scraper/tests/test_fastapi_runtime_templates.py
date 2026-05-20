@@ -71,16 +71,37 @@ def test_fastapi_app_exposes_health_and_observe_routes():
     app = read_runtime_file("app/main.py")
 
     assert '@app.get("/api/health")' in app
+    assert '@app.get("/api/ready")' in app
     assert '@app.post("/api/observe")' in app
+    assert "X-Request-ID" in app
+    assert "database_unavailable" in app
+    assert "status_code=503" in app
     assert "INSERT INTO products" in app
     assert "ON CONFLICT (url) DO UPDATE" in app
     assert "INSERT INTO prices" in app
+
+
+def test_fastapi_health_is_liveness_and_ready_checks_database():
+    app = read_runtime_file("app/main.py")
+
+    health_start = app.index('@app.get("/api/health")')
+    ready_start = app.index('@app.get("/api/ready")')
+    observe_start = app.index('@app.post("/api/observe")')
+    health_block = app[health_start:ready_start]
+    ready_block = app[ready_start:observe_start]
+
+    assert "SELECT 1" not in health_block
+    assert '{"ok": True}' in health_block
+    assert "SELECT 1" in ready_block
+    assert "db_unavailable_response" in ready_block
 
 
 def test_readme_contains_smoke_cleanup_rollout_and_rollback():
     readme = read_runtime_file("README.md")
 
     assert "curl -fsS http://127.0.0.1:8402/api/health" in readme
+    assert "curl -fsS http://127.0.0.1:8402/api/ready" in readme
+    assert "database_unavailable" in readme
     assert "curl -fsS -X POST http://127.0.0.1:8402/api/observe" in readme
     assert "precio-real-smoke.invalid" in readme
     assert "DELETE FROM prices" in readme

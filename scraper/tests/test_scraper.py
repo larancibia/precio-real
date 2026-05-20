@@ -304,6 +304,30 @@ class TestPostObserve:
         ok, inserted, deduped = post_observe("https://api.example.com", self._payload(), client=client)
         assert ok is False
 
+    def test_503_logs_api_unavailable(self, caplog):
+        import httpx
+        request = httpx.Request("POST", "https://api.example.com/api/observe")
+        response = httpx.Response(
+            503,
+            request=request,
+            json={
+                "ok": False,
+                "error": {"code": "database_unavailable", "message": "database temporarily unavailable"},
+                "request_id": "req-test",
+            },
+        )
+        client = MagicMock()
+        client.post.return_value = response
+
+        with caplog.at_level("WARNING", logger=scraper_module.__name__):
+            ok, inserted, deduped = post_observe("https://api.example.com", self._payload(), client=client)
+
+        assert (ok, inserted, deduped) == (False, False, False)
+        assert "api_unavailable" in caplog.text
+        assert "status=503" in caplog.text
+        assert "request_id=req-test" in caplog.text
+        assert "database_unavailable" in caplog.text
+
     def test_posts_to_observe_endpoint(self):
         client = self._make_client({"ok": True, "inserted": True, "deduped": False})
         post_observe("https://api.example.com", self._payload(), client=client)

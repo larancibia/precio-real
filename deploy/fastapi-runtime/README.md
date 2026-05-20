@@ -9,7 +9,7 @@ Current production ports:
 
 ## Files
 
-- `app/main.py`: FastAPI health and observe endpoints.
+- `app/main.py`: FastAPI health, readiness, and observe endpoints.
 - `schema.sql`: idempotent Postgres schema for `products` and `prices`.
 - `compose.yml`: Postgres and API services with explicit restart policies.
 - `env.example`: sanitized variable names and formats.
@@ -29,7 +29,18 @@ docker compose up -d postgres
 docker compose ps postgres
 docker compose up -d api
 curl -fsS http://127.0.0.1:8402/api/health
+curl -fsS http://127.0.0.1:8402/api/ready
 ```
+
+`/api/health` is process liveness only and does not touch Postgres. Use `/api/ready` for cron, watchdog, and load-balancer readiness checks because it runs a `SELECT 1` against Postgres.
+
+When Postgres is unavailable, `/api/ready` and `/api/observe` return HTTP 503 with a sanitized body:
+
+```json
+{"ok":false,"error":{"code":"database_unavailable","message":"database temporarily unavailable"},"request_id":"synthetic-request-id"}
+```
+
+The response includes `X-Request-ID`; callers may also send their own `X-Request-ID`. Logs include `route`, `request_id`, and `error_code` fields, but must not include connection strings, passwords, or raw `.env` values.
 
 `docker compose up -d postgres` should leave Postgres healthy. The compose file sets `restart: unless-stopped` so Docker restarts the database after daemon or VPS reboots unless an operator intentionally stopped it.
 
@@ -89,7 +100,7 @@ sudo systemctl enable precio-real-postgres.service precio-real-api.service
 sudo systemctl restart precio-real-postgres.service precio-real-api.service
 ```
 
-8. Run the health check and synthetic observe smoke test.
+8. Run the health check, readiness check, and synthetic observe smoke test.
 9. Confirm the scraper points at `http://127.0.0.1:8402/api/observe`.
 10. Confirm the Cloudflare Worker public API still reads from its expected backend and has not been switched unintentionally.
 
@@ -101,6 +112,6 @@ Keep the Cloudflare Worker backend and this FastAPI ingestion runtime aligned du
 2. Repoint the scraper to the last known-good ingestion URL or pause scraper cron/jobs to avoid silent observation failures.
 3. If a previous `/opt/precio-real-api` release is available, restore that release and its matching `.env`, then run `docker compose config` before starting services.
 4. Do not deploy Cloudflare Worker schema/API changes while the VPS runtime is rolled back. If Worker changes already shipped, roll the Worker back to the release that matches the active ingestion schema.
-5. Re-run `/api/health` and the synthetic `/api/observe` smoke test before resuming scraper jobs.
+5. Re-run `/api/health`, `/api/ready`, and the synthetic `/api/observe` smoke test before resuming scraper jobs.
 
 Secrets, real customer data, tokens, and raw production payloads must remain outside the repo.
