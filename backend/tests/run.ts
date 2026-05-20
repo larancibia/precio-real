@@ -24,6 +24,7 @@ import { fileURLToPath } from "node:url";
 import { computeStats } from "../src/lib/analytics";
 import { extractMLAId, normalizeMLUrl } from "../src/lib/ml-url";
 import { isSyntheticPublicProduct } from "../src/lib/public-catalog";
+import { classifyProductUrl } from "../src/lib/product-url-classifier";
 import { parseArgentinePrice, extractPriceFromHTML } from "../src/lib/price-parse";
 import { clampLimit, clampMinDrop, fetchMovers } from "../src/lib/movers";
 import { validateObservation, upsertObservedProduct } from "../src/lib/observe";
@@ -74,6 +75,39 @@ function assertEq<T>(actual: T, expected: T, msg: string): void {
     "https://www.mercadolibre.com.ar/foo/p/MLA999",
     "normalizeMLUrl idempotent on canonical input",
   );
+}
+
+// ── product-url-classifier ──────────────────────────────────────────────────
+{
+  const badCatalogUrls = [
+    "https://www.fravega.com/l/celulares/",
+    "https://www.naldo.com.ar/ayuda",
+    "https://www.jumbo.com.ar/institucional/privacidad",
+    "https://www.disco.com.ar/sitemap.xml",
+    "https://www.sodimac.com.ar/sodimac-ar/category/cat10012/herramientas",
+    "https://www.easy.com.ar/blog/ideas-para-tu-casa",
+    "https://www.compumundo.com.ar/contacto",
+    "https://www.farmacity.com/terminos-y-condiciones",
+    "https://www.coppel.com.ar/c/celulares",
+  ];
+  for (const url of badCatalogUrls) {
+    const result = classifyProductUrl(url);
+    assertEq(result.isProduct, false, `classifyProductUrl non-product: ${url}`);
+    assertEq(result.quarantine, true, `classifyProductUrl quarantines: ${url}`);
+  }
+
+  const goodProductUrls = [
+    "https://www.naldo.com.ar/smart-tv-samsung-55-un55cu7000/p",
+    "https://www.cetrogar.com.ar/notebook-lenovo-ideapad-15alc7-82r400bwar.html",
+    "https://www.carrefour.com.ar/smart-tv-50-pulgadas-uhd-4k/p",
+    "https://www.amazon.com/-/es/SAMSUNG-Galaxy-S24-128GB-Desbloqueado/dp/B0CMDRCZBX",
+    "https://compragamer.com/producto/Notebook_Gamer_ASUS_TUF_A15_16549",
+  ];
+  for (const url of goodProductUrls) {
+    const result = classifyProductUrl(url);
+    assertEq(result.isProduct, true, `classifyProductUrl product candidate: ${url}`);
+    assertEq(result.quarantine, false, `classifyProductUrl does not quarantine: ${url}`);
+  }
 }
 
 // ── price-parse: parseArgentinePrice ────────────────────────────────────────
