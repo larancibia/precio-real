@@ -292,6 +292,37 @@ def post_observe(
         inserted = bool(data.get("inserted"))
         deduped = bool(data.get("deduped"))
         return True, inserted, deduped
+    except httpx.HTTPStatusError as exc:
+        response = exc.response
+        status_code = response.status_code
+        request_id = response.headers.get("x-request-id", "-")
+        error_code = "-"
+        try:
+            body = response.json()
+            if isinstance(body, dict):
+                request_id = str(body.get("request_id") or request_id)
+                error = body.get("error")
+                if isinstance(error, dict):
+                    error_code = str(error.get("code") or error_code)
+        except ValueError:
+            pass
+        if status_code == 503:
+            log.warning(
+                "[observe] api_unavailable url=%s status=%s error_code=%s request_id=%s",
+                payload.get("url"),
+                status_code,
+                error_code,
+                request_id,
+            )
+        else:
+            log.warning(
+                "[observe] http_error url=%s status=%s error_code=%s request_id=%s",
+                payload.get("url"),
+                status_code,
+                error_code,
+                request_id,
+            )
+        return False, False, False
     except Exception as exc:
         log.warning("[observe] url=%s error=%s", payload.get("url"), exc)
         return False, False, False
