@@ -33,6 +33,8 @@ curl -fsS http://127.0.0.1:8402/api/health
 
 `docker compose up -d postgres` should leave Postgres healthy. The compose file sets `restart: unless-stopped` so Docker restarts the database after daemon or VPS reboots unless an operator intentionally stopped it.
 
+For local validation only, if port `54330` is already in use, set a temporary `POSTGRES_PUBLISHED_PORT` override in `.env`. Keep aranserver on the documented production port.
+
 ## Observe Smoke Test
 
 Use synthetic data only. This proves `/api/observe` returns 200 without inserting real customer or production payloads.
