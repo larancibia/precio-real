@@ -5,6 +5,9 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -20,9 +23,19 @@ jobs:
           cache: "npm"
           cache-dependency-path: backend/package-lock.json
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: scraper/requirements.txt
+
       - name: Install backend dependencies
         working-directory: backend
         run: npm ci
+
+      - name: Install scraper dependencies
+        run: python -m pip install -r scraper/requirements.txt
 
       - name: Backend tests
         working-directory: backend
@@ -35,3 +48,11 @@ jobs:
         run: |
           node -e "const m=require('./extension/manifest.json'); if (m.manifest_version !== 3) throw new Error('manifest_version must be 3'); if (!m.version) throw new Error('missing version');"
 
+      - name: Retailer config validation
+        run: python -m pytest scraper/tests/test_retailers_config.py -q
+
+      - name: Scraper tests
+        run: python -m pytest scraper/tests -q
+
+      - name: Scraper dry-run smoke
+        run: python -m scraper.scraper --dry-run --max-queries 0

@@ -8,6 +8,8 @@ import json
 from unittest.mock import MagicMock, patch, call
 import pytest
 
+import scraper.scraper as scraper_module
+
 # Imported after scraper.py exists
 from scraper.scraper import (
     extract_mla_id,
@@ -426,3 +428,41 @@ class TestRunScraper:
         assert "inserted" in result
         assert "deduped" in result
         assert "failed" in result
+
+
+# ── command entrypoint ──────────────────────────────────────────────────────
+
+class TestCommandEntrypoint:
+    def test_dry_run_can_smoke_without_network(self, monkeypatch, capsys):
+        calls = []
+
+        def fake_run_scraper(*, api_base, dry_run, queries):
+            calls.append({
+                "api_base": api_base,
+                "dry_run": dry_run,
+                "queries": queries,
+            })
+            return {
+                "queries": len(queries),
+                "candidates": 0,
+                "posted": 0,
+                "inserted": 0,
+                "deduped": 0,
+                "failed": 0,
+                "skipped_banned": 0,
+            }
+
+        monkeypatch.setattr(scraper_module, "run_scraper", fake_run_scraper)
+        monkeypatch.setattr(
+            "sys.argv",
+            ["scraper", "--dry-run", "--max-queries", "0"],
+        )
+
+        scraper_module.main()
+
+        assert calls == [{
+            "api_base": scraper_module.API_BASE_URL,
+            "dry_run": True,
+            "queries": [],
+        }]
+        assert "Done" in capsys.readouterr().out
