@@ -47,6 +47,7 @@ def build_run_summary(
     queries: int,
     candidates: int,
     observations: Iterable[dict[str, Any]],
+    skipped_banned: int = 0,
 ) -> dict[str, Any]:
     observations = list(observations)
     attempted = len(observations)
@@ -107,6 +108,7 @@ def build_run_summary(
         "dry_run": dry_run,
         "queries": queries,
         "candidates": candidates,
+        "skipped_banned": skipped_banned,
         "attempted": attempted,
         "succeeded": succeeded,
         "failed": failed,

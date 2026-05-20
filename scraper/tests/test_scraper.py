@@ -529,6 +529,31 @@ class TestRunScraper:
         assert result["skipped_banned"] == 1
         sleep.assert_not_called()
 
+    def test_source_failures_are_included_in_run_history(self, tmp_path):
+        rate_limited = MagicMock()
+        rate_limited.status_code = 429
+        client = MagicMock()
+        client.get.return_value = rate_limited
+        manager = ThrottleManager()
+        history_path = tmp_path / "run_history.jsonl"
+
+        with patch.object(scraper_module.time, "sleep"):
+            result = run_scraper(
+                ["celular", "televisor"],
+                api_base="https://api.example.com",
+                client=client,
+                throttle_manager=manager,
+                run_history_path=history_path,
+            )
+
+        summary = json.loads(history_path.read_text(encoding="utf-8").strip())
+        assert result["failed"] == 1
+        assert result["skipped_banned"] == 1
+        assert summary["attempted"] == 1
+        assert summary["failed"] == 1
+        assert summary["failure_classes"] == {"api_rate_limited": 1}
+        assert summary["retailers"][ML_DOMAIN]["failure_classes"] == {"api_rate_limited": 1}
+
     def test_expired_ban_allows_request_and_logs_recovery(self, caplog):
         client = MagicMock()
         client.get.return_value = self._make_search_response([])
