@@ -2,7 +2,7 @@
 
 import json
 
-from scraper.catalog_urls import audit_catalog_urls, classify_product_url
+from scraper.catalog_urls import audit_catalog_urls, classify_product_url, main
 
 
 BAD_CATALOG_URLS = [
@@ -74,3 +74,30 @@ def test_audit_report_json_is_machine_readable():
     assert decoded["summary"]["invalid"] == 1
     assert decoded["summary"]["valid"] == 1
     assert decoded["summary"]["quarantined"] == 1
+
+
+def test_audit_command_writes_sanitized_report_without_mutating_input(tmp_path):
+    input_path = tmp_path / "catalog.txt"
+    report_path = tmp_path / "quarantine.json"
+    rows = [GOOD_PRODUCT_URLS[0], BAD_CATALOG_URLS[0], "not a url"]
+    input_path.write_text("\n".join(rows), encoding="utf-8")
+
+    exit_code = main(["--input", str(input_path), "--quarantine-file", str(report_path)])
+
+    assert exit_code == 0
+    assert input_path.read_text(encoding="utf-8") == "\n".join(rows)
+    report = json.loads(report_path.read_text(encoding="utf-8"))
+    assert report["summary"] == {
+        "total": 3,
+        "valid": 1,
+        "invalid": 1,
+        "quarantined": 1,
+        "unknown": 0,
+    }
+    assert report["quarantine"] == [
+        {
+            "url": BAD_CATALOG_URLS[0],
+            "host": "fravega.com",
+            "reason": "category_path",
+        }
+    ]
